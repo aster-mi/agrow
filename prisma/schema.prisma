@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma schema
+model Agave {
+  id          Int            @id @default(autoincrement())
+  name        String
+  tags        TagsOnAgaves[]
+  description String?
+  ownerId     Int
+  owner       User           @relation(fields: [ownerId], references: [id])
+  agaveImages AgaveImage[]
+  createdAt   DateTime       @default(now())
+  parentId    Int?
+  children    Agave[]        @relation("ParentChild")
+  parent      Agave?         @relation("ParentChild", fields: [parentId], references: [id])
+  qrCode      QrCode?
+}
+
+model Tag {
+  id     Int            @id @default(autoincrement())
+  name   String         @unique
+  agaves TagsOnAgaves[]
+}
+
+model TagsOnAgaves {
+  agaveId Int
+  agave   Agave @relation(fields: [agaveId], references: [id])
+  tagId   Int
+  tag     Tag   @relation(fields: [tagId], references: [id])
+
+  @@id([agaveId, tagId])
+}
+
+model QrCode {
+  id      String @id @default(uuid())
+  agaveId Int
+  agave   Agave  @relation(fields: [agaveId], references: [id])
+
+  @@unique([agaveId])
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ownedAgaves Agave[]
+  likedPosts  Like[]
+  followers   Follow[] @relation("Followers")
+  following   Follow[] @relation("Following")
+  Post        Post[]
+}
+
+model Follow {
+  id         Int  @id @default(autoincrement())
+  follower   User @relation("Followers", fields: [followerId], references: [id])
+  followerId Int
+  followed   User @relation("Following", fields: [followedId], references: [id])
+  followedId Int
+
+  @@unique([followerId, followedId])
+}
+
+model AgaveImage {
+  id       Int                  @id @default(autoincrement())
+  url      String
+  agaveId  Int
+  agave    Agave                @relation(fields: [agaveId], references: [id])
+  shotDate DateTime             @default(now())
+  posts    PostsOnAgaveImages[]
+}
+
+model Post {
+  id          Int                  @id @default(autoincrement())
+  content     String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  likes       Like[]
+  authorId    Int
+  author      User                 @relation(fields: [authorId], references: [id])
+  parentId    Int?
+  parent      Post?                @relation("RepliesTo", fields: [parentId], references: [id])
+  replies     Post[]               @relation("RepliesTo")
+  agaveImages PostsOnAgaveImages[]
+}
+
+model PostsOnAgaveImages {
+  postId       Int
+  post         Post       @relation(fields: [postId], references: [id])
+  agaveImageId Int
+  agaveImage   AgaveImage @relation(fields: [agaveImageId], references: [id])
+
+  @@id([postId, agaveImageId])
+}
+
+model Like {
+  id     Int  @id @default(autoincrement())
+  postId Int
+  post   Post @relation(fields: [postId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, postId])
+}

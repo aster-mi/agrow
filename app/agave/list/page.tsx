@@ -5,7 +5,7 @@ import { Card, Row, Col, Input, Button, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 
 interface DataType {
-  id: number;
+  slug: string;
   name: string;
   description: string;
   owner: {
@@ -16,6 +16,7 @@ interface DataType {
 export default function Home(){
   const [content, setContent] = useState('');
   const [dataSource, setDataSource] = useState<DataType[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleGetAgaves = async () => {
     const response = await fetch('/api/agave/list');
@@ -23,11 +24,11 @@ export default function Home(){
     setDataSource(agaves);
   };
 
-    const handleGetAgaveClick = async (id: number) => {
-        const response = await fetch(`/api/agave/${id}`);
-        const agave = await response.json();
-        alert(agave);
-    };
+  const handleGetAgaveClick = async (slug: string) => {
+      const response = await fetch(`/api/agave/${slug}`);
+      const agave = await response.json();
+      alert(agave);
+  };
 
   const columns: ColumnsType<DataType> = [
     {
@@ -38,7 +39,7 @@ export default function Home(){
     {
       title: '詳細',
       dataIndex: 'description',
-      width: '60%',
+      width: '40%',
     },
     {
       title: '所有者',
@@ -49,7 +50,7 @@ export default function Home(){
     {
       width: '5%',
       render: (record: DataType) => (
-        <Button danger onClick={() => handleGetAgaveClick(record.id)}>
+        <Button danger onClick={() => handleGetAgaveClick(record.slug)}>
           Get
         </Button>
       ),
@@ -67,7 +68,7 @@ export default function Home(){
         <Table
           dataSource={dataSource}
           columns={columns}
-          rowKey={(record) => record.id}
+          rowKey={(record) => record.slug}
           pagination={{
             pageSize: 5,
           }}

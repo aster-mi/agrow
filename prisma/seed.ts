@@ -1,33 +1,31 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-    // delete all
-    await prisma.agave.deleteMany();
-    await prisma.tag.deleteMany();
-    await prisma.tagsOnAgaves.deleteMany();
-    await prisma.qrCode.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.follow.deleteMany();
-    await prisma.agaveImage.deleteMany();
-    await prisma.post.deleteMany();
-    await prisma.postsOnAgaveImages.deleteMany();
-    await prisma.like.deleteMany();
+  // delete all
+  await prisma.agave.deleteMany();
+  await prisma.tag.deleteMany();
+  await prisma.tagsOnAgaves.deleteMany();
+  await prisma.qrCode.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.follow.deleteMany();
+  await prisma.agaveImage.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.postsOnAgaveImages.deleteMany();
+  await prisma.like.deleteMany();
 
   try {
     // ユーザーデータの追加
     await prisma.user.createMany({
       data: [
         {
-          username: 'user1',
-          email: 'user1@example.com',
-          password: 'password1',
+          name: "user1",
+          email: "user1@example.com",
         },
         {
-          username: 'user2',
-          email: 'user2@example.com',
-          password: 'password2',
+          name: "user2",
+          email: "user2@example.com",
         },
       ],
     });
@@ -36,13 +34,13 @@ async function main() {
     await prisma.agave.createMany({
       data: [
         {
-          name: 'Agave 1',
-          description: 'This is Agave 1',
+          name: "Agave 1",
+          description: "This is Agave 1",
           ownerId: 1, // user1のIDを指定
         },
         {
-          name: 'Agave 2',
-          description: 'This is Agave 2',
+          name: "Agave 2",
+          description: "This is Agave 2",
           ownerId: 2, // user2のIDを指定
         },
       ],
@@ -52,10 +50,10 @@ async function main() {
     await prisma.tag.createMany({
       data: [
         {
-          name: 'Tag 1',
+          name: "Tag 1",
         },
         {
-          name: 'Tag 2',
+          name: "Tag 2",
         },
       ],
     });
@@ -92,11 +90,11 @@ async function main() {
     await prisma.agaveImage.createMany({
       data: [
         {
-          url: 'https://example.com/agave1.jpg',
+          url: "https://example.com/agave1.jpg",
           agaveId: 1, // Agave 1に関連付け
         },
         {
-          url: 'https://example.com/agave2.jpg',
+          url: "https://example.com/agave2.jpg",
           agaveId: 2, // Agave 2に関連付け
         },
       ],
@@ -106,11 +104,11 @@ async function main() {
     await prisma.post.createMany({
       data: [
         {
-          content: 'This is the first post',
+          content: "This is the first post",
           authorId: 1, // user1が投稿
         },
         {
-          content: 'This is the second post',
+          content: "This is the second post",
           authorId: 2, // user2が投稿
         },
       ],
@@ -134,22 +132,24 @@ async function main() {
     await prisma.qrCode.createMany({
       data: [
         {
+          code: "AAAA",
           agaveId: 1, // Agave 1に関連付け
         },
         {
+          code: "BBBB",
           agaveId: 2, // Agave 2に関連付け
         },
       ],
     });
 
-    console.log('サンプルデータの追加が完了しました');
+    console.log("サンプルデータの追加が完了しました");
   } catch (error) {
-    console.error('データの追加中にエラーが発生しました:', error);
+    console.error("データの追加中にエラーが発生しました:", error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
 main().catch((error) => {
-  console.error('エラーが発生しました:', error);
+  console.error("エラーが発生しました:", error);
 });

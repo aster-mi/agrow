@@ -4,15 +4,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { slug: string } }
 ) {
-  return NextResponse.json(await getAgave(Number(params.id)));
+  const agave = await getAgave(params.slug);
+  console.log(agave)
+  return NextResponse.json(agave);
 }
 
-async function getAgave(id: number){
+async function getAgave(slug: string){
     const agave = await prisma.agave.findUnique({
     where: {
-      id: id,
+      slug: slug,
     },
     include:{
       owner: {

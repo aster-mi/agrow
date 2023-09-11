@@ -9,11 +9,11 @@ interface DataType {
   name: string;
   description: string;
   owner: {
-    username: string;
+    name: string;
   }
 }
 
-export default function Home(){
+export default function Page(){
   const [content, setContent] = useState('');
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -27,7 +27,7 @@ export default function Home(){
   const handleGetAgaveClick = async (slug: string) => {
       const response = await fetch(`/api/agave/${slug}`);
       const agave = await response.json();
-      alert(agave);
+      alert(JSON.stringify(agave));
   };
 
   const columns: ColumnsType<DataType> = [
@@ -45,7 +45,7 @@ export default function Home(){
       title: '所有者',
       dataIndex: 'owner',
       width: '10%',
-      render: (owner) => owner.username,
+      render: (owner) => owner.name,
     },
     {
       width: '5%',

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 function UserProfile() {
   const router = useRouter();
-  const { username } = router.query;
+  const { name } = router.query;
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ function UserProfile() {
     // 以下は仮の例です
     async function fetchUserData() {
       try {
-        const response = await fetch(`/api/user/${username}`);
+        const response = await fetch(`/api/user/${name}`);
         const data = await response.json();
         setUserData(data);
       } catch (error) {
@@ -20,12 +20,12 @@ function UserProfile() {
       }
     }
 
-    if (username) {
+    if (name) {
       fetchUserData();
     }
-  }, [username]);
+  }, [name]);
 
-  if (!username) {
+  if (!name) {
     return <p>Loading...</p>;
   }
 
@@ -35,7 +35,7 @@ function UserProfile() {
 
   return (
     <div>
-      <h1>{userData.username}'s Profile</h1>
+      <h1>{userData.name}'s Profile</h1>
       <p>Name: {userData.name}</p>
       <p>Email: {userData.email}</p>
       {/* 他のプロフィール情報を表示 */}

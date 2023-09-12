@@ -18,15 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <head>
-        <link rel="stylesheet" href="../flowbite.min.css"></link>
-      </head>
+      <head></head>
       <body className={inter.className}>
         <NextAuthProvider>
           {children}
           <BottomMenue></BottomMenue>
         </NextAuthProvider>
-        <script src="../flowbite.min.js"></script>
       </body>
     </html>
   );

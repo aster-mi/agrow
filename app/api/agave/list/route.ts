@@ -3,12 +3,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
-  return NextResponse.json(await getAllAgaves());
+export async function GET(request: NextRequest) {
+  const agaves = await getAllAgaves();
+  return NextResponse.json(agaves);
 }
 
 async function getAllAgaves() {
-  const agaves = await prisma.agave.findMany({
+  return await prisma.agave.findMany({
     include: {
       owner: {
         select: {
@@ -17,7 +18,4 @@ async function getAllAgaves() {
       },
     },
   });
-
-  // ownerの名前を含むAgaveデータを返す
-  return agaves;
 }

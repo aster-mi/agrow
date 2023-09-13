@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Card, Row, Col, Input, Button, Table } from "antd";
+import { useSession } from "next-auth/react";
 import { ColumnsType } from "antd/es/table";
 import { AgaveType } from "../type/AgaveType";
 import { addAgave } from "./api";
@@ -9,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
   const [agaveName, setAgaveName] = useState<string>("");
   const [agaveDescription, setAgaveDescription] = useState<string>("");
@@ -21,7 +23,11 @@ export default function Page() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await addAgave({ name: agaveName, description: agaveDescription });
+    await addAgave({
+      name: agaveName,
+      description: agaveDescription,
+      ownerId: session?.user?.id,
+    });
     setAgaveName("");
     setAgaveDescription("");
     router.refresh;

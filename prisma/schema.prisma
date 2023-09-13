@@ -13,7 +13,7 @@ datasource db {
 // 認証系
 model Account {
   id                 Int     @id @default(autoincrement())
-  userId             Int     @map("user_id")
+  userId             String  @map("user_id")
   type               String
   provider           String
   providerAccountId  String  @map("provider_account_id")
@@ -35,7 +35,7 @@ model Account {
 model Session {
   id           Int      @id @default(autoincrement())
   sessionToken String   @unique @map("session_token")
-  userId       Int      @map("user_id")
+  userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -58,7 +58,7 @@ model Agave {
   name        String
   tags        TagsOnAgaves[]
   description String?
-  ownerId     Int
+  ownerId     String
   owner       User           @relation(fields: [ownerId], references: [id])
   agaveImages AgaveImage[]
   createdAt   DateTime       @default(now())
@@ -90,7 +90,8 @@ model QrCode {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(cuid())
+  publicId      String    @unique @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime? @map("email_verified")
@@ -107,11 +108,11 @@ model User {
 }
 
 model Follow {
-  id         Int  @id @default(autoincrement())
-  follower   User @relation("Followers", fields: [followerId], references: [id])
-  followerId Int
-  followed   User @relation("Following", fields: [followedId], references: [id])
-  followedId Int
+  id         Int    @id @default(autoincrement())
+  follower   User   @relation("Followers", fields: [followerId], references: [id])
+  followerId String
+  followed   User   @relation("Following", fields: [followedId], references: [id])
+  followedId String
 
   @@unique([followerId, followedId])
 }
@@ -131,7 +132,7 @@ model Post {
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   likes       Like[]
-  authorId    Int
+  authorId    String
   author      User                 @relation(fields: [authorId], references: [id])
   parentId    Int?
   parent      Post?                @relation("RepliesTo", fields: [parentId], references: [id])
@@ -149,11 +150,11 @@ model PostsOnAgaveImages {
 }
 
 model Like {
-  id     Int  @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   postId Int
-  post   Post @relation(fields: [postId], references: [id])
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
 }

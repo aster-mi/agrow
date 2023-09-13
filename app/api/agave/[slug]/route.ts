@@ -8,7 +8,6 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   const agave = await getAgave(params.slug);
-  console.log(agave);
   return NextResponse.json(agave);
 }
 

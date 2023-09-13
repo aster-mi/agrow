@@ -3,6 +3,6 @@ export interface AgaveType {
   slug?: string;
   name: string;
   description: string;
-  ownerId?: number;
+  ownerId?: string;
   parentId?: number;
 }

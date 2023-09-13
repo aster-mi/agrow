@@ -25,6 +25,8 @@ const Login: NextPage = () => {
             <div className="mx-auto">
               <h1>ようこそ, {session.user && session.user.name} さん</h1>
               <h2>email: {session.user && session.user.email}</h2>
+              <h2>public id: @{session.user && session.user.publicId}</h2>
+
               <img
                 src={session.user?.image || ""}
                 alt="Image"

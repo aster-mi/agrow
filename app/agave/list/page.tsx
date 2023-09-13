@@ -1,65 +1,65 @@
-'use client';
+"use client";
 
-import { useState, useEffect, ChangeEvent } from 'react';
-import { Card, Row, Col, Input, Button, Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { useState, useEffect, ChangeEvent } from "react";
+import { Card, Row, Col, Input, Button, Table } from "antd";
+import { ColumnsType } from "antd/es/table";
 
 interface DataType {
-  slug: string;
+  ownedAgaves: Agave[];
   name: string;
-  description: string;
-  owner: {
-    name: string;
-  }
 }
 
-export default function Page(){
-  const [content, setContent] = useState('');
-  const [dataSource, setDataSource] = useState<DataType[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+interface Agave {
+  name: string;
+  description: string;
+  slug: string;
+}
+
+export default function Page() {
+  const [dataSource, setDataSource] = useState<Agave[]>([]);
 
   const handleGetAgaves = async () => {
-    const response = await fetch('/api/agave/list');
-    const agaves = await response.json();
-    setDataSource(agaves);
+    fetch("/api/agave/list")
+      .then((response) => response.json())
+      .then((data) => setDataSource(data.ownedAgaves));
   };
 
   const handleGetAgaveClick = async (slug: string) => {
-      const response = await fetch(`/api/agave/${slug}`);
-      const agave = await response.json();
-      alert(JSON.stringify(agave));
+    const response = await fetch(`/api/agave/${slug}`);
+    const agave = await response.json();
+    alert(JSON.stringify(agave));
   };
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<Agave> = [
     {
-      title: '名前',
-      dataIndex: 'name',
-      width: '30%',
+      title: "名前",
+      dataIndex: "name",
+      width: "30%",
     },
     {
-      title: '詳細',
-      dataIndex: 'description',
-      width: '40%',
+      title: "詳細",
+      dataIndex: "description",
+      width: "40%",
     },
+    // {
+    //   title: "所有者",
+    //   dataIndex: "owner",
+    //   width: "10%",
+    //   render: (owner) => owner.name,
+    // },
     {
-      title: '所有者',
-      dataIndex: 'owner',
-      width: '10%',
-      render: (owner) => owner.name,
-    },
-    {
-      width: '5%',
-      render: (record: DataType) => (
-        <Button danger onClick={() => handleGetAgaveClick(record.slug)}>
+      width: "5%",
+      render: (agave: Agave) => (
+        <Button danger onClick={() => handleGetAgaveClick(agave.slug)}>
           Get
         </Button>
       ),
     },
   ];
 
-    return (
+  return (
     <div>
-      <Card title='Agaves'>
+      <Card title="Agaves">
         <Row>
           <Col span={16}>
             <Button onClick={handleGetAgaves}>一覧取得</Button>
@@ -68,12 +68,12 @@ export default function Page(){
         <Table
           dataSource={dataSource}
           columns={columns}
-          rowKey={(record) => record.slug}
+          rowKey={(agave) => agave.slug}
           pagination={{
             pageSize: 5,
           }}
         />
       </Card>
     </div>
-  ); 
+  );
 }

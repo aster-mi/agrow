@@ -8,11 +8,11 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   const session = await getServerSession(nextAuthOptions);
 
-  if (!session) {
+  if (!session || !session.user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const publicId = session?.user.publicId;
+  const publicId = session.user.publicId;
 
   const agaves = await getAgaves(publicId);
   return NextResponse.json(agaves);

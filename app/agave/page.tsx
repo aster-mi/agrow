@@ -3,7 +3,6 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Card, Row, Col, Input, Button, Table } from "antd";
 import { useSession } from "next-auth/react";
-import { ColumnsType } from "antd/es/table";
 import { AgaveType } from "../type/AgaveType";
 import { addAgave } from "./api";
 import { useRouter } from "next/navigation";

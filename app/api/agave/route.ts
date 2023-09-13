@@ -9,11 +9,11 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest) {
   const session = await getServerSession(nextAuthOptions);
 
-  if (!session) {
+  if (!session?.user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const id = session?.user.id;
+  const id = session.user.id;
   const body = await request.json();
   return NextResponse.json(await registerAgave(body, id));
 }

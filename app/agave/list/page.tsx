@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { Card, Row, Col, Input, Button, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import Link from "next/link";
 
 interface DataType {
   ownedAgaves: Agave[];
@@ -33,13 +34,13 @@ export default function Page() {
   const columns: ColumnsType<Agave> = [
     {
       title: "名前",
-      dataIndex: "name",
       width: "30%",
+      render: (agave: Agave) => <Link href={agave.slug}>{agave.name}</Link>,
     },
     {
       title: "詳細",
       dataIndex: "description",
-      width: "40%",
+      width: "30%",
     },
     // {
     //   title: "所有者",

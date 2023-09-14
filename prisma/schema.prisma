@@ -58,8 +58,10 @@ model Agave {
   name        String
   tags        TagsOnAgaves[]
   description String?
+  isPublished Boolean        @default(true)
   ownerId     String
   owner       User           @relation(fields: [ownerId], references: [id])
+  iconUrl     String
   agaveImages AgaveImage[]
   createdAt   DateTime       @default(now())
   parentId    Int?
@@ -119,7 +121,7 @@ model Follow {
 
 model AgaveImage {
   id       Int                  @id @default(autoincrement())
-  url      String
+  url      String               @unique
   agaveId  Int
   agave    Agave                @relation(fields: [agaveId], references: [id])
   shotDate DateTime             @default(now())

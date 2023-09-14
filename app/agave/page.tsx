@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Card, Row, Col, Input, Button, Table } from "antd";
+import { Card, Input, Button } from "antd";
 import { useSession } from "next-auth/react";
 import { AgaveType } from "../type/AgaveType";
 import { addAgave } from "./api";
 import { useRouter } from "next/navigation";
+import ImageUploader from "@/components/ImageUploader";
 
 export default function Page() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Page() {
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
   const [agaveName, setAgaveName] = useState<string>("");
   const [agaveDescription, setAgaveDescription] = useState<string>("");
+  const [uploadedImageURLs, setUploadedImageURLs] = useState<string[]>([]);
 
   const handleGetAgaves = async () => {
     const response = await fetch("/api/agave/list");
@@ -22,14 +24,26 @@ export default function Page() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // アップロードした画像の URL をサーバーに送信する
     await addAgave({
       name: agaveName,
       description: agaveDescription,
       ownerId: session?.user?.id,
+      images: uploadedImageURLs, // 画像の URL をサーバーに送信
     });
+
     setAgaveName("");
     setAgaveDescription("");
-    router.refresh;
+    setUploadedImageURLs([]); // 送信後に画像の URL リストをクリア
+
+    router.push("/"); // 例: ホームページにリダイレクト
+  };
+  // ...
+
+  // 画像のURLを受け取るコールバック関数
+  const handleImagesUploaded = (imageURLs: string[]) => {
+    setUploadedImageURLs(imageURLs);
   };
 
   return (
@@ -54,6 +68,7 @@ export default function Page() {
             type="text"
             placeholder="description..."
           />
+          <ImageUploader onImagesUploaded={handleImagesUploaded} />
           <button className="w-full px-4 py-2 text-white bg-blue-500 rounded transform transition-transform duration-200 hover:bg-blue-400 hover:scale-95">
             Add new agave!
           </button>

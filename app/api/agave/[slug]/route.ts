@@ -8,6 +8,8 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   const agave = await getAgave(params.slug);
+  console.log(params.slug);
+  console.log(agave);
   return NextResponse.json(agave);
 }
 
@@ -19,6 +21,7 @@ async function getAgave(slug: string) {
     include: {
       owner: {
         select: {
+          id: true,
           name: true,
         },
       },

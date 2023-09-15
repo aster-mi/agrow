@@ -3,6 +3,7 @@
 import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { NextPage } from "next";
+import Image from "next/image";
 
 const Login: NextPage = () => {
   // sessionには、以下のような値が入っています。
@@ -27,11 +28,11 @@ const Login: NextPage = () => {
               <h2>email: {session.user && session.user.email}</h2>
               <h2>public id: @{session.user && session.user.publicId}</h2>
 
-              <img
+              <Image
                 src={session.user?.image || ""}
                 alt="Image"
                 className="rounded-full w-32 h-32"
-              ></img>
+              ></Image>
               <button onClick={() => signOut()}>ログアウト</button>
             </div>
           </div>

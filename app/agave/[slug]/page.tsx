@@ -1,29 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import ImageUploader from "@/components/ImageUploader";
+import { useState, ChangeEvent, useEffect } from "react";
+import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
-import { addImages, getAgave } from "../api";
+import { addImages, getAgave } from "@/app/agave/api";
 import { useParams, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
-import { toast } from "react-toastify";
+import Image from "next/image";
+import compressImage from "@/app/utils/compressImage";
 
 const Page = () => {
   const { slug } = useParams();
-  const [uploadedImageURLs, setUploadedImageURLs] = useState<string[]>([]);
-  const [agave, setAgave] = useState<AgaveType>();
-  const router = useRouter();
+  const [agave, setAgave] = useState<AgaveType | null>(null);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [fileInputKey, setFileInputKey] = useState<number>(0);
 
   useEffect(() => {
-    (async () => {
-      const agave: AgaveType = await getAgave(slug as string);
-      setAgave(agave);
-    })();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const agave: AgaveType = await getAgave(slug as string);
+        setAgave(agave);
+      } catch (error) {
+        console.error("Error fetching agave:", error);
+      }
+    };
+    fetchData();
+  }, [fileInputKey, slug]);
 
-  const handleImagesUploaded = (imageURLs: string[]) => {
-    setUploadedImageURLs(imageURLs);
+  const handleChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+    if (files && files.length > 0) {
+      const compressedURLs = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const compressedImage = await compressImage(file);
+          return URL.createObjectURL(compressedImage);
+        })
+      );
+      setPreviewImages(compressedURLs);
+    }
   };
 
   const handleUpload = async () => {
@@ -31,8 +46,9 @@ const Page = () => {
       if (!agave) {
         throw "agave not found.";
       }
+
       // 画像をSupabaseにアップロード
-      const uploadPromises = uploadedImageURLs.map(async (previewURL) => {
+      const uploadPromises = previewImages.map(async (previewURL) => {
         const response = await fetch(previewURL);
         const blob = await response.blob();
         const fileName = `agave/${uuidv4()}.jpg`;
@@ -54,14 +70,14 @@ const Page = () => {
       const imagePaths = await Promise.all(uploadPromises);
 
       await addImages({
-        id: agave.id,
+        id: agave.id as number,
         slug: slug as unknown as string,
-        images: imagePaths, // 画像の URL をサーバーに送信
+        images: imagePaths,
       });
 
-      setUploadedImageURLs([]);
+      setPreviewImages([]);
+      setFileInputKey((prevKey) => prevKey + 1);
       toast.success("画像追加完了");
-
       console.log("add images");
     } catch (error) {
       console.error("Upload error:", error);
@@ -71,8 +87,34 @@ const Page = () => {
   return (
     <div>
       <h1>Upload Images</h1>
-      <ImageUploader onImagesUploaded={handleImagesUploaded} />
-      <button onClick={handleUpload}>Upload</button>
+      {agave && (
+        <div>
+          <input
+            key={fileInputKey}
+            type="file"
+            accept=".jpeg, .jpg, .png"
+            multiple
+            onChange={handleChangeFiles}
+            className="w-full p-2 border rounded"
+          />
+
+          <div className="flex overflow-x-auto whitespace-nowrap p-2">
+            {previewImages.map((previewURL, index) => (
+              <div
+                key={index}
+                className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+              >
+                <Image
+                  src={previewURL}
+                  alt={`Preview ${index}`}
+                  className="w-full"
+                />
+              </div>
+            ))}
+          </div>
+          <button onClick={handleUpload}>Upload</button>
+        </div>
+      )}
 
       {agave && (
         <div>
@@ -81,18 +123,18 @@ const Page = () => {
           <p>Slug: {agave.slug}</p>
           <p>Name: {agave.name}</p>
           <p>Description: {agave.description}</p>
-          {/* 画像の表示 */}
           {agave.images && (
-            <div>
-              <h3>Images</h3>
-              {agave.images.map((imageUrl, index) => (
-                <img
-                  key={index}
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`} // プライベートバケットのパスを指定
-                  alt={`Image ${index}`}
-                  width={100}
-                />
-              ))}
+            <div className="grid grid-cols-4 gap-0">
+              {agave.images &&
+                agave.images.map((imageUrl, index) => (
+                  <div key={index} className="rounded overflow-hidden">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`}
+                      alt={`Image ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
             </div>
           )}
           <p>Owner ID: {agave.ownerId}</p>

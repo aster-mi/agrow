@@ -3,24 +3,15 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Card, Input, Button } from "antd";
 import { useSession } from "next-auth/react";
-import { AgaveType } from "../type/AgaveType";
 import { addAgave } from "./api";
 import { useRouter } from "next/navigation";
-import ImageUploader from "@/components/ImageUploader";
 
 export default function Page() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [dataSource, setDataSource] = useState<AgaveType[]>([]);
   const [agaveName, setAgaveName] = useState<string>("");
   const [agaveDescription, setAgaveDescription] = useState<string>("");
   const [uploadedImageURLs, setUploadedImageURLs] = useState<string[]>([]);
-
-  const handleGetAgaves = async () => {
-    const response = await fetch("/api/agave/list");
-    const agaves = await response.json();
-    setDataSource(agaves);
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,7 +59,6 @@ export default function Page() {
             type="text"
             placeholder="description..."
           />
-          <ImageUploader onImagesUploaded={handleImagesUploaded} />
           <button className="w-full px-4 py-2 text-white bg-blue-500 rounded transform transition-transform duration-200 hover:bg-blue-400 hover:scale-95">
             Add new agave!
           </button>

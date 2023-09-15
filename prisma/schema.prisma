@@ -61,7 +61,7 @@ model Agave {
   isPublished Boolean        @default(true)
   ownerId     String
   owner       User           @relation(fields: [ownerId], references: [id])
-  iconUrl     String
+  iconUrl     String?
   agaveImages AgaveImage[]
   createdAt   DateTime       @default(now())
   parentId    Int?

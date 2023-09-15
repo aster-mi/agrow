@@ -9,12 +9,26 @@ import { useParams, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
+import ImageModal from "@/app/components/ImageModal";
+import AddImageSvg from "@/app/components/svg/AddImageSvg";
 
 const Page = () => {
   const { slug } = useParams();
   const [agave, setAgave] = useState<AgaveType | null>(null);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [fileInputKey, setFileInputKey] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,11 +52,17 @@ const Page = () => {
         })
       );
       setPreviewImages(compressedURLs);
+    } else {
+      setPreviewImages([]);
     }
   };
 
   const handleUpload = async () => {
     try {
+      if (previewImages.length == 0) {
+        toast.warn("画像が選択されていません。");
+        return;
+      }
       if (!agave) {
         throw "agave not found.";
       }
@@ -86,59 +106,93 @@ const Page = () => {
 
   return (
     <div>
-      <h1>Upload Images</h1>
       {agave && (
         <div>
-          <input
-            key={fileInputKey}
-            type="file"
-            accept=".jpeg, .jpg, .png"
-            multiple
-            onChange={handleChangeFiles}
-            className="w-full p-2 border rounded"
-          />
-
-          <div className="flex overflow-x-auto whitespace-nowrap p-2">
-            {previewImages.map((previewURL, index) => (
-              <div
-                key={index}
-                className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
-              >
-                <Image
-                  src={previewURL}
-                  alt={`Preview ${index}`}
-                  className="w-full"
-                />
-              </div>
-            ))}
+          <div className="my-4">
+            <span className="text-3xl font-semibold">{agave.name}</span>
+            <p className="mt-2 text-gray-300">{agave.description}</p>
+            <p>オーナー: {agave.ownerId}</p>
+            <p>親株: {agave.parentId}</p>
           </div>
-          <button onClick={handleUpload}>Upload</button>
-        </div>
-      )}
+          <div>
+            <div className="grid grid-cols-1 gap-0">
+              <label
+                htmlFor="dropzone-file"
+                className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <p className="m-2 text-sm text-gray-500 dark:text-gray-400">
+                    <AddImageSvg />
+                  </p>
+                </div>
+                <input
+                  id="dropzone-file"
+                  key={fileInputKey}
+                  type="file"
+                  accept=".jpeg, .jpg, .png"
+                  multiple
+                  onChange={handleChangeFiles}
+                  className="hidden"
+                />
+              </label>
+            </div>
 
-      {agave && (
-        <div>
-          <h2>Agave Details</h2>
-          <p>ID: {agave.id}</p>
-          <p>Slug: {agave.slug}</p>
-          <p>Name: {agave.name}</p>
-          <p>Description: {agave.description}</p>
+            <div className="flex overflow-x-auto whitespace-nowrap">
+              {previewImages.map((previewURL, index) => (
+                <div
+                  key={index}
+                  className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+                  style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
+                >
+                  <Image
+                    src={previewURL}
+                    alt={`Preview ${index}`}
+                    className="w-full h-full object-cover" // 画像を親要素に合わせて表示
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              ))}
+            </div>
+            {previewImages.length > 0 && (
+              <div className="grid grid-cols-1 gap-0">
+                <button
+                  onClick={handleUpload}
+                  className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                >
+                  <span className="m-2 text-xl text-white">
+                    <span>投稿</span>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
           {agave.images && (
-            <div className="grid grid-cols-4 gap-0">
+            <div className="grid grid-cols-3 gap-0 w-full h-full">
               {agave.images &&
                 agave.images.map((imageUrl, index) => (
-                  <div key={index} className="rounded overflow-hidden">
+                  <div key={index} className="p-px overflow-hidden">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`}
                       alt={`Image ${index}`}
                       className="w-full h-full object-cover"
+                      onClick={() =>
+                        handleImageClick(
+                          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`
+                        )
+                      }
+                      width={1000}
+                      height={1000}
                     />
                   </div>
                 ))}
             </div>
           )}
-          <p>Owner ID: {agave.ownerId}</p>
-          <p>Parent ID: {agave.parentId}</p>
+          <ImageModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            imageUrl={selectedImage!}
+          />
         </div>
       )}
     </div>

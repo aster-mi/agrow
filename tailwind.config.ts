@@ -22,7 +22,7 @@ const colors = require("tailwindcss/colors");
 
 module.exports = {
   plugins: [require("flowbite/plugin")],
-  content: ["./node_modules/flowbite/**/*min.{css,js}"],
+  content: ["./node_modules/flowbite/**/*min.js"],
 };
 
 export default config;

@@ -32,5 +32,8 @@ async function getAgave(slug: string) {
       parent: true,
     },
   });
+  if (agave && agave.agaveImages) {
+    agave.agaveImages.reverse();
+  }
   return agave;
 }

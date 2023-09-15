@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import NextAuthProvider from "./providers/NextAuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "flowbite/dist/flowbite.min.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

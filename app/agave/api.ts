@@ -17,8 +17,16 @@ export const addAgave = async (agave: AgaveType): Promise<AgaveType> => {
 export const getAgave = async (slug: string): Promise<AgaveType> => {
   const res = await fetch(`${baseUrl}/${slug}`);
   const agave = await res.json();
-  console.log(agave);
-  return agave;
+  const result: AgaveType = {
+    id: agave.id,
+    slug: agave.slug,
+    name: agave.name,
+    description: agave.description,
+    ownerId: agave.ownerId,
+    parentId: agave.parentId,
+    images: agave.agaveImages.map((image: any) => image.url), // images プロパティを url の配列に変換
+  };
+  return result;
 };
 
 export const addImages = async (agave: AgaveType) => {

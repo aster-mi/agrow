@@ -27,6 +27,7 @@ async function registerAgave(data: AgaveType, id: string) {
       name: data.name,
       description: data.description,
       ownerId: id,
+      parentId: data.parentId,
     },
   });
   return agave;

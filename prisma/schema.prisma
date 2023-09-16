@@ -65,8 +65,8 @@ model Agave {
   agaveImages AgaveImage[]
   createdAt   DateTime       @default(now())
   parentId    Int?
-  children    Agave[]        @relation("ParentChild")
-  parent      Agave?         @relation("ParentChild", fields: [parentId], references: [id])
+  pups        Agave[]        @relation("ParentPup")
+  parent      Agave?         @relation("ParentPup", fields: [parentId], references: [id])
   qrCode      QrCode?
 }
 

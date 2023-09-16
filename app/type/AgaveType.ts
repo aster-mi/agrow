@@ -5,5 +5,8 @@ export interface AgaveType {
   description?: string;
   images?: string[];
   ownerId?: string;
+  ownerName?: string;
   parentId?: number;
+  parentName?: string;
+  parentSlug?: string;
 }

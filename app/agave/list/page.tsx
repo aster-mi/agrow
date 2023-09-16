@@ -19,11 +19,15 @@ interface Agave {
 export default function Page() {
   const [dataSource, setDataSource] = useState<Agave[]>([]);
 
-  const handleGetAgaves = async () => {
-    fetch("/api/agave/list")
-      .then((response) => response.json())
-      .then((data) => setDataSource(data.ownedAgaves));
-  };
+  useEffect(() => {
+    try {
+      fetch("/api/agave/list")
+        .then((response) => response.json())
+        .then((data) => setDataSource(data.ownedAgaves));
+    } catch (error) {
+      console.error("Error fetching agave:", error);
+    }
+  }, []);
 
   const handleGetAgaveClick = async (slug: string) => {
     const response = await fetch(`/api/agave/${slug}`);
@@ -42,12 +46,6 @@ export default function Page() {
       dataIndex: "description",
       width: "30%",
     },
-    // {
-    //   title: "所有者",
-    //   dataIndex: "owner",
-    //   width: "10%",
-    //   render: (owner) => owner.name,
-    // },
     {
       width: "5%",
       render: (agave: Agave) => (
@@ -63,7 +61,8 @@ export default function Page() {
       <Card title="Agaves">
         <Row>
           <Col span={16}>
-            <Button onClick={handleGetAgaves}>一覧取得</Button>
+            {/* <Button onClick={handleGetAgaves}>一覧取得</Button> */}
+            <div />
           </Col>
         </Row>
         <Table

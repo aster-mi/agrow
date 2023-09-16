@@ -13,6 +13,8 @@ import ImageModal from "@/app/components/ImageModal";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
 import Loading from "./loading";
 import LoadingImage from "@/app/components/LoadingImage";
+import pup from "@/public/pup.png";
+import Link from "next/link";
 
 const Page = () => {
   const { slug } = useParams();
@@ -23,6 +25,7 @@ const Page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isImageProcessing, setIsImageProcessing] = useState(false);
+  const router = useRouter();
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -113,6 +116,10 @@ const Page = () => {
     }
   };
 
+  const handlePup = async () => {
+    router.push("/pup");
+  };
+
   return (
     <div>
       {agave === null ? (
@@ -123,8 +130,29 @@ const Page = () => {
           <div className="my-4">
             <span className="text-3xl font-semibold">{agave.name}</span>
             <p className="mt-2 text-gray-300">{agave.description}</p>
-            <p>オーナー: {agave.ownerId}</p>
-            <p>親株: {agave.parentId}</p>
+            <p>オーナー: {agave.ownerName}</p>
+            {agave.parentSlug && (
+              <Link href={"/agave/" + agave.parentSlug}>
+                <p>親株: {agave.parentName}</p>
+              </Link>
+            )}
+            <Link href={slug + "/pup"}>
+              <div className="flex flex-col items-end justify-center">
+                <div
+                  className="flex flex-col items-center bg-gray-100 rounded-xl px-2 mr-2 rounded"
+                  // onClick={handlePup}
+                >
+                  <Image
+                    src={pup}
+                    alt="pup"
+                    className="rounded-xl rounded"
+                    width={50}
+                    height={50}
+                  />
+                  <div className="text-gray-600 text-xs">子株一覧</div>
+                </div>
+              </div>
+            </Link>
           </div>
           <div>
             <div className="grid grid-cols-1 gap-0">

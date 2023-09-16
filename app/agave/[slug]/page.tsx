@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, Suspense } from "react";
 import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
@@ -11,6 +11,8 @@ import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import ImageModal from "@/app/components/ImageModal";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
+import Loading from "./loading";
+import LoadingImage from "@/app/components/LoadingImage";
 
 const Page = () => {
   const { slug } = useParams();
@@ -19,6 +21,8 @@ const Page = () => {
   const [fileInputKey, setFileInputKey] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isImageProcessing, setIsImageProcessing] = useState(false);
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -45,6 +49,8 @@ const Page = () => {
   const handleChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files && files.length > 0) {
+      setIsImageProcessing(true);
+      setPreviewImages(new Array(files.length).fill(""));
       const compressedURLs = await Promise.all(
         Array.from(files).map(async (file) => {
           const compressedImage = await compressImage(file);
@@ -55,6 +61,7 @@ const Page = () => {
     } else {
       setPreviewImages([]);
     }
+    setIsImageProcessing(false);
   };
 
   const handleUpload = async () => {
@@ -66,6 +73,7 @@ const Page = () => {
       if (!agave) {
         throw "agave not found.";
       }
+      setIsUploading(true);
 
       // 画像をSupabaseにアップロード
       const uploadPromises = previewImages.map(async (previewURL) => {
@@ -97,16 +105,20 @@ const Page = () => {
 
       setPreviewImages([]);
       setFileInputKey((prevKey) => prevKey + 1);
-      toast.success("画像追加完了");
-      console.log("add images");
+      toast.success("画像アップロード完了");
     } catch (error) {
       console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <div>
-      {agave && (
+      {agave === null ? (
+        // Agaveデータのロード中に表示するローディング
+        <Loading />
+      ) : (
         <div>
           <div className="my-4">
             <span className="text-3xl font-semibold">{agave.name}</span>
@@ -136,34 +148,53 @@ const Page = () => {
                 />
               </label>
             </div>
+            {isUploading ? (
+              <div
+                className="flex justify-center m-4"
+                aria-label="アップロード中"
+              >
+                <div className="animate-spin h-8 w-8 bg-white rounded-xl"></div>
+              </div>
+            ) : (
+              <div>
+                {previewImages.length > 0 && (
+                  <div>
+                    <div className="flex overflow-x-auto whitespace-nowrap">
+                      {previewImages.map((previewURL, index) => (
+                        <div
+                          key={index}
+                          className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+                          style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
+                        >
+                          {isImageProcessing ? (
+                            // 圧縮中
+                            <LoadingImage />
+                          ) : (
+                            <Image
+                              src={previewURL}
+                              alt={`Preview ${index}`}
+                              className="w-full h-full object-cover" // 画像を親要素に合わせて表示
+                              onClick={() => handleImageClick(`${previewURL}`)}
+                              width={50}
+                              height={50}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
 
-            <div className="flex overflow-x-auto whitespace-nowrap">
-              {previewImages.map((previewURL, index) => (
-                <div
-                  key={index}
-                  className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
-                  style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
-                >
-                  <Image
-                    src={previewURL}
-                    alt={`Preview ${index}`}
-                    className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                    width={50}
-                    height={50}
-                  />
-                </div>
-              ))}
-            </div>
-            {previewImages.length > 0 && (
-              <div className="grid grid-cols-1 gap-0">
-                <button
-                  onClick={handleUpload}
-                  className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-                >
-                  <span className="m-2 text-xl text-white">
-                    <span>投稿</span>
-                  </span>
-                </button>
+                    <div className="grid grid-cols-1 gap-0">
+                      <button
+                        onClick={handleUpload}
+                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                      >
+                        <span className="m-2 text-xl text-white">
+                          <span>投稿</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

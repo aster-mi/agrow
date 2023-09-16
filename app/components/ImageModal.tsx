@@ -14,18 +14,18 @@ const ImageModal: React.FC<ImageModalProps> = ({
   imageUrl,
 }) => {
   const downloadImage = () => {
-    // 画像のURLを取得
-    const imageSrc = imageUrl;
+    // 画像のURLからファイル名を取得
+    const fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
     // 画像を取得
-    fetch(imageSrc)
+    fetch(imageUrl)
       .then((response) => response.blob())
       .then((blob) => {
         // Blobオブジェクトを使用してダウンロードリンクを生成
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "image.jpg"; // ダウンロード時のファイル名を指定
+        a.download = fileName; // ダウンロード時のファイル名を設定
         document.body.appendChild(a);
         a.click();
 
@@ -93,11 +93,11 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                     <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />

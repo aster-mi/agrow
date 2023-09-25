@@ -33,10 +33,11 @@ export default function RootLayout({
           newestOnTop={false}
           closeOnClick
           rtl={false}
-          position={"bottom-right"}
+          position={"top-center"}
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          theme={"dark"}
         />
       </body>
     </html>

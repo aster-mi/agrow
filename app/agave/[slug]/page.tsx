@@ -132,9 +132,15 @@ const Page = () => {
             <p className="mt-2 text-gray-300">{agave.description}</p>
             <p>オーナー: {agave.ownerName}</p>
             {agave.parentSlug && (
-              <Link href={"/agave/" + agave.parentSlug}>
-                <p>親株: {agave.parentName}</p>
-              </Link>
+              <span>
+                親株:
+                <Link
+                  href={"/agave/" + agave.parentSlug}
+                  className="rounded-xl px-1 ml-2 bg-white text-gray-700"
+                >
+                  <span>{agave.parentName}</span>
+                </Link>
+              </span>
             )}
             <Link href={slug + "/pup"}>
               <div className="flex flex-col items-end justify-center">
@@ -210,17 +216,18 @@ const Page = () => {
                         </div>
                       ))}
                     </div>
-
-                    <div className="grid grid-cols-1 gap-0">
-                      <button
-                        onClick={handleUpload}
-                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-                      >
-                        <span className="m-2 text-xl text-white">
-                          <span>投稿</span>
-                        </span>
-                      </button>
-                    </div>
+                    {!isImageProcessing && (
+                      <div className="grid grid-cols-1 gap-0">
+                        <button
+                          onClick={handleUpload}
+                          className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                        >
+                          <span className="m-2 text-xl text-white">
+                            <span>投稿</span>
+                          </span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

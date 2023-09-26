@@ -23,17 +23,20 @@ const Page = () => {
   const [fileInputKey, setFileInputKey] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isImageProcessing, setIsImageProcessing] = useState(false);
   const router = useRouter();
 
-  const handleImageClick = (imageUrl: string) => {
+  const handleImageClick = (imageUrl: string, shareUrl: string) => {
     setSelectedImage(imageUrl);
+    setShareUrl(shareUrl);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setSelectedImage(null);
+    setShareUrl(null);
     setIsModalOpen(false);
   };
 
@@ -208,7 +211,9 @@ const Page = () => {
                               src={previewURL}
                               alt={`Preview ${index}`}
                               className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                              onClick={() => handleImageClick(`${previewURL}`)}
+                              onClick={() =>
+                                handleImageClick(`${previewURL}`, "")
+                              }
                               width={50}
                               height={50}
                             />
@@ -244,7 +249,12 @@ const Page = () => {
                       className="w-full h-full object-cover"
                       onClick={() =>
                         handleImageClick(
-                          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`
+                          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`,
+                          `${
+                            process.env.NEXT_PUBLIC_APP_BASE_URL
+                          }/agave/${slug}/image/${imageUrl
+                            .substring(imageUrl.lastIndexOf("/") + 1)
+                            .replace(".jpg", "")}`
                         )
                       }
                       width={1000}
@@ -258,6 +268,7 @@ const Page = () => {
             isOpen={isModalOpen}
             onClose={closeModal}
             imageUrl={selectedImage!}
+            shareUrl={shareUrl!}
           />
         </div>
       )}

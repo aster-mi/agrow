@@ -6,13 +6,18 @@ interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
   imageUrl: string;
+  shareUrl: string;
 }
 
 const ImageModal: React.FC<ImageModalProps> = ({
   isOpen,
   onClose,
   imageUrl,
+  shareUrl,
 }) => {
+  console.log(imageUrl);
+  console.log(shareUrl);
+
   const downloadImage = () => {
     // 画像のURLからファイル名を取得
     const fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
@@ -32,6 +37,14 @@ const ImageModal: React.FC<ImageModalProps> = ({
         // ダウンロード後に一時的なURLを解放
         window.URL.revokeObjectURL(url);
       });
+  };
+
+  // Twitterシェア機能
+  const shareOnTwitter = () => {
+    const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+      shareUrl
+    )}`;
+    window.open(tweetUrl, "_blank");
   };
 
   return (
@@ -105,6 +118,15 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     <path d="M12 4l0 12" />
                   </svg>
                 </button>
+                {/* Twitterシェアボタン */}
+                {shareUrl && (
+                  <button
+                    onClick={shareOnTwitter}
+                    className="absolute top-2 left-2 px-4 py-2 font-bold text-white bg-blue-400 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-200"
+                  >
+                    Share on Twitter
+                  </button>
+                )}
               </div>
             </Transition.Child>
           </div>

@@ -15,9 +15,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
   imageUrl,
   shareUrl,
 }) => {
-  console.log(imageUrl);
-  console.log(shareUrl);
-
   const downloadImage = () => {
     // 画像のURLからファイル名を取得
     const fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);

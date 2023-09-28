@@ -21,7 +21,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const res = await fetch(
-    `http://localhost:3000/api/agave/${params.slug}/image/${params.image}`
+    `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/agave/${params.slug}/image/${params.image}`
   );
   const detail = (await res.json()) as Detail;
   const shotDate = new Date(detail.shotDate);

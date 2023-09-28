@@ -29,11 +29,7 @@ const ShareMenuButton: React.FC<ShareMenuButtonProps> = ({ url }) => {
   };
 
   const shareOnLINE = () => {
-    // LINEでの共有ロジックを追加する
-    // ここではLINE共有のURLを生成するだけと仮定しています
-    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(
-      `Check out this link: ${url}`
-    )}`;
+    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(url)}`;
     window.open(lineUrl, "_blank");
     setIsMenuOpen(false);
   };

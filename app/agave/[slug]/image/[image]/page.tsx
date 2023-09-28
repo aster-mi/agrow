@@ -1,3 +1,4 @@
+import { AgaveType } from "@/app/type/AgaveType";
 import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,14 +8,30 @@ type Props = {
   searchParams: {};
 };
 
+interface Detail {
+  id: 256;
+  url: string;
+  agaveId: number;
+  shotDate: string;
+  agave: AgaveType;
+}
+
 export async function generateMetadata(
   { params, searchParams }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const res = await fetch(
+    `http://localhost:3000/api/agave/${params.slug}/image/${params.image}`
+  );
+  const detail = (await res.json()) as Detail;
+  const shotDate = new Date(detail.shotDate);
+  const formatShotDate = `${shotDate.getFullYear()}/${
+    shotDate.getMonth() + 1
+  }/${shotDate.getDate()}`;
   return {
     openGraph: {
-      title: "agave",
-      description: "test",
+      title: `${detail.agave.name + " 撮影: " + formatShotDate}`,
+      description: `${detail.agave.description}`,
       url: `${process.env.NEXT_PUBLIC_APP_BASE_URL}/agave/${params.slug}`,
       siteName: "Agrow",
       images: [

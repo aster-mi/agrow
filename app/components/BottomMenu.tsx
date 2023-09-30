@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const BottomMenu = () => {
   return (
-    <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-gray-700 border border-gray-500 rounded-full bottom-4 left-1/2">
+    <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 backdrop-blur-sm bg-black bg-opacity-50 rounded-full bottom-4 left-1/2">
       <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
         <div
           data-tooltip-target="tooltip-home"
@@ -10,7 +10,7 @@ const BottomMenu = () => {
         >
           <Link href="/">
             <svg
-              className="w-6 h-6 mb-1 text-gray-300 hover:text-blue-600"
+              className="w-6 h-6 mb-1 text-white hover:text-green-600"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -27,7 +27,7 @@ const BottomMenu = () => {
         >
           <Link href="/agave/list">
             <svg
-              className="w-6 h-6 mb-1 text-gray-300 hover:text-blue-600"
+              className="w-6 h-6 mb-1 text-white hover:text-green-600"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -43,7 +43,7 @@ const BottomMenu = () => {
           <Link href="/agave">
             <div
               data-tooltip-target="tooltip-new"
-              className="inline-flex items-center justify-center w-10 h-10 font-medium bg-blue-600 rounded-full hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none"
+              className="inline-flex items-center justify-center w-10 h-10 font-medium bg-green-600 rounded-full hover:bg-green-700 focus:ring-4 focus:ring-green-300 focus:outline-none"
             >
               <svg
                 className="w-4 h-4 text-white"
@@ -69,7 +69,7 @@ const BottomMenu = () => {
         >
           <Link href="/timeline">
             <svg
-              className="w-6 h-6 mb-1 text-gray-300 hover:text-blue-600"
+              className="w-6 h-6 mb-1 text-white hover:text-green-600"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -92,7 +92,7 @@ const BottomMenu = () => {
         >
           <Link href="/">
             <svg
-              className="w-6 h-6 mb-1 text-gray-300 hover:text-blue-600"
+              className="w-6 h-6 mb-1 text-white hover:text-green-600"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"

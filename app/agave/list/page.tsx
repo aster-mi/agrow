@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { Card, Row, Col, Input, Button, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import Image from "next/image";
 import Link from "next/link";
 
 interface DataType {
@@ -14,6 +15,7 @@ interface Agave {
   name: string;
   description: string;
   slug: string;
+  iconUrl?: string;
 }
 
 export default function Page() {
@@ -36,6 +38,25 @@ export default function Page() {
   };
 
   const columns: ColumnsType<Agave> = [
+    {
+      title: "icon",
+      width: "20%",
+      render: (agave: Agave) => (
+        <>
+          {agave.iconUrl ? (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+              alt={`Image icon`}
+              className="w-full h-full object-cover"
+              width={100}
+              height={100}
+            />
+          ) : (
+            <div>ICON未設定</div>
+          )}
+        </>
+      ),
+    },
     {
       title: "名前",
       width: "30%",
@@ -70,7 +91,7 @@ export default function Page() {
           columns={columns}
           rowKey={(agave) => agave.slug}
           pagination={{
-            pageSize: 5,
+            pageSize: 10,
           }}
         />
       </Card>

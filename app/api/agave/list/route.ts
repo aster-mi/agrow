@@ -23,6 +23,7 @@ async function getAgaves(publicId: string) {
           name: true,
           description: true,
           slug: true,
+          iconUrl: true,
         },
       },
       name: true,

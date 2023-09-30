@@ -4,7 +4,13 @@ import { useState, ChangeEvent, useEffect, Suspense } from "react";
 import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
-import { addImages, deleteAgave, deleteImage, getAgave } from "@/app/agave/api";
+import {
+  addImages,
+  deleteAgave,
+  deleteImage,
+  getAgave,
+  setAgaveIcon,
+} from "@/app/agave/api";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
@@ -53,7 +59,8 @@ const Page = () => {
       const agave: AgaveType = await getAgave(slug as string);
       setAgave(agave);
     } catch (error) {
-      console.error("Error fetching agave:", error);
+      toast.error("データ取得に失敗しました");
+      router.back();
     }
   };
 
@@ -143,6 +150,15 @@ const Page = () => {
     toast.success("画像を削除しました");
   };
 
+  const handleSetIcon = async () => {
+    const fileName = selectedImage!.substring(
+      selectedImage!.lastIndexOf("/agave") + 1
+    );
+    console.log(fileName);
+    await setAgaveIcon(slug as string, fileName);
+    toast.success("アイコンを設定しました");
+  };
+
   return (
     <div>
       {agave === null ? (
@@ -152,14 +168,17 @@ const Page = () => {
         <div>
           <div className="flex border-b border-gray-300">
             <div className="w-2/12 flex justify-center">
-              {/* TODO */}
-              <Image
-                src={localImage}
-                width={100}
-                height={100}
-                alt="agave"
-                className="rounded w-full"
-              />
+              {agave.iconUrl ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                  alt={`Image icon`}
+                  className="w-full h-full object-cover"
+                  width={100}
+                  height={100}
+                />
+              ) : (
+                <div>ICON未設定</div>
+              )}
             </div>
             <div className="w-8/12 text-center">
               <p className="break-all p-2">{agave.name}</p>
@@ -322,6 +341,7 @@ const Page = () => {
             isOpen={isModalOpen}
             onClose={closeModal}
             onDelete={handleDeleteImage}
+            onSetIcon={handleSetIcon}
             imageUrl={selectedImage!}
             shareUrl={shareUrl!}
           />

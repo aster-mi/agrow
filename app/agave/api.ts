@@ -22,6 +22,7 @@ export const getAgave = async (slug: string): Promise<AgaveType> => {
     slug: agave.slug,
     name: agave.name,
     description: agave.description,
+    iconUrl: agave.iconUrl,
     ownerName: agave.owner?.name,
     parentId: agave.parentId,
     parentName: agave.parent?.name,
@@ -52,8 +53,7 @@ export const updateAgave = async (
     },
     body: JSON.stringify({ agave }),
   });
-  const updatedagave = await res.json();
-  return updatedagave;
+  return await res.json();
 };
 
 export const deleteAgave = async (slug: string): Promise<AgaveType> => {
@@ -63,8 +63,7 @@ export const deleteAgave = async (slug: string): Promise<AgaveType> => {
       "Content-Type": "application/json",
     },
   });
-  const deleteagave = await res.json();
-  return deleteagave;
+  return await res.json();
 };
 
 export const deleteImage = async (
@@ -77,6 +76,19 @@ export const deleteImage = async (
       "Content-Type": "application/json",
     },
   });
-  const deleteImage = await res.json();
-  return deleteImage;
+  return await res.json();
+};
+
+export const setAgaveIcon = async (
+  slug: string,
+  image: string
+): Promise<AgaveType> => {
+  const res = await fetch(`${baseUrl}/${slug}/icon`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ image }),
+  });
+  return await res.json();
 };

@@ -8,11 +8,13 @@ import DownloadSvg from "./svg/DownloadSvg";
 import ShareButtons from "./ShareButtons";
 import DeleteButton from "./DeleteButton";
 import { toast } from "react-toastify";
+import { Button } from "antd";
 
 interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete?: () => void;
+  onSetIcon?: () => void;
   imageUrl: string;
   shareUrl: string;
 }
@@ -21,6 +23,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   isOpen,
   onClose,
   onDelete,
+  onSetIcon,
   imageUrl,
   shareUrl,
 }) => {
@@ -93,6 +96,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
                             onDelete={handleDeleteImage}
                             name={"画像"}
                           />
+                        )}
+                        {onSetIcon && (
+                          <button onClick={onSetIcon}>Iconに設定</button>
                         )}
                       </>
                     }

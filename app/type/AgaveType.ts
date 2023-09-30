@@ -3,6 +3,7 @@ export interface AgaveType {
   slug?: string;
   name?: string;
   description?: string;
+  iconUrl?: string;
   images?: string[];
   ownerId?: string;
   ownerName?: string;

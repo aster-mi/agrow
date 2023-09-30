@@ -34,8 +34,9 @@ export default function Page() {
   }, []);
 
   return (
-    <div>
-      <Card title="アガベ一覧">
+    <div className="bg-black">
+      <div>
+        <div className="text-center text-lg p-2 text-gray-200">- Agaves -</div>
         <div
           style={{
             display: "grid",
@@ -49,7 +50,7 @@ export default function Page() {
                 <Card
                   hoverable
                   // className="w-1/3"
-                  style={{ width: 120 }}
+                  style={{ width: 130 }}
                   cover={
                     agave.iconUrl ? (
                       <Image
@@ -71,7 +72,7 @@ export default function Page() {
             </div>
           ))}
         </div>
-      </Card>
+      </div>
       <div className="h-10 w-full"></div>
       <div className="h-10 w-full"></div>
     </div>

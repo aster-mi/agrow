@@ -72,6 +72,8 @@ export default function Page() {
           ))}
         </div>
       </Card>
+      <div className="h-10 w-full"></div>
+      <div className="h-10 w-full"></div>
     </div>
   );
 }

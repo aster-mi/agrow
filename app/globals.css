@@ -32,9 +32,9 @@ a {
 }
 
 .ant-table-tbody {
-  padding: 0;
+  padding: 0 !important;
 }
 
 .ant-table-tbody>tr>td {
-  padding: 0;
+  padding: 0 !important;
 }

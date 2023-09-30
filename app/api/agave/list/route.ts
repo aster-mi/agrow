@@ -16,6 +16,9 @@ async function getAgaves(publicId: string) {
   const result = await prisma.user.findUnique({
     select: {
       ownedAgaves: {
+        where: {
+          deleted: false,
+        },
         select: {
           name: true,
           description: true,

@@ -4,8 +4,8 @@ import { useState, ChangeEvent, useEffect, Suspense } from "react";
 import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
-import { addImages, getAgave } from "@/app/agave/api";
-import { useParams, useRouter } from "next/navigation";
+import { addImages, deleteAgave, getAgave } from "@/app/agave/api";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
@@ -15,6 +15,12 @@ import Loading from "./loading";
 import LoadingImage from "@/app/components/LoadingImage";
 import pup from "@/public/pup.png";
 import Link from "next/link";
+import DeleteButton from "@/app/components/DeleteButton";
+import MenuButton from "@/app/components/MenuButton";
+import ShareButtons from "@/app/components/ShareButtons";
+import localImage from "@/public/agave.jpeg";
+import OffStarSvg from "@/app/components/svg/OffStar";
+import TagSvg from "@/app/components/svg/TagSvg";
 
 const Page = () => {
   const { slug } = useParams();
@@ -27,6 +33,8 @@ const Page = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isImageProcessing, setIsImageProcessing] = useState(false);
   const router = useRouter();
+
+  const currentURL = process.env.NEXT_PUBLIC_APP_BASE_URL + usePathname();
 
   const handleImageClick = (imageUrl: string, shareUrl: string) => {
     setSelectedImage(imageUrl);
@@ -90,7 +98,7 @@ const Page = () => {
         const { data, error } = await supabase.storage
           .from("photos")
           .upload(fileName, blob, {
-            cacheControl: "3600",
+            cacheControl: "2592000",
             upsert: false,
           });
 
@@ -119,8 +127,10 @@ const Page = () => {
     }
   };
 
-  const handlePup = async () => {
-    router.push("/pup");
+  const handleDeleteAgave = async () => {
+    await deleteAgave(slug as string);
+    toast.success("削除完了");
+    router.back();
   };
 
   return (
@@ -130,38 +140,72 @@ const Page = () => {
         <Loading />
       ) : (
         <div>
-          <div className="my-4">
-            <span className="text-3xl font-semibold">{agave.name}</span>
-            <p className="mt-2 text-gray-300">{agave.description}</p>
-            <p>オーナー: {agave.ownerName}</p>
-            {agave.parentSlug && (
-              <span>
-                親株:
-                <Link
-                  href={"/agave/" + agave.parentSlug}
-                  className="rounded-xl px-1 ml-2 bg-white text-gray-700"
-                >
-                  <span>{agave.parentName}</span>
-                </Link>
-              </span>
-            )}
-            <Link href={slug + "/pup"}>
-              <div className="flex flex-col items-end justify-center">
-                <div
-                  className="flex flex-col items-center bg-gray-100 rounded-xl px-2 mr-2 rounded"
-                  // onClick={handlePup}
-                >
-                  <Image
-                    src={pup}
-                    alt="pup"
-                    className="rounded-xl rounded"
-                    width={50}
-                    height={50}
-                  />
-                  <div className="text-gray-600 text-xs">子株一覧</div>
-                </div>
+          <div className="flex border-b border-gray-300">
+            <div className="w-2/12 flex justify-center">
+              {/* TODO */}
+              <Image
+                src={localImage}
+                width={100}
+                height={100}
+                alt="agave"
+                className="rounded w-full"
+              />
+            </div>
+            <div className="w-8/12 text-center">
+              <p className="break-all p-2">{agave.name}</p>
+            </div>
+            <div className="w-3/12 flex">
+              <div className="p-3">
+                <OffStarSvg />
               </div>
-            </Link>
+              <div className="text-right">
+                <MenuButton
+                  contents={
+                    <>
+                      <ShareButtons url={currentURL} />
+                      <DeleteButton onDelete={handleDeleteAgave} name={"株"} />
+                    </>
+                  }
+                />
+              </div>
+            </div>
+          </div>
+          {/* TODO */}
+          <div>
+            <div className="flex">
+              <TagSvg />
+              チタノタ
+            </div>
+            <p>{agave.description}</p>
+          </div>
+          <div className="flex my-2">
+            <div className="w-5/6">
+              <div>
+                <p>オーナー: {agave.ownerName}</p>
+                {agave.parentSlug && (
+                  <div>
+                    <div>
+                      親株:
+                      <Link
+                        href={"/agave/" + agave.parentSlug}
+                        className="rounded-xl px-1 ml-2 bg-white text-gray-700 w-3/4"
+                      >
+                        <span className="">{agave.parentName}</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="w-1/6">
+              <div className="flex items-center justify-center">
+                <Link href={slug + "/pup"}>
+                  <div className="p-1 rounded-xl bg-white">
+                    <Image src={pup} alt="pup" width={40} height={40} />
+                  </div>
+                </Link>
+              </div>
+            </div>
           </div>
           <div>
             <div className="grid grid-cols-1 gap-0">
@@ -257,8 +301,8 @@ const Page = () => {
                             .replace(".jpg", "")}`
                         )
                       }
-                      width={1000}
-                      height={1000}
+                      width={200}
+                      height={200}
                     />
                   </div>
                 ))}

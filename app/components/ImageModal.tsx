@@ -1,8 +1,13 @@
+"use client";
+
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Image from "next/image";
-import ShareMenuButton from "./ShareMenuButton";
+import MenuButton from "./MenuButton";
 import DownloadSvg from "./svg/DownloadSvg";
+import ShareButtons from "./ShareButtons";
+import DeleteButton from "./DeleteButton";
+import { toast } from "react-toastify";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -42,11 +47,17 @@ const ImageModal: React.FC<ImageModalProps> = ({
     event.stopPropagation();
   };
 
+  const handleDeleteImage = async () => {
+    // FIXME 画像削除処理
+    toast.success("削除完了");
+    onClose();
+  };
+
   return (
     <div>
       <Dialog
         as="div"
-        className="fixed inset-0 z-50 backdrop-blur-3xl bg-gray-900 bg-opacity-50"
+        className="fixed inset-0 z-50 backdrop-blur-2xl"
         onClose={onClose}
         open={isOpen}
       >
@@ -54,25 +65,35 @@ const ImageModal: React.FC<ImageModalProps> = ({
           onClick={onClose}
           className="fixed inset-0 flex items-center justify-center"
         >
-          <div className="inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl relative">
+          <div className="inline-block w-full h-full my-8 overflow-hidden text-left align-middle transition-all transform shadow-xl relative">
             <Image
               src={imageUrl}
               alt="Selected Image"
-              className="w-full max-h-96"
-              width={1000}
-              height={1000}
+              className="w-full h-full object-contain"
+              width={2048}
+              height={2048}
             />
           </div>
           {shareUrl && (
             <div onClick={handleChildClick}>
-              <div className="absolute top-0 left-0 right-0 bg-gray-900 bg-opacity-50 flex justify-between">
+              <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
                 <div className="left-0 p-3">
                   <button onClick={downloadImage}>
                     <DownloadSvg />
                   </button>
                 </div>
-                <div className="right-0 p-3">
-                  <ShareMenuButton url={shareUrl} />
+                <div className="right-0">
+                  <MenuButton
+                    contents={
+                      <>
+                        <ShareButtons url={shareUrl} />
+                        <DeleteButton
+                          onDelete={handleDeleteImage}
+                          name={"画像"}
+                        />
+                      </>
+                    }
+                  />
                 </div>
               </div>
             </div>

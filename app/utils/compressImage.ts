@@ -6,7 +6,7 @@ const compressImage = async (file: File): Promise<Blob> => {
 
     image.onload = () => {
       const maxWidth = 2048;
-      const maxHeight = 1532;
+      const maxHeight = 2048;
       let width = image.width;
       let height = image.height;
 

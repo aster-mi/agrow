@@ -64,16 +64,19 @@ model Agave {
   iconUrl     String?
   agaveImages AgaveImage[]
   createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   parentId    Int?
   pups        Agave[]        @relation("ParentPup")
   parent      Agave?         @relation("ParentPup", fields: [parentId], references: [id])
-  qrCode      QrCode?
+  shortLink   ShortLink?
+  deleted     Boolean        @default(false)
 }
 
 model Tag {
-  id     Int            @id @default(autoincrement())
-  name   String         @unique
-  agaves TagsOnAgaves[]
+  id      Int            @id @default(autoincrement())
+  name    String         @unique
+  agaves  TagsOnAgaves[]
+  deleted Boolean        @default(false)
 }
 
 model TagsOnAgaves {
@@ -85,8 +88,8 @@ model TagsOnAgaves {
   @@id([agaveId, tagId])
 }
 
-model QrCode {
-  code    String @id @unique
+model ShortLink {
+  link    String @id @unique
   agaveId Int    @unique
   agave   Agave  @relation(fields: [agaveId], references: [id])
 }
@@ -120,12 +123,14 @@ model Follow {
 }
 
 model AgaveImage {
-  id       Int                  @id @default(autoincrement())
-  url      String               @unique
-  agaveId  Int
-  agave    Agave                @relation(fields: [agaveId], references: [id])
-  shotDate DateTime             @default(now())
-  posts    PostsOnAgaveImages[]
+  id        Int                  @id @default(autoincrement())
+  url       String               @unique
+  agaveId   Int
+  agave     Agave                @relation(fields: [agaveId], references: [id])
+  createdAt DateTime             @default(now())
+  shotDate  DateTime             @default(now())
+  posts     PostsOnAgaveImages[]
+  deleted   Boolean              @default(false)
 }
 
 model Post {
@@ -140,6 +145,7 @@ model Post {
   parent      Post?                @relation("RepliesTo", fields: [parentId], references: [id])
   replies     Post[]               @relation("RepliesTo")
   agaveImages PostsOnAgaveImages[]
+  deleted     Boolean              @default(false)
 }
 
 model PostsOnAgaveImages {

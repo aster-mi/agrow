@@ -15,7 +15,13 @@ const colors = require("tailwindcss/colors");
 
 module.exports = {
   plugins: [require("flowbite/plugin")],
-  content: ["./node_modules/flowbite/**/*min.js"],
+  content: [
+    "./node_modules/flowbite/**/*min.js",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
 };
 
 export default config;

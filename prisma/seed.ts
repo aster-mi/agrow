@@ -7,7 +7,7 @@ async function main() {
   await prisma.agave.deleteMany();
   await prisma.tag.deleteMany();
   await prisma.tagsOnAgaves.deleteMany();
-  await prisma.qrCode.deleteMany();
+  await prisma.shortLink.deleteMany();
   await prisma.user.deleteMany();
   await prisma.follow.deleteMany();
   await prisma.agaveImage.deleteMany();

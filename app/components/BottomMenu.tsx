@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const BottomMenue = () => {
+const BottomMenu = () => {
   return (
     <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-gray-700 border border-gray-500 rounded-full bottom-4 left-1/2">
       <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
@@ -106,4 +106,4 @@ const BottomMenue = () => {
     </div>
   );
 };
-export default BottomMenue;
+export default BottomMenu;

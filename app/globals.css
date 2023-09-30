@@ -38,3 +38,11 @@ a {
 .ant-table-tbody>tr>td {
   padding: 0 !important;
 }
+
+.ant-card-body>div{
+  align-items: flex-end;
+}
+
+.ant-card-body{
+  padding: 15px 2px 15px 2px !important;
+}

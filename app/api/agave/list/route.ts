@@ -16,6 +16,11 @@ async function getAgaves(publicId: string) {
   const result = await prisma.user.findUnique({
     select: {
       ownedAgaves: {
+        orderBy: [
+          {
+            createdAt: "asc",
+          },
+        ],
         where: {
           deleted: false,
         },

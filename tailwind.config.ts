@@ -14,7 +14,7 @@ const config: Config = {
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  plugins: [require("flowbite/plugin")],
+  plugins: [require("flowbite/plugin"), require("@tailwindcss/line-clamp")],
   content: [
     "./node_modules/flowbite/**/*min.js",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",

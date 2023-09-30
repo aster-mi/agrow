@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Card } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { AgaveType } from "../../type/AgaveType";
-import DummyImage from "@/components/DummyImage";
 import NoImage from "@/app/components/NoImage";
 
 const { Meta } = Card;
@@ -42,7 +40,7 @@ export default function Page() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)", // 3列
-            gap: "5px", // グリッド間の間隔
+            gap: "1px", // グリッド間の間隔
           }}
         >
           {dataSource.map((agave) => (
@@ -50,7 +48,8 @@ export default function Page() {
               <Link href={agave.slug}>
                 <Card
                   hoverable
-                  style={{ width: 100 }}
+                  // className="w-1/3"
+                  style={{ width: 120 }}
                   cover={
                     agave.iconUrl ? (
                       <Image
@@ -64,7 +63,9 @@ export default function Page() {
                     )
                   }
                 >
-                  <Meta title={agave.name} />
+                  <div className="text-xs line-clamp-3 font-bold text-gray-800">
+                    {agave.name}
+                  </div>
                 </Card>
               </Link>
             </div>

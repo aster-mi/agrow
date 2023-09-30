@@ -24,7 +24,7 @@ export async function DELETE(
   }
 
   const id = session.user.id;
-  return NextResponse.json(await registerAgave(params.slug, id));
+  return NextResponse.json(await deleteAgave(params.slug, id));
 }
 
 async function getAgave(slug: string) {
@@ -40,7 +40,11 @@ async function getAgave(slug: string) {
         },
       },
       tags: true,
-      agaveImages: true,
+      agaveImages: {
+        where: {
+          deleted: false,
+        },
+      },
       shortLink: true,
       parent: true,
     },
@@ -51,7 +55,7 @@ async function getAgave(slug: string) {
   return agave;
 }
 
-async function registerAgave(slug: string, id: string) {
+async function deleteAgave(slug: string, id: string) {
   const deletedAgave = await prisma.agave.update({
     where: {
       slug: slug,

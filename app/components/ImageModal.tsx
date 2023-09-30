@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onDelete?: () => void;
   imageUrl: string;
   shareUrl: string;
 }
@@ -19,6 +20,7 @@ interface ImageModalProps {
 const ImageModal: React.FC<ImageModalProps> = ({
   isOpen,
   onClose,
+  onDelete,
   imageUrl,
   shareUrl,
 }) => {
@@ -48,8 +50,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   };
 
   const handleDeleteImage = async () => {
-    // FIXME 画像削除処理
-    toast.success("削除完了");
+    onDelete!();
     onClose();
   };
 
@@ -87,10 +88,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     contents={
                       <>
                         <ShareButtons url={shareUrl} />
-                        <DeleteButton
-                          onDelete={handleDeleteImage}
-                          name={"画像"}
-                        />
+                        {onDelete && (
+                          <DeleteButton
+                            onDelete={handleDeleteImage}
+                            name={"画像"}
+                          />
+                        )}
                       </>
                     }
                   />

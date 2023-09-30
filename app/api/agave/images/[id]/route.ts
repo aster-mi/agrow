@@ -33,6 +33,7 @@ async function registerAgave(data: AgaveType, id: string) {
       data: {
         url: image,
         agaveId: agave.id,
+        ownerId: id,
       },
     });
   }

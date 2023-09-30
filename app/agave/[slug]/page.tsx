@@ -4,7 +4,7 @@ import { useState, ChangeEvent, useEffect, Suspense } from "react";
 import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
-import { addImages, deleteAgave, getAgave } from "@/app/agave/api";
+import { addImages, deleteAgave, deleteImage, getAgave } from "@/app/agave/api";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
@@ -48,15 +48,16 @@ const Page = () => {
     setIsModalOpen(false);
   };
 
+  const fetchData = async () => {
+    try {
+      const agave: AgaveType = await getAgave(slug as string);
+      setAgave(agave);
+    } catch (error) {
+      console.error("Error fetching agave:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const agave: AgaveType = await getAgave(slug as string);
-        setAgave(agave);
-      } catch (error) {
-        console.error("Error fetching agave:", error);
-      }
-    };
     fetchData();
   }, [fileInputKey, slug]);
 
@@ -131,6 +132,15 @@ const Page = () => {
     await deleteAgave(slug as string);
     toast.success("削除完了");
     router.back();
+  };
+
+  const handleDeleteImage = async () => {
+    const fileName = selectedImage!
+      .substring(selectedImage!.lastIndexOf("/") + 1)
+      .replace(".jpg", "");
+    await deleteImage(slug as string, fileName);
+    fetchData();
+    toast.success("画像を削除しました");
   };
 
   return (
@@ -311,6 +321,7 @@ const Page = () => {
           <ImageModal
             isOpen={isModalOpen}
             onClose={closeModal}
+            onDelete={handleDeleteImage}
             imageUrl={selectedImage!}
             shareUrl={shareUrl!}
           />

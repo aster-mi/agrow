@@ -66,3 +66,17 @@ export const deleteAgave = async (slug: string): Promise<AgaveType> => {
   const deleteagave = await res.json();
   return deleteagave;
 };
+
+export const deleteImage = async (
+  slug: string,
+  image: string
+): Promise<AgaveType> => {
+  const res = await fetch(`${baseUrl}/${slug}/image/${image}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const deleteImage = await res.json();
+  return deleteImage;
+};

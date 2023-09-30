@@ -27,12 +27,6 @@ const Login: NextPage = () => {
               <h1>ようこそ, {session.user && session.user.name} さん</h1>
               <h2>email: {session.user && session.user.email}</h2>
               <h2>public id: @{session.user && session.user.publicId}</h2>
-
-              <Image
-                src={session.user?.image || ""}
-                alt="Image"
-                className="rounded-full w-32 h-32"
-              ></Image>
               <button onClick={() => signOut()}>ログアウト</button>
             </div>
           </div>

@@ -91,14 +91,19 @@ const ImageModal: React.FC<ImageModalProps> = ({
                     contents={
                       <>
                         <ShareButtons url={shareUrl} />
+                        {onSetIcon && (
+                          <button
+                            className="text-blue-500 w-full border-b border-gray-300 p-2"
+                            onClick={onSetIcon}
+                          >
+                            アイコンに設定
+                          </button>
+                        )}
                         {onDelete && (
                           <DeleteButton
                             onDelete={handleDeleteImage}
                             name={"画像"}
                           />
-                        )}
-                        {onSetIcon && (
-                          <button onClick={onSetIcon}>Iconに設定</button>
                         )}
                       </>
                     }

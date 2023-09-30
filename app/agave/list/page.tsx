@@ -31,12 +31,6 @@ export default function Page() {
     }
   }, []);
 
-  const handleGetAgaveClick = async (slug: string) => {
-    const response = await fetch(`/api/agave/${slug}`);
-    const agave = await response.json();
-    alert(JSON.stringify(agave));
-  };
-
   const columns: ColumnsType<Agave> = [
     {
       title: "icon",
@@ -62,30 +56,11 @@ export default function Page() {
       width: "30%",
       render: (agave: Agave) => <Link href={agave.slug}>{agave.name}</Link>,
     },
-    {
-      title: "詳細",
-      dataIndex: "description",
-      width: "30%",
-    },
-    {
-      width: "5%",
-      render: (agave: Agave) => (
-        <Button danger onClick={() => handleGetAgaveClick(agave.slug)}>
-          Get
-        </Button>
-      ),
-    },
   ];
 
   return (
     <div>
-      <Card title="Agaves">
-        <Row>
-          <Col span={16}>
-            {/* <Button onClick={handleGetAgaves}>一覧取得</Button> */}
-            <div />
-          </Col>
-        </Row>
+      <Card title="アガベ一覧">
         <Table
           dataSource={dataSource}
           columns={columns}

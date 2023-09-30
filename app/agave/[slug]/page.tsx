@@ -27,6 +27,7 @@ import ShareButtons from "@/app/components/ShareButtons";
 import localImage from "@/public/agave.jpeg";
 import OffStarSvg from "@/app/components/svg/OffStar";
 import TagSvg from "@/app/components/svg/TagSvg";
+import { headers } from "next/headers";
 
 const Page = () => {
   const { slug } = useParams();
@@ -154,8 +155,8 @@ const Page = () => {
     const fileName = selectedImage!.substring(
       selectedImage!.lastIndexOf("/agave") + 1
     );
-    console.log(fileName);
     await setAgaveIcon(slug as string, fileName);
+    fetchData();
     toast.success("アイコンを設定しました");
   };
 

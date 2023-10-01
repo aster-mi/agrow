@@ -52,19 +52,21 @@ export default function Page() {
                   // className="w-1/3"
                   style={{ width: 130 }}
                   cover={
-                    agave.iconUrl ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
-                        alt={`Image icon`}
-                        width={100}
-                        height={75}
-                      />
-                    ) : (
-                      <NoImage />
-                    )
+                    <div className="overflow-hidden" style={{ height: 87 }}>
+                      {agave.iconUrl ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                          alt={`Image icon`}
+                          width={200}
+                          height={200}
+                        />
+                      ) : (
+                        <NoImage />
+                      )}
+                    </div>
                   }
                 >
-                  <div className="text-xs line-clamp-3 font-bold text-gray-800">
+                  <div className="text-xs line-clamp-3 font-bold text-gray-800 h-12">
                     {agave.name}
                   </div>
                 </Card>

@@ -44,14 +44,14 @@ async function getAgave(slug: string) {
         where: {
           deleted: false,
         },
+        orderBy: {
+          shotDate: "desc",
+        },
       },
       shortLink: true,
       parent: true,
     },
   });
-  if (agave.agaveImages) {
-    agave.agaveImages.reverse();
-  }
   return agave;
 }
 

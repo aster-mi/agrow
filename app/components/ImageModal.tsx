@@ -1,14 +1,11 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog } from "@headlessui/react";
 import Image from "next/image";
 import MenuButton from "./MenuButton";
 import DownloadSvg from "./svg/DownloadSvg";
 import ShareButtons from "./ShareButtons";
 import DeleteButton from "./DeleteButton";
-import { toast } from "react-toastify";
-import { Button } from "antd";
 
 interface ImageModalProps {
   isOpen: boolean;

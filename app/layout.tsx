@@ -27,7 +27,7 @@ export default function RootLayout({
           <BottomMenu />
         </NextAuthProvider>
         <ToastContainer
-          autoClose={3000}
+          autoClose={2000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick

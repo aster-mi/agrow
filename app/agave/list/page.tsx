@@ -49,16 +49,16 @@ export default function Page() {
               <Link href={agave.slug}>
                 <Card
                   hoverable
-                  // className="w-1/3"
-                  style={{ width: 130 }}
+                  style={{ width: "33vw" }}
                   cover={
-                    <div className="overflow-hidden" style={{ height: 87 }}>
+                    <div className="overflow-hidden" style={{ height: "20vw" }}>
                       {agave.iconUrl ? (
                         <Image
                           src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
                           alt={`Image icon`}
-                          width={200}
-                          height={200}
+                          priority={true}
+                          width={500}
+                          height={500}
                         />
                       ) : (
                         <NoImage />

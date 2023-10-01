@@ -67,12 +67,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
           className="fixed inset-0 flex items-center justify-center"
         >
           <div className="inline-block w-full h-full my-8 overflow-hidden text-left align-middle transition-all transform shadow-xl relative">
-            <Image
+            <img
               src={imageUrl}
-              alt="Selected Image"
+              alt="selected image"
               className="w-full h-full object-contain"
-              width={2048}
-              height={2048}
             />
           </div>
           {shareUrl && (

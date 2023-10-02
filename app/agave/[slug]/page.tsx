@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, useEffect, Suspense } from "react";
+import { useState, ChangeEvent, useEffect, Suspense, useRef } from "react";
 import { toast } from "react-toastify";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,6 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
-import ImageModal from "@/app/components/ImageModal";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
 import Loading from "./loading";
 import LoadingImage from "@/app/components/LoadingImage";
@@ -27,7 +26,7 @@ import ShareButtons from "@/app/components/ShareButtons";
 import localImage from "@/public/agave.jpeg";
 import OffStarSvg from "@/app/components/svg/OffStar";
 import TagSvg from "@/app/components/svg/TagSvg";
-import { headers } from "next/headers";
+import GalleryModal from "@/app/components/GalleryModal";
 
 const Page = () => {
   const { slug } = useParams();
@@ -35,23 +34,22 @@ const Page = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [fileInputKey, setFileInputKey] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [isImageProcessing, setIsImageProcessing] = useState(false);
   const router = useRouter();
 
   const currentURL = process.env.NEXT_PUBLIC_APP_BASE_URL + usePathname();
 
-  const handleImageClick = (imageUrl: string, shareUrl: string) => {
-    setSelectedImage(imageUrl);
-    setShareUrl(shareUrl);
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setSelectedImage(null);
-    setShareUrl(null);
+    setSelectedImageIndex(null);
     setIsModalOpen(false);
   };
 
@@ -63,6 +61,19 @@ const Page = () => {
       toast.error("データ取得に失敗しました");
       router.back();
     }
+  };
+
+  const getImage = (index: number) => {
+    return agave!.images![index];
+  };
+
+  const createShareUrl = (index: number) => {
+    const imageUrl = getImage(index);
+    return `${
+      process.env.NEXT_PUBLIC_APP_BASE_URL
+    }/agave/${slug}/image/${imageUrl
+      .substring(imageUrl.lastIndexOf("/") + 1)
+      .replace(".jpg", "")}`;
   };
 
   useEffect(() => {
@@ -130,7 +141,7 @@ const Page = () => {
       setFileInputKey((prevKey) => prevKey + 1);
       toast.success("画像アップロード完了");
     } catch (error) {
-      console.error("Upload error:", error);
+      toast.error("画像アップロードに失敗しました");
     } finally {
       setIsUploading(false);
     }
@@ -138,27 +149,34 @@ const Page = () => {
 
   const handleDeleteAgave = async () => {
     await deleteAgave(slug as string);
-    toast.success("削除完了");
+    toast.success(agave!.name + "を削除しました");
     router.back();
   };
 
-  const handleDeleteImage = async () => {
-    const fileName = selectedImage!
-      .substring(selectedImage!.lastIndexOf("/") + 1)
+  const handleDeleteImage = async (index: number) => {
+    const imageUrl = getImage(index);
+    const fileName = imageUrl!
+      .substring(imageUrl!.lastIndexOf("/") + 1)
       .replace(".jpg", "");
     await deleteImage(slug as string, fileName);
     fetchData();
     toast.success("画像を削除しました");
   };
 
-  const handleSetIcon = async () => {
-    const fileName = selectedImage!.substring(
-      selectedImage!.lastIndexOf("/agave") + 1
-    );
+  const handleSetIcon = async (index: number) => {
+    const imageUrl = getImage(index);
+    const fileName = imageUrl!.substring(imageUrl!.lastIndexOf("/agave") + 1);
     await setAgaveIcon(slug as string, fileName);
     fetchData();
-    toast.success("アイコンを設定しました");
+    toast.success("サムネイルに設定しました");
   };
+
+  function convertToImageGalleryItems(imageLinks: string[]) {
+    return imageLinks.map((link) => ({
+      original: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${link}`,
+      thumbnail: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${link}`,
+    }));
+  }
 
   return (
     <div>
@@ -192,8 +210,12 @@ const Page = () => {
                 <MenuButton
                   contents={
                     <>
-                      <ShareButtons url={currentURL} />
-                      <DeleteButton onDelete={handleDeleteAgave} name={"株"} />
+                      <ShareButtons getUrl={() => currentURL} />
+                      <DeleteButton
+                        onDelete={handleDeleteAgave}
+                        title={"株を削除する"}
+                        buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
+                      />
                     </>
                   }
                 />
@@ -285,9 +307,9 @@ const Page = () => {
                               src={previewURL}
                               alt={`Preview ${index}`}
                               className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                              onClick={() =>
-                                handleImageClick(`${previewURL}`, "")
-                              }
+                              // onClick={() =>
+                              //   handleImageClick(`${previewURL}`, "")
+                              // }
                               width={50}
                               height={50}
                             />
@@ -321,16 +343,7 @@ const Page = () => {
                       src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`}
                       alt={`Image ${index}`}
                       className="w-full h-full object-cover"
-                      onClick={() =>
-                        handleImageClick(
-                          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`,
-                          `${
-                            process.env.NEXT_PUBLIC_APP_BASE_URL
-                          }/agave/${slug}/image/${imageUrl
-                            .substring(imageUrl.lastIndexOf("/") + 1)
-                            .replace(".jpg", "")}`
-                        )
-                      }
+                      onClick={() => handleImageClick(index)}
                       width={200}
                       height={200}
                     />
@@ -338,14 +351,17 @@ const Page = () => {
                 ))}
             </div>
           )}
-          <ImageModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onDelete={handleDeleteImage}
-            onSetIcon={handleSetIcon}
-            imageUrl={selectedImage!}
-            shareUrl={shareUrl!}
-          />
+          {agave && agave.images && selectedImageIndex !== null && (
+            <GalleryModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              onDelete={handleDeleteImage}
+              onSetIcon={handleSetIcon}
+              getShareUrl={createShareUrl}
+              items={convertToImageGalleryItems(agave.images)}
+              startIndex={selectedImageIndex}
+            />
+          )}
         </div>
       )}
       <div className="h-10 w-full"></div>

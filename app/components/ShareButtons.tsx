@@ -5,23 +5,25 @@ import { toast } from "react-toastify";
 import ShareSvg from "./svg/ShareSvg";
 
 interface ShareButtonProps {
-  url: string;
+  getUrl: () => string;
 }
-const ShareButtons: React.FC<ShareButtonProps> = ({ url }) => {
+const ShareButtons: React.FC<ShareButtonProps> = ({ getUrl }) => {
   const copyUrlToClipboard = () => {
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(getUrl());
     toast.success("URLコピー完了");
   };
 
   const shareOnTwitter = () => {
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-      url
+      getUrl()
     )}`;
     window.open(tweetUrl, "_blank");
   };
 
   const shareOnLINE = () => {
-    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(url)}`;
+    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(
+      getUrl()
+    )}`;
     window.open(lineUrl, "_blank");
   };
 

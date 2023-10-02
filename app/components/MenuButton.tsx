@@ -5,7 +5,7 @@ import ShareSvg from "./svg/ShareSvg";
 import MenuDotsSvg from "./svg/MenuDots";
 
 interface MenuButtonProps {
-  contents: React.ReactNode; // ★
+  contents: React.ReactNode;
 }
 const MenuButton: React.FC<MenuButtonProps> = ({ contents }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

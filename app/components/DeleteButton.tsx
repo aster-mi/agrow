@@ -3,9 +3,14 @@ import DeleteSvg from "./svg/DeleteSvg";
 
 interface DeleteButtonProps {
   onDelete: () => void;
-  name?: string;
+  buttonClass?: string;
+  title: string;
 }
-const DeleteButton: React.FC<DeleteButtonProps> = ({ onDelete, name }) => {
+const DeleteButton: React.FC<DeleteButtonProps> = ({
+  onDelete,
+  title,
+  buttonClass,
+}) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleDeleteClick = () => {
@@ -23,11 +28,8 @@ const DeleteButton: React.FC<DeleteButtonProps> = ({ onDelete, name }) => {
 
   return (
     <>
-      <button
-        onClick={handleDeleteClick}
-        className="text-red-500 w-full border-b border-gray-300 p-2"
-      >
-        <span>{name && name + "を"}削除する</span>
+      <button onClick={handleDeleteClick} className={buttonClass}>
+        {title}
       </button>
       {isConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-10">

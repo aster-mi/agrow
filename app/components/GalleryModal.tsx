@@ -59,9 +59,18 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
     onClose();
   };
 
-  const handleToggleSlideShow = () => {
-    playSlideShow ? galleryRef!.current!.pause() : galleryRef!.current!.play();
-    setPlaySlideShow(!playSlideShow);
+  const startSlideShow = () => {
+    if (!playSlideShow) {
+      galleryRef!.current!.play();
+      setPlaySlideShow(true);
+    }
+  };
+
+  const stopSlideShow = () => {
+    if (playSlideShow) {
+      galleryRef!.current!.pause();
+      setPlaySlideShow(false);
+    }
   };
 
   const handleDeleteImage = async () => {
@@ -112,7 +121,8 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
               <Gallery
                 items={items}
                 showBullets={false}
-                showThumbnails={true}
+                showThumbnails={!playSlideShow}
+                showNav={!playSlideShow}
                 showFullscreenButton={false}
                 showPlayButton={false}
                 thumbnailPosition={"bottom"}
@@ -120,44 +130,45 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
                 slideInterval={2000}
                 startIndex={startIndex}
                 ref={galleryRef}
+                onClick={stopSlideShow}
               />
             </div>
           )}
         </div>
-        <div onClick={handleChildClick}>
-          <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
-            <div className="left-0 p-3">
-              <button onClick={onClose}>←</button>
-            </div>
-            <div className="left-0 p-3">
-              <button onClick={downloadImage}>
-                <DownloadSvg />
-              </button>
-            </div>
-            <div className="left-0 p-3">
-              <button onClick={handleToggleSlideShow}>
-                {playSlideShow ? "■ 停止" : "▶️ 再生"}
-              </button>
-            </div>
-            <div className="left-0 p-3">
-              {onSetIcon && <button onClick={handleSetIcon}>Icon化</button>}
-            </div>
-            <div className="left-0 p-3">
-              {onDelete && (
-                <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
-              )}
-            </div>
-            <div className="right-0">
-              <MenuButton
-                contents={
-                  <>
-                    <ShareButtons getUrl={handleGetShareButtonUrl} />
-                  </>
-                }
-              />
+        {!playSlideShow && (
+          <div onClick={handleChildClick}>
+            <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
+              <div className="left-0 p-3">
+                <button onClick={onClose}>←</button>
+              </div>
+              <div className="left-0 p-3">
+                <button onClick={downloadImage}>
+                  <DownloadSvg />
+                </button>
+              </div>
+              <div className="left-0 p-3">
+                <button onClick={startSlideShow}>▶️</button>
+              </div>
+              <div className="left-0 p-3">
+                {onSetIcon && <button onClick={handleSetIcon}>Icon化</button>}
+              </div>
+              <div className="left-0 p-3">
+                {onDelete && (
+                  <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
+                )}
+              </div>
+              <div className="right-0">
+                <MenuButton
+                  contents={
+                    <>
+                      <ShareButtons getUrl={handleGetShareButtonUrl} />
+                    </>
+                  }
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </Dialog>
     </div>
   );

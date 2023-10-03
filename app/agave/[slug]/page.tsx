@@ -135,7 +135,7 @@ const Page = () => {
 
       const uploadImages: ImageType[] = imagePaths.map((imagePath) => ({
         url: imagePath,
-        shotDate: new Date(),
+        shotDate: new Date().toISOString(),
       }));
 
       await addImages({
@@ -182,7 +182,7 @@ const Page = () => {
     return images.map((image) => ({
       original: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
       thumbnail: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
-      description: convertDateToSlashFormat(image.shotDate!),
+      description: convertDateToSlashFormat(image.shotDate as string),
     }));
   }
 

@@ -1,14 +1,13 @@
 "use client";
 
-import { Dialog } from "@headlessui/react";
-import Image from "next/image";
+import { Dialog, Transition } from "@headlessui/react";
 import MenuButton from "./MenuButton";
 import DownloadSvg from "./svg/DownloadSvg";
 import ShareButtons from "./ShareButtons";
 import DeleteButton from "./DeleteButton";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import { MutableRefObject, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 interface GalleryModalProps {
   isOpen: boolean;
@@ -25,6 +24,10 @@ interface Item {
   thumbnail: string;
 }
 
+const handleChildClick = (event: { stopPropagation: () => void }) => {
+  event.stopPropagation();
+};
+
 const GalleryModal: React.FC<GalleryModalProps> = ({
   isOpen,
   onClose,
@@ -36,6 +39,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 }) => {
   const galleryRef = useRef<Gallery>(null);
   const [playSlideShow, setPlaySlideShow] = useState(false);
+  const focusRef = useRef(null);
 
   const getCurrentIndex = () => {
     return galleryRef!.current!.getCurrentIndex();
@@ -89,28 +93,25 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
       });
   };
 
-  const handleChildClick = (event: { stopPropagation: () => void }) => {
-    event.stopPropagation();
-  };
-
   return (
     <div>
       <Dialog
         as="div"
         className="fixed inset-0 z-50 backdrop-blur-2xl"
-        onClose={onClose}
+        onClose={() => {}}
         open={isOpen}
+        initialFocus={focusRef}
       >
         <div
           className="flex justify-center items-center h-screen"
           onClick={onClose}
+          ref={focusRef}
         >
           {items && (
-            <div onClick={handleChildClick} className="w-full">
+            <div onClick={(e) => e.stopPropagation()} className="w-full">
               <Gallery
                 items={items}
                 showBullets={false}
-                showIndex={true}
                 showThumbnails={true}
                 showFullscreenButton={false}
                 showPlayButton={false}

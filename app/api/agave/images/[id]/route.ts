@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { AgaveType } from "@/app/type/AgaveType";
 import { getServerSession } from "next-auth/next";
 import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
+import { now } from "next-auth/client/_utils";
 
 const prisma = new PrismaClient();
 
@@ -15,10 +16,10 @@ export async function POST(request: NextRequest) {
 
   const id = session.user.id;
   const body = await request.json();
-  return NextResponse.json(await registerAgave(body, id));
+  return NextResponse.json(await registerImages(body, id));
 }
 
-async function registerAgave(data: AgaveType, id: string) {
+async function registerImages(data: AgaveType, id: string) {
   if (!data.images) {
     throw "image is required.";
   }
@@ -31,9 +32,10 @@ async function registerAgave(data: AgaveType, id: string) {
   for (const image of data.images) {
     await prisma.agaveImage.create({
       data: {
-        url: image,
+        url: image.url,
         agaveId: agave.id,
         ownerId: id,
+        shotDate: image.shotDate || new Date(),
       },
     });
   }

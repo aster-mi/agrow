@@ -27,6 +27,8 @@ import localImage from "@/public/agave.jpeg";
 import OffStarSvg from "@/app/components/svg/OffStar";
 import TagSvg from "@/app/components/svg/TagSvg";
 import GalleryModal from "@/app/components/GalleryModal";
+import { ImageType } from "@/app/type/ImageType";
+import convertDateToSlashFormat from "@/app/utils/convertDateToSlashFormat";
 
 const Page = () => {
   const { slug } = useParams();
@@ -68,7 +70,7 @@ const Page = () => {
   };
 
   const createShareUrl = (index: number) => {
-    const imageUrl = getImage(index);
+    const imageUrl = getImage(index).url;
     return `${
       process.env.NEXT_PUBLIC_APP_BASE_URL
     }/agave/${slug}/image/${imageUrl
@@ -131,10 +133,15 @@ const Page = () => {
 
       const imagePaths = await Promise.all(uploadPromises);
 
+      const uploadImages: ImageType[] = imagePaths.map((imagePath) => ({
+        url: imagePath,
+        shotDate: new Date(),
+      }));
+
       await addImages({
         id: agave.id as number,
         slug: slug as unknown as string,
-        images: imagePaths,
+        images: uploadImages,
       });
 
       setPreviewImages([]);
@@ -154,7 +161,7 @@ const Page = () => {
   };
 
   const handleDeleteImage = async (index: number) => {
-    const imageUrl = getImage(index);
+    const imageUrl = getImage(index).url;
     const fileName = imageUrl!
       .substring(imageUrl!.lastIndexOf("/") + 1)
       .replace(".jpg", "");
@@ -164,17 +171,18 @@ const Page = () => {
   };
 
   const handleSetIcon = async (index: number) => {
-    const imageUrl = getImage(index);
+    const imageUrl = getImage(index).url;
     const fileName = imageUrl!.substring(imageUrl!.lastIndexOf("/agave") + 1);
     await setAgaveIcon(slug as string, fileName);
     fetchData();
     toast.success("サムネイルに設定しました");
   };
 
-  function convertToImageGalleryItems(imageLinks: string[]) {
-    return imageLinks.map((link) => ({
-      original: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${link}`,
-      thumbnail: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${link}`,
+  function convertToImageGalleryItems(images: ImageType[]) {
+    return images.map((image) => ({
+      original: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
+      thumbnail: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
+      description: convertDateToSlashFormat(image.shotDate!),
     }));
   }
 
@@ -336,19 +344,18 @@ const Page = () => {
           </div>
           {agave.images && (
             <div className="grid grid-cols-3 gap-0 w-full h-full">
-              {agave.images &&
-                agave.images.map((imageUrl, index) => (
-                  <div key={index} className="p-px overflow-hidden">
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${imageUrl}`}
-                      alt={`Image ${index}`}
-                      className="w-full h-full object-cover"
-                      onClick={() => handleImageClick(index)}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                ))}
+              {agave.images.map((image, index) => (
+                <div key={index} className="p-px overflow-hidden">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`}
+                    alt={`Image ${index}`}
+                    className="w-full h-full object-cover"
+                    onClick={() => handleImageClick(index)}
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              ))}
             </div>
           )}
           {agave && agave.images && selectedImageIndex !== null && (

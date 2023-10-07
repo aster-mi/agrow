@@ -52,24 +52,53 @@ model VerificationToken {
 }
 
 // リソース
+model Rack {
+  code       String   @id @unique @default(cuid())
+  name       String
+  ownerId    String
+  owner      User     @relation(fields: [ownerId], references: [id])
+  design     String?
+  size       Int?
+  monthlyFee Int?
+  agaves     Agave[]
+  rackPlan   RackPlan @relation(fields: [rackPlanId], references: [id])
+  rackPlanId Int
+  deleted    Boolean  @default(false)
+
+  @@unique([name, ownerId], name: "UniqueMyRack")
+}
+
+model RackPlan {
+  id         Int    @id @default(autoincrement())
+  name       String
+  size       Int
+  monthlyFee Int
+  racks      Rack[]
+}
+
 model Agave {
-  id          Int            @id @default(autoincrement())
-  slug        String         @unique @default(cuid())
-  name        String
-  tags        TagsOnAgaves[]
-  description String?
-  isPublished Boolean        @default(true)
-  ownerId     String
-  owner       User           @relation(fields: [ownerId], references: [id])
-  iconUrl     String?
-  agaveImages AgaveImage[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  parentId    Int?
-  pups        Agave[]        @relation("ParentPup")
-  parent      Agave?         @relation("ParentPup", fields: [parentId], references: [id])
-  shortLink   ShortLink?
-  deleted     Boolean        @default(false)
+  id           Int            @id @default(autoincrement())
+  slug         String         @unique @default(cuid())
+  name         String
+  tags         TagsOnAgaves[]
+  description  String?
+  isPublished  Boolean        @default(true)
+  ownerId      String?
+  owner        User?          @relation(fields: [ownerId], references: [id])
+  iconUrl      String?
+  agaveImages  AgaveImage[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  parentId     Int?
+  pups         Agave[]        @relation("ParentPup")
+  parent       Agave?         @relation("ParentPup", fields: [parentId], references: [id])
+  shortLink    ShortLink?
+  rackPosition Int?
+  rackCode     String?
+  rack         Rack?          @relation(fields: [rackCode], references: [code])
+  deleted      Boolean        @default(false)
+
+  @@unique([rackPosition, rackCode], name: "UniquePositionInRack")
 }
 
 model Tag {
@@ -107,10 +136,11 @@ model User {
   likedPosts    Like[]
   followers     Follow[]     @relation("Followers")
   following     Follow[]     @relation("Following")
-  post          Post[]
-  account       Account[]
+  posts         Post[]
+  accounts      Account[]
   sessions      Session[]
-  AgaveImage    AgaveImage[]
+  AgaveImages   AgaveImage[]
+  racks         Rack[]
 }
 
 model Follow {

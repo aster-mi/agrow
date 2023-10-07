@@ -221,7 +221,7 @@ const Page = () => {
                       <ShareButtons getUrl={() => currentURL} />
                       <DeleteButton
                         onDelete={handleDeleteAgave}
-                        title={"株を削除する"}
+                        title={"株を削除"}
                         buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
                       />
                     </>
@@ -236,7 +236,11 @@ const Page = () => {
               <TagSvg />
               チタノタ
             </div>
-            <p>{agave.description}</p>
+            {agave.description && (
+              <div
+                style={{ whiteSpace: "pre-wrap" }}
+              >{`${agave.description}`}</div>
+            )}
           </div>
           <div className="flex my-2">
             <div className="w-5/6">

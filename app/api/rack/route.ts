@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { AgaveType } from "@/app/type/AgaveType";
 import { getServerSession } from "next-auth/next";
 import { nextAuthOptions } from "../auth/[...nextauth]/route";
+import { RackPlanType } from "@/app/type/RackPlanType";
 
 const prisma = new PrismaClient();
 
@@ -18,19 +19,32 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(await registerAgave(body, id));
 }
 
-async function registerAgave(data: AgaveType, id: string) {
-  if (!data.name) {
-    throw "name is required.";
+async function registerAgave(rackPlanId: number, userId: string) {
+  if (!rackPlanId || !userId) {
+    throw "bad request";
   }
-  const agave = await prisma.agave.create({
-    data: {
-      name: data.name,
-      description: data.description,
-      ownerId: id,
-      parentId: data.parentId,
-      rackCode: data.rackCode,
-      rackPosition: data.rackPosition,
+  const rackPlan = await prisma.rackPlan.findUniqueOrThrow({
+    where: {
+      id: rackPlanId,
+    },
+    select: {
+      name: true,
+      size: true,
+      monthlyFee: true,
+      _count: true,
     },
   });
-  return agave;
+
+  // TODO free trial check
+
+  const rack = await prisma.rack.create({
+    data: {
+      name: rackPlan.name + (rackPlan._count.racks + 1),
+      ownerId: userId,
+      rackPlanId: rackPlanId,
+      size: rackPlan.size,
+      monthlyFee: rackPlan.monthlyFee,
+    },
+  });
+  return rack.code;
 }

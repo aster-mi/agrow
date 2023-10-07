@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
+import rackPng from "@/public/rack.png";
 
 const BottomMenu = () => {
   return (
-    <div className="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 backdrop-blur-sm bg-black bg-opacity-50 rounded-full bottom-4 left-1/2">
+    <div className="fixed z-50 w-full h-14 max-w-lg -translate-x-1/2 backdrop-blur-sm bg-black bg-opacity-50 rounded-full bottom-2 left-1/2">
       <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
         <div
           data-tooltip-target="tooltip-home"
@@ -25,7 +27,7 @@ const BottomMenu = () => {
           data-tooltip-target="tooltip-wallet"
           className="inline-flex flex-col items-center justify-center px-5"
         >
-          <Link href="/agave/list">
+          <Link href="/">
             <svg
               className="w-6 h-6 mb-1 text-white hover:text-green-600"
               aria-hidden="true"
@@ -40,27 +42,16 @@ const BottomMenu = () => {
         </div>
 
         <div className="flex items-center justify-center">
-          <Link href="/agave">
-            <div
-              data-tooltip-target="tooltip-new"
-              className="inline-flex items-center justify-center w-10 h-10 font-medium bg-green-600 rounded-full hover:bg-green-700 focus:ring-4 focus:ring-green-300 focus:outline-none"
-            >
-              <svg
-                className="w-4 h-4 text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 18 18"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 1v16M1 9h16"
-                />
-              </svg>
-            </div>
+          <Link
+            href="/rack"
+            className="bg-green-600 hover:bg-green-800 rounded-full p-2"
+          >
+            <Image
+              src={rackPng}
+              width={100}
+              alt="rack"
+              style={{ width: "25px", height: "25px" }}
+            />
           </Link>
         </div>
         <div

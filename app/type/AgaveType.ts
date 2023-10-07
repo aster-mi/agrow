@@ -12,4 +12,7 @@ export interface AgaveType {
   parentId?: number;
   parentName?: string;
   parentSlug?: string;
+  rackPosition?: number;
+  rackCode?: string;
+  pups?: AgaveType[];
 }

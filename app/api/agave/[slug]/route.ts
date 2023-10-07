@@ -50,6 +50,7 @@ async function getAgave(slug: string) {
       },
       shortLink: true,
       parent: true,
+      pups: true,
     },
   });
   return agave;
@@ -63,6 +64,8 @@ async function deleteAgave(slug: string, id: string) {
     },
     data: {
       deleted: true,
+      rackCode: null,
+      rackPosition: null,
     },
   });
   if (!deletedAgave) {

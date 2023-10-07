@@ -33,7 +33,7 @@ const ShareButtons: React.FC<ShareButtonProps> = ({ getUrl }) => {
         onClick={copyUrlToClipboard}
         className="text-blue-500 w-full border-b border-gray-300 p-2"
       >
-        URLをコピーする
+        URLをコピー
       </button>
       <button
         onClick={shareOnTwitter}
@@ -45,7 +45,7 @@ const ShareButtons: React.FC<ShareButtonProps> = ({ getUrl }) => {
         onClick={shareOnLINE}
         className="text-blue-500 w-full border-b border-gray-300 p-2"
       >
-        LINEに共有する
+        LINEに共有
       </button>
     </>
   );

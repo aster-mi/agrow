@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Card, Input, Button, Row, Table } from "antd";
+import { Card, Input, Button, Row, Table, Tabs } from "antd";
 import { useSession } from "next-auth/react";
 import { addAgave, updatePosition } from "./api";
 import { useParams, useRouter } from "next/navigation";
@@ -13,6 +13,8 @@ import Image from "next/image";
 import NoImage from "@/app/components/NoImage";
 import TextArea from "antd/es/input/TextArea";
 
+const { TabPane } = Tabs;
+
 export default function Page() {
   const { rack, position } = useParams();
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function Page() {
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
   const [value, setValue] = useState("");
+  const [activeTab, setActiveTab] = useState("1");
 
   useEffect(() => {
     try {
@@ -131,50 +134,107 @@ export default function Page() {
 
   return (
     <div>
-      <Card title="新しいアガベを設置" className="text-center">
-        <form className="mb-4 space-y-3" onSubmit={handleSubmit}>
-          <Input
-            value={agaveName}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setAgaveName(e.target.value)
-            }
-            className="w-full px-4 py-2 rounded focus:outline-none focus:border-blue-400"
-            type="text"
-            placeholder="名称..."
-          />
-          <TextArea
-            value={agaveDescription}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setAgaveDescription(e.target.value)
-            }
-            className="w-full px-4 py-2 rounded focus:outline-none focus:border-blue-400"
-            placeholder="詳細・メモ..."
-            rows={3}
-          />
-          <button className="w-full px-4 py-2 text-white bg-blue-500 rounded transform transition-transform duration-200 hover:bg-blue-400 hover:scale-95">
-            登録
-          </button>
-        </form>
-      </Card>
-      <Card title="既存のアガベを設置" className="text-center">
-        <Row>
-          <Input
-            placeholder="検索..."
-            value={value}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e)}
-            className="rounded m-2 focus:outline-none"
-          />
-        </Row>
-        <Table
-          showHeader={false}
-          dataSource={dataSource}
-          columns={columns}
-          rowKey={(agave) => agave!.slug!}
-          pagination={{
-            pageSize: 10,
-          }}
-        />
-      </Card>
+      <Tabs
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key)}
+        className="bg-white"
+        centered={true}
+        tabBarGutter={100}
+        indicatorSize={130}
+      >
+        <TabPane tab="一覧から選択" key="1">
+          <Card className="text-center border-none" bodyStyle={{ padding: 0 }}>
+            <Row className="p-2 text-gray-700 flex items-center justify-center">
+              <div className="font-bold text-base">
+                配置するアガベを選択してください
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 text-gray-500"
+                fill="none"
+                viewBox="-1 -1 30 30"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </Row>
+            <Row className="p-2">
+              <Input
+                placeholder="検索..."
+                value={value}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e)}
+                className="rounded m-2"
+              />
+            </Row>
+            <Table
+              showHeader={false}
+              dataSource={dataSource}
+              columns={columns}
+              rowKey={(agave) => agave!.slug!}
+              pagination={{
+                pageSize: 10,
+              }}
+            />
+          </Card>
+        </TabPane>
+        <TabPane tab="新規登録" key="2">
+          <Card className="text-center border-none">
+            <Row className="p-2 text-gray-700 flex items-center justify-center">
+              <div className="font-bold text-base">
+                配置するアガベを登録してください
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 text-gray-500"
+                fill="none"
+                viewBox="-1 -1 30 30"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </Row>
+            <form className="mb-4 space-y-3" onSubmit={handleSubmit}>
+              <Row className="p-2">
+                <Input
+                  value={agaveName}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setAgaveName(e.target.value)
+                  }
+                  className="m-2 rounded"
+                  type="text"
+                  placeholder="名称..."
+                />
+              </Row>
+              <Row className="p-2">
+                <TextArea
+                  value={agaveDescription}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setAgaveDescription(e.target.value)
+                  }
+                  className="m-2 rounded"
+                  placeholder="詳細・メモ..."
+                  rows={3}
+                />
+              </Row>
+              <button className="w-full px-4 py-2 text-white bg-blue-500 rounded transform transition-transform duration-200 hover:bg-blue-400 hover:scale-95">
+                登録
+              </button>
+            </form>
+          </Card>
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

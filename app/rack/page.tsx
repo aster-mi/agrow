@@ -100,8 +100,6 @@ export default function Page() {
             ))}
         </div>
       </div>
-      <div className="h-10 w-full"></div>
-      <div className="h-10 w-full"></div>
     </div>
   );
 }

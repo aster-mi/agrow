@@ -89,48 +89,40 @@ export default function Page() {
               </div>
             )}
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)", // 3列
-              gap: "1px", // グリッド間の間隔
-            }}
-          >
+          <div className="grid grid-cols-3 gap-1 w-full h-full">
             {agaves.length > 0 &&
               agaves.map((agave, index) => (
-                <div key={index} className="aspect-square">
+                <div
+                  key={index}
+                  className="aspect-square rounded overflow-hidden relative"
+                >
                   {agave.slug ? (
                     <Link href={"/agave/" + agave.slug}>
-                      <Card
-                        className="w-full h-full overflow-hidden border-none"
-                        hoverable
-                        style={{ width: "33vw" }}
-                        cover={
-                          <div>
-                            {agave.iconUrl ? (
-                              <Image
-                                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
-                                alt={`Image icon`}
-                                priority={true}
-                                width={500}
-                                height={500}
-                              />
-                            ) : (
-                              <NoImage />
-                            )}
-                          </div>
-                        }
-                      ></Card>
+                      {agave.iconUrl ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                          alt={`Image icon`}
+                          priority={true}
+                          width={500}
+                          height={500}
+                          className="relative w-full h-full object-cover"
+                        />
+                      ) : (
+                        <NoImage />
+                      )}
+                      <div className="absolute text-xs bottom-0 left-0 text-white bg-black bg-opacity-70 pr-1 mb-1 rounded-r-full">
+                        {agave.name}
+                      </div>
                     </Link>
                   ) : (
                     <Link href={`/rack/${rack}/position/${index + 1}/agave`}>
                       <Card
                         hoverable
-                        className="flex items-center justify-center h-full w-full"
+                        className="flex items-center justify-center h-full w-full border-gray-500 border-2 bg-transparent"
                         cover={
-                          <div className="text-center text-x text-gray-500">
+                          <div className="text-center text-x text-gray-200">
                             <div>+</div>
-                            <div>アガベを設置</div>
+                            <div>設置</div>
                           </div>
                         }
                       />

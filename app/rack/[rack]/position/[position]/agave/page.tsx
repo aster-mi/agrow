@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import { Agave } from "@prisma/client";
 import { AgaveType } from "@/app/type/AgaveType";
 import { ColumnsType } from "antd/es/table";
-import Link from "next/link";
 import Image from "next/image";
 import NoImage from "@/app/components/NoImage";
 import TextArea from "antd/es/input/TextArea";
@@ -104,22 +103,28 @@ export default function Page() {
     },
     {
       title: "名前",
-      width: "30%",
+      width: "60%",
       filterSearch: true,
-      render: (agave: Agave) => (
-        <Link href={`/agave/${agave.slug}`}>{agave.name}</Link>
+      render: (agave: AgaveType) => (
+        <div>
+          <Row>
+            {agave.name!.length > 20
+              ? agave.name!.slice(0, 20) + "..."
+              : agave.name}
+          </Row>
+          <Row className="text-xs text-gray-500">{agave.description}</Row>
+          {agave.rack && (
+            <Row className="text-xs text-green-500">
+              ●{agave.rack.name}に配置済み
+            </Row>
+          )}
+        </div>
       ),
     },
     {
-      title: "詳細",
-      dataIndex: "description",
-      width: "30%",
-      filterSearch: true,
-    },
-    {
       width: "10%",
-      render: (agave: Agave) => (
-        <Button onClick={() => handleSetAgaveClick(agave.slug)}>設置</Button>
+      render: (agave: AgaveType) => (
+        <Button onClick={() => handleSetAgaveClick(agave.slug!)}>設置</Button>
       ),
     },
   ];

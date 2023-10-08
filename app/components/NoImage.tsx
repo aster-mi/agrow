@@ -8,6 +8,7 @@ export default function NoImage() {
       width={500}
       height={500}
       alt="no image"
+      className="w-full h-full object-cover"
     />
   );
 }

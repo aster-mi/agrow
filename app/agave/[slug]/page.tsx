@@ -16,8 +16,7 @@ import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
-import Loading from "./loading";
-import LoadingImage from "@/app/components/LoadingImage";
+import LoadingAnime from "@/app/components/LoadingAnime";
 import pup from "@/public/pup.png";
 import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
@@ -189,8 +188,7 @@ const Page = () => {
   return (
     <div>
       {agave === null ? (
-        // Agaveデータのロード中に表示するローディング
-        <Loading />
+        <LoadingAnime />
       ) : (
         <div>
           <div className="flex border-b border-gray-300">
@@ -313,7 +311,7 @@ const Page = () => {
                         >
                           {isImageProcessing ? (
                             // 圧縮中
-                            <LoadingImage />
+                            <LoadingAnime />
                           ) : (
                             <Image
                               src={previewURL}

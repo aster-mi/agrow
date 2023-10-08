@@ -1,4 +1,5 @@
 import { ImageType } from "./ImageType";
+import { RackType } from "./RackType";
 
 export interface AgaveType {
   id?: number;
@@ -15,4 +16,5 @@ export interface AgaveType {
   rackPosition?: number;
   rackCode?: string;
   pups?: AgaveType[];
+  rack?: RackType;
 }

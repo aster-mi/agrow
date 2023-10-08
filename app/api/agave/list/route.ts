@@ -18,7 +18,7 @@ async function getAgaves(publicId: string) {
       ownedAgaves: {
         orderBy: [
           {
-            createdAt: "asc",
+            rackPosition: "desc",
           },
         ],
         where: {
@@ -29,6 +29,7 @@ async function getAgaves(publicId: string) {
           description: true,
           slug: true,
           iconUrl: true,
+          rack: true,
         },
       },
       name: true,

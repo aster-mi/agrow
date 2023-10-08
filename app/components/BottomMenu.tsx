@@ -44,7 +44,7 @@ const BottomMenu = () => {
         <div className="flex items-center justify-center">
           <Link
             href="/rack"
-            className="bg-green-600 hover:bg-green-800 rounded-full p-2"
+            className="bg-green-500 hover:bg-green-700 rounded-full p-2"
           >
             <Image
               src={rackPng}

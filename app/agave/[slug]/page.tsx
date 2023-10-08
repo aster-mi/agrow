@@ -17,7 +17,7 @@ import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
 import LoadingAnime from "@/app/components/LoadingAnime";
-import pup from "@/public/pup.png";
+import pup from "@/public/dotPup.png";
 import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
 import MenuButton from "@/app/components/MenuButton";
@@ -28,6 +28,9 @@ import TagSvg from "@/app/components/svg/TagSvg";
 import GalleryModal from "@/app/components/GalleryModal";
 import { ImageType } from "@/app/type/ImageType";
 import convertDateToSlashFormat from "@/app/utils/convertDateToSlashFormat";
+import buildImageUrl from "@/app/utils/buildImageUrl";
+import NoImage from "@/app/components/NoImage";
+import Loading from "@/app/loading";
 
 const Page = () => {
   const { slug } = useParams();
@@ -179,8 +182,8 @@ const Page = () => {
 
   function convertToImageGalleryItems(images: ImageType[]) {
     return images.map((image) => ({
-      original: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
-      thumbnail: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`,
+      original: buildImageUrl(image.url),
+      thumbnail: buildImageUrl(image.url),
       description: convertDateToSlashFormat(image.shotDate as string),
     }));
   }
@@ -188,21 +191,21 @@ const Page = () => {
   return (
     <div>
       {agave === null ? (
-        <LoadingAnime />
+        <Loading />
       ) : (
         <div>
           <div className="flex border-b border-gray-300">
             <div className="w-2/12 flex justify-center">
               {agave.iconUrl ? (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                  src={buildImageUrl(agave.iconUrl)}
                   alt={`Image icon`}
                   className="w-full h-full object-cover"
                   width={100}
                   height={100}
                 />
               ) : (
-                <div>ICON未設定</div>
+                <NoImage />
               )}
             </div>
             <div className="w-8/12 text-center">
@@ -244,28 +247,46 @@ const Page = () => {
             <div className="w-5/6">
               <div>
                 <p>オーナー: {agave.ownerName}</p>
-                {agave.parentSlug && (
-                  <div>
-                    <div>
-                      親株:
-                      <Link
-                        href={"/agave/" + agave.parentSlug}
-                        className="rounded-xl px-1 ml-2 bg-white text-gray-700 w-3/4"
-                      >
-                        <span className="">{agave.parentName}</span>
-                      </Link>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
             <div className="w-1/6">
-              <div className="flex items-center justify-center">
-                <Link href={slug + "/pup"}>
-                  <div className="p-1 rounded-xl bg-white">
-                    <Image src={pup} alt="pup" width={40} height={40} />
-                  </div>
-                </Link>
+              <div className="flex flex-row-reverse">
+                <div className="w-16 flex flex-col">
+                  {agave.parent ? (
+                    <Link href={"/agave/" + agave.parent.slug}>
+                      <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center overflow-hidden">
+                        <div className="text-xs mr-1 font-bold text-gray-700">
+                          親
+                        </div>
+                        <div className="w-10">
+                          {agave.parent.iconUrl ? (
+                            <Image
+                              src={buildImageUrl(agave.parent.iconUrl)}
+                              alt="parent"
+                              width={40}
+                              height={40}
+                            />
+                          ) : (
+                            <NoImage />
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="text-black h-10 rounded-l-full bg-gray-500 flex flex-row justify-end items-center">
+                      <div className="text-xs mr-1 font-bold text-gray-700">
+                        親
+                      </div>
+                      <div className="w-10 text-center">-</div>
+                    </div>
+                  )}
+                  <Link href={slug + "/pup"}>
+                    <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
+                      <div className="text-xs mr-1 font-bold">子</div>
+                      <Image src={pup} alt="pup" width={40} height={40} />
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -292,12 +313,7 @@ const Page = () => {
               </label>
             </div>
             {isUploading ? (
-              <div
-                className="flex justify-center m-4"
-                aria-label="アップロード中"
-              >
-                <div className="animate-spin h-8 w-8 bg-white rounded-xl"></div>
-              </div>
+              <Loading />
             ) : (
               <div>
                 {previewImages.length > 0 && (
@@ -311,7 +327,7 @@ const Page = () => {
                         >
                           {isImageProcessing ? (
                             // 圧縮中
-                            <LoadingAnime />
+                            <Loading />
                           ) : (
                             <Image
                               src={previewURL}
@@ -349,7 +365,7 @@ const Page = () => {
               {agave.images.map((image, index) => (
                 <div key={index} className="p-px overflow-hidden">
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${image.url}`}
+                    src={buildImageUrl(image.url)}
                     alt={`Image ${index}`}
                     className="w-full h-full object-cover"
                     onClick={() => handleImageClick(index)}

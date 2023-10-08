@@ -11,6 +11,8 @@ import { AgaveType } from "@/app/type/AgaveType";
 import NoImage from "@/app/components/NoImage";
 import { addAgave, getAgave } from "../../api";
 import { toast } from "react-toastify";
+import buildImageUrl from "@/app/utils/buildImageUrl";
+import Loading from "@/app/loading";
 
 interface Agave {
   name: string;
@@ -22,6 +24,7 @@ export default function Page() {
   const { slug } = useParams();
   const { data: session } = useSession();
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     try {
@@ -31,6 +34,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error fetching agave:", error);
     }
+    setLoading(false);
   }, []);
 
   const handleAddPup = async (e: FormEvent) => {
@@ -59,7 +63,7 @@ export default function Page() {
           <Link href={`/agave/${agave.slug}`}>
             {agave.iconUrl ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                src={buildImageUrl(agave.iconUrl)}
                 alt={`Image icon`}
                 className="w-full h-full object-cover"
                 width={100}
@@ -93,6 +97,7 @@ export default function Page() {
 
   return (
     <div>
+      {loading && <Loading />}
       <Card title="子株一覧">
         <Row>
           <Button

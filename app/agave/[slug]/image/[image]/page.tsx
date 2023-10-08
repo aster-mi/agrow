@@ -1,4 +1,5 @@
 import { AgaveType } from "@/app/type/AgaveType";
+import buildImageUrl from "@/app/utils/buildImageUrl";
 import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +37,7 @@ export async function generateMetadata(
       siteName: "Agrow",
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/agave/${params.image}.jpg`,
+          url: buildImageUrl(`agave/${params.image}.jpg`),
         },
       ],
       locale: "ja_JP",
@@ -49,7 +50,7 @@ export default function Page({ params, searchParams }: Props) {
   return (
     <div className="flex flex-col items-center">
       <Image
-        src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/agave/${params.image}.jpg`}
+        src={buildImageUrl(`agave/${params.image}.jpg`)}
         alt="pup"
         className="mt-4"
         width={500}

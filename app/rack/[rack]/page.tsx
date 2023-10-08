@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import positionSetting from "@/app/utils/positionSetting";
 import { AgaveType } from "@/app/type/AgaveType";
 import { EditOutlined } from "@ant-design/icons";
+import buildImageUrl from "@/app/utils/buildImageUrl";
 
 const { Meta } = Card;
 
@@ -100,7 +101,7 @@ export default function Page() {
                     <Link href={"/agave/" + agave.slug}>
                       {agave.iconUrl ? (
                         <Image
-                          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${agave.iconUrl}`}
+                          src={buildImageUrl(agave.iconUrl)}
                           alt={`Image icon`}
                           priority={true}
                           width={500}

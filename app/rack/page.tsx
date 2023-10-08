@@ -53,84 +53,77 @@ export default function Page() {
   };
 
   const showModal = () => {
+    setPageLoading(true);
     fetchRackPlan();
     setIsModalVisible(true);
+    setPageLoading(false);
   };
 
   return (
     <div className="bg-black">
-      {pageLoading ? (
-        <LoadingAnime />
-      ) : (
-        <div>
-          <div className="text-center text-lg p-2 text-gray-200">
-            - 所有している棚 -
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)", // 3列
-              gap: "1px", // グリッド間の間隔
-            }}
-          >
-            {myRacks &&
-              myRacks.map((rack) => (
-                <Link key={rack.code} href={"/rack/" + rack.code}>
-                  <Card
-                    key={rack.code}
-                    hoverable
-                    style={{ width: "33vw" }}
-                    cover={
-                      <div className="text-center" style={{ height: "20vw" }}>
-                        <div className="font-bold">{rack.name}</div>
-                        <div>
-                          アガベの数：{rack._count?.agaves + "/" + rack.size}
-                        </div>
-                      </div>
-                    }
-                  ></Card>
-                </Link>
-              ))}
-          </div>
-          <Modal
-            title="追加できる棚"
-            open={isModalVisible}
-            footer={null}
-            mask={true}
-            onCancel={() => setIsModalVisible(false)}
-          >
-            {rackPlans ? (
-              rackPlans.map((plan) => (
+      {pageLoading && <Loading />}
+      <div>
+        <div className="text-center text-lg p-2 text-gray-200">
+          - 所有している棚 -
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)", // 3列
+            gap: "1px", // グリッド間の間隔
+          }}
+        >
+          {myRacks &&
+            myRacks.map((rack) => (
+              <Link key={rack.code} href={"/rack/" + rack.code}>
                 <Card
-                  className="bg-gray-100 m-2 shadow-md"
-                  key={plan.id}
-                  onClick={() => handleAddRack(plan.id)}
+                  key={rack.code}
                   hoverable
+                  style={{ width: "33vw" }}
                   cover={
-                    <div className="text-center">
-                      <div className="font-bold">{plan.name}</div>
-                      <div>月額：{plan.monthlyFee}円</div>
-                      <div>サイズ：{plan.size}株分</div>
+                    <div className="text-center" style={{ height: "20vw" }}>
+                      <div className="font-bold">{rack.name}</div>
+                      <div>
+                        アガベの数：{rack._count?.agaves + "/" + rack.size}
+                      </div>
                     </div>
                   }
                 ></Card>
-              ))
-            ) : (
-              <div className="text-center">
-                <Loading />
-              </div>
-            )}
-          </Modal>
-          <div className="text-center">
-            <button
-              onClick={showModal}
-              className="p-2 border-2 border-green-600 bg-black hover:bg-green-600 rounded-full text-white"
-            >
-              棚を追加
-            </button>
-          </div>
+              </Link>
+            ))}
         </div>
-      )}
+        <Modal
+          title="追加できる棚"
+          open={isModalVisible}
+          footer={null}
+          mask={true}
+          onCancel={() => setIsModalVisible(false)}
+        >
+          {rackPlans.map((plan) => (
+            <Card
+              className="bg-gray-100 m-2 shadow-md"
+              key={plan.id}
+              onClick={() => handleAddRack(plan.id)}
+              hoverable
+              cover={
+                <div className="text-center">
+                  <div className="font-bold">{plan.name}</div>
+                  <div>月額：{plan.monthlyFee}円</div>
+                  <div>サイズ：{plan.size}株分</div>
+                </div>
+              }
+            ></Card>
+          ))}
+        </Modal>
+        <div className="text-center">
+          <button
+            onClick={showModal}
+            className="mt-5 p-2 border-2 border-green-600 bg-black hover:bg-green-600 rounded-full text-white"
+          >
+            棚を追加
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

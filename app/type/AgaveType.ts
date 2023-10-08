@@ -11,8 +11,7 @@ export interface AgaveType {
   ownerId?: string;
   ownerName?: string;
   parentId?: number;
-  parentName?: string;
-  parentSlug?: string;
+  parent?: AgaveType;
   rackPosition?: number;
   rackCode?: string;
   pups?: AgaveType[];

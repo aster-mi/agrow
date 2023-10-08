@@ -24,6 +24,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
 a {
@@ -58,4 +59,8 @@ a {
   bottom: 0 !important;
   left: 0 !important;
   padding: 5px !important;
+}
+
+.text-super-small{
+  font-size: 0.1rem !important;
 }

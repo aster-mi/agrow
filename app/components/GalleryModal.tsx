@@ -39,6 +39,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 }) => {
   const galleryRef = useRef<Gallery>(null);
   const [playSlideShow, setPlaySlideShow] = useState(false);
+  const [imageOnly, setImageOnly] = useState(false);
   const focusRef = useRef(null);
 
   const getCurrentIndex = () => {
@@ -63,6 +64,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
     if (!playSlideShow) {
       galleryRef!.current!.play();
       setPlaySlideShow(true);
+      setImageOnly(true);
     }
   };
 
@@ -121,8 +123,8 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
               <Gallery
                 items={items}
                 showBullets={false}
-                showThumbnails={!playSlideShow}
-                showNav={!playSlideShow}
+                showThumbnails={!imageOnly}
+                showNav={!imageOnly}
                 showFullscreenButton={false}
                 showPlayButton={false}
                 thumbnailPosition={"bottom"}
@@ -130,12 +132,15 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
                 slideInterval={2000}
                 startIndex={startIndex}
                 ref={galleryRef}
-                onClick={stopSlideShow}
+                onClick={() => {
+                  stopSlideShow();
+                  setImageOnly(!imageOnly);
+                }}
               />
             </div>
           )}
         </div>
-        {!playSlideShow && (
+        {!imageOnly && (
           <div onClick={handleChildClick}>
             <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
               <div className="left-0 p-3">

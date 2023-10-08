@@ -3,7 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NextAuthProvider from "./providers/NextAuthProvider";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "flowbite/dist/flowbite.min.css";
 
@@ -27,7 +27,7 @@ export default function RootLayout({
           <BottomMenu />
         </NextAuthProvider>
         <ToastContainer
-          autoClose={2000}
+          autoClose={1000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -36,6 +36,7 @@ export default function RootLayout({
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          toastClassName="rounded-full text-xs"
           theme={"dark"}
         />
         <div className="h-16 w-full"></div>

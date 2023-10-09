@@ -1,5 +1,5 @@
 import Image from "next/image";
-import localImage from "@/public/agave.jpeg";
+import localImage from "@/public/dotAgrow.png";
 export default function DummyImage() {
   return (
     <div className="flex justify-center items-center min-h-screen">

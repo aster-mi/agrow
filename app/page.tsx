@@ -1,11 +1,11 @@
 "use client";
 
-import DummyImage from "./components/DummyImage";
+import AgrowLogo from "./components/AgrowLogo";
 
 export default function Page() {
   return (
     <div className="space-y-4">
-      <DummyImage />
+      <AgrowLogo />
     </div>
   );
 }

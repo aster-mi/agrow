@@ -22,7 +22,6 @@ import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
 import MenuButton from "@/app/components/MenuButton";
 import ShareButtons from "@/app/components/ShareButtons";
-import localImage from "@/public/agave.jpeg";
 import OffStarSvg from "@/app/components/svg/OffStar";
 import TagSvg from "@/app/components/svg/TagSvg";
 import GalleryModal from "@/app/components/GalleryModal";
@@ -31,6 +30,7 @@ import convertDateToSlashFormat from "@/app/utils/convertDateToSlashFormat";
 import buildImageUrl from "@/app/utils/buildImageUrl";
 import NoImage from "@/app/components/NoImage";
 import Loading from "@/app/loading";
+import dotWatering from "@/public/dotWatering.png";
 
 const Page = () => {
   const { slug } = useParams();
@@ -212,8 +212,13 @@ const Page = () => {
               <p className="break-all p-2">{agave.name}</p>
             </div>
             <div className="w-3/12 flex">
-              <div className="p-3">
-                <OffStarSvg />
+              <div className="pt-1">
+                <Image
+                  src={dotWatering}
+                  alt="watering"
+                  width={100}
+                  height={100}
+                />
               </div>
               <div className="text-right">
                 <MenuButton

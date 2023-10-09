@@ -1,7 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-
 export { default } from "next-auth/middleware";
 
 export const config = {
-  matcher: ["/((?!register|api|login|agave).*)"], // ?!は否定
+  matcher: ["/rack/:path*", "/agave/:path/pup"],
 };

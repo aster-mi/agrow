@@ -118,7 +118,7 @@ export default function Page() {
         <div className="text-center">
           <button
             onClick={showModal}
-            className="mt-5 p-2 border-2 border-green-600 bg-black hover:bg-green-600 rounded-full text-white"
+            className="mt-20 rounded-full bg-black border border-green-500 bg-opacity-50 shadow-inner shadow-green-500 px-20 py-2"
           >
             棚を追加
           </button>

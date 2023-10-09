@@ -212,7 +212,7 @@ const Page = () => {
               <p className="break-all p-2">{agave.name}</p>
             </div>
             <div className="w-3/12 flex">
-              <div className="pt-1">
+              <div className="">
                 <Image
                   src={dotWatering}
                   alt="watering"

@@ -32,13 +32,11 @@ export default function Page() {
           setRackName(data.name);
         });
     } catch (error) {
-      console.log(error);
       toast.error("棚の取得に失敗しました");
     }
   }, []);
 
   const onFinish = async () => {
-    console.log("called");
     try {
       setIsEditing(false);
       const response = await fetch(`/api/rack/${rack}`, {
@@ -58,7 +56,6 @@ export default function Page() {
         toast.error("棚名の更新に失敗しました");
       }
     } catch (error) {
-      console.log(error);
       toast.error("棚名の更新に失敗しました");
     }
   };

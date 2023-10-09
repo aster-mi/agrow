@@ -17,6 +17,7 @@ interface GalleryModalProps {
   getShareUrl: (index: number) => string;
   items: Item[];
   startIndex: number;
+  isMine: boolean;
 }
 
 interface Item {
@@ -36,6 +37,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   getShareUrl,
   items,
   startIndex,
+  isMine,
 }) => {
   const galleryRef = useRef<Gallery>(null);
   const [playSlideShow, setPlaySlideShow] = useState(false);
@@ -154,14 +156,20 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
               <div className="left-0 p-3">
                 <button onClick={startSlideShow}>▶️</button>
               </div>
-              <div className="left-0 p-3">
-                {onSetIcon && <button onClick={handleSetIcon}>Icon化</button>}
-              </div>
-              <div className="left-0 p-3">
-                {onDelete && (
-                  <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
-                )}
-              </div>
+              {isMine && (
+                <>
+                  <div className="left-0 p-3">
+                    {onSetIcon && (
+                      <button onClick={handleSetIcon}>Icon化</button>
+                    )}
+                  </div>
+                  <div className="left-0 p-3">
+                    {onDelete && (
+                      <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
+                    )}
+                  </div>
+                </>
+              )}
               <div className="right-0">
                 <MenuButton
                   contents={

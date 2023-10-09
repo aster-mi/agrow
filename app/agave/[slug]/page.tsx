@@ -31,9 +31,12 @@ import buildImageUrl from "@/app/utils/buildImageUrl";
 import NoImage from "@/app/components/NoImage";
 import Loading from "@/app/loading";
 import dotWatering from "@/public/dotWatering.png";
+import { useSession } from "next-auth/react";
 
 const Page = () => {
   const { slug } = useParams();
+  const session = useSession();
+  const [isMine, setIsMine] = useState<boolean>(false);
   const [agave, setAgave] = useState<AgaveType | null>(null);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [fileInputKey, setFileInputKey] = useState<number>(0);
@@ -61,6 +64,7 @@ const Page = () => {
     try {
       const agave: AgaveType = await getAgave(slug as string);
       setAgave(agave);
+      setIsMine(agave.ownerId === session.data?.user?.id);
     } catch (error) {
       toast.error("データ取得に失敗しました");
       router.back();
@@ -225,11 +229,13 @@ const Page = () => {
                   contents={
                     <>
                       <ShareButtons getUrl={() => currentURL} />
-                      <DeleteButton
-                        onDelete={handleDeleteAgave}
-                        title={"株を削除"}
-                        buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
-                      />
+                      {isMine && (
+                        <DeleteButton
+                          onDelete={handleDeleteAgave}
+                          title={"株を削除"}
+                          buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
+                        />
+                      )}
                     </>
                   }
                 />
@@ -295,76 +301,78 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div>
-            <div className="grid grid-cols-1 gap-0">
-              <label
-                htmlFor="dropzone-file"
-                className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <p className="m-2 text-sm text-gray-500 dark:text-gray-400">
-                    <AddImageSvg />
-                  </p>
-                </div>
-                <input
-                  id="dropzone-file"
-                  key={fileInputKey}
-                  type="file"
-                  accept=".jpeg, .jpg, .png"
-                  multiple
-                  onChange={handleChangeFiles}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            {isUploading ? (
-              <Loading />
-            ) : (
-              <div>
-                {previewImages.length > 0 && (
-                  <div>
-                    <div className="flex overflow-x-auto whitespace-nowrap">
-                      {previewImages.map((previewURL, index) => (
-                        <div
-                          key={index}
-                          className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
-                          style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
-                        >
-                          {isImageProcessing ? (
-                            // 圧縮中
-                            <Loading />
-                          ) : (
-                            <Image
-                              src={previewURL}
-                              alt={`Preview ${index}`}
-                              className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                              // onClick={() =>
-                              //   handleImageClick(`${previewURL}`, "")
-                              // }
-                              width={50}
-                              height={50}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {!isImageProcessing && (
-                      <div className="grid grid-cols-1 gap-0">
-                        <button
-                          onClick={handleUpload}
-                          className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-                        >
-                          <span className="m-2 text-xl text-white">
-                            <span>投稿</span>
-                          </span>
-                        </button>
-                      </div>
-                    )}
+          {isMine && (
+            <div>
+              <div className="grid grid-cols-1 gap-0">
+                <label
+                  htmlFor="dropzone-file"
+                  className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <p className="m-2 text-sm text-gray-500 dark:text-gray-400">
+                      <AddImageSvg />
+                    </p>
                   </div>
-                )}
+                  <input
+                    id="dropzone-file"
+                    key={fileInputKey}
+                    type="file"
+                    accept=".jpeg, .jpg, .png"
+                    multiple
+                    onChange={handleChangeFiles}
+                    className="hidden"
+                  />
+                </label>
               </div>
-            )}
-          </div>
+              {isUploading ? (
+                <Loading />
+              ) : (
+                <div>
+                  {previewImages.length > 0 && (
+                    <div>
+                      <div className="flex overflow-x-auto whitespace-nowrap">
+                        {previewImages.map((previewURL, index) => (
+                          <div
+                            key={index}
+                            className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+                            style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
+                          >
+                            {isImageProcessing ? (
+                              // 圧縮中
+                              <Loading />
+                            ) : (
+                              <Image
+                                src={previewURL}
+                                alt={`Preview ${index}`}
+                                className="w-full h-full object-cover" // 画像を親要素に合わせて表示
+                                // onClick={() =>
+                                //   handleImageClick(`${previewURL}`, "")
+                                // }
+                                width={50}
+                                height={50}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {!isImageProcessing && (
+                        <div className="grid grid-cols-1 gap-0">
+                          <button
+                            onClick={handleUpload}
+                            className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                          >
+                            <span className="m-2 text-xl text-white">
+                              <span>投稿</span>
+                            </span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           {agave.images && (
             <div className="grid grid-cols-3 gap-0 w-full h-full">
               {agave.images.map((image, index) => (
@@ -390,6 +398,7 @@ const Page = () => {
               getShareUrl={createShareUrl}
               items={convertToImageGalleryItems(agave.images)}
               startIndex={selectedImageIndex}
+              isMine={isMine}
             />
           )}
         </div>

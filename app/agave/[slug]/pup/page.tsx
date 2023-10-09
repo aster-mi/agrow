@@ -22,17 +22,23 @@ interface Agave {
 
 export default function Page() {
   const { slug } = useParams();
-  const { data: session } = useSession();
+  const session = useSession();
+  const [isMine, setIsMine] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     try {
       fetch(`/api/agave/${slug}/pup`)
         .then((response) => response.json())
-        .then((data) => setDataSource(data));
+        .then((data: AgaveType) => {
+          setDataSource(data.pups || []);
+          setIsMine(data.ownerId === session.data?.user?.id);
+        });
     } catch (error) {
-      console.error("Error fetching agave:", error);
+      toast.error("データの取得に失敗しました");
+      router.back();
     }
     setLoading(false);
   }, []);
@@ -46,7 +52,7 @@ export default function Page() {
     // アップロードした画像の URL をサーバーに送信する
     const agave = await addAgave({
       name: pupName,
-      ownerId: session?.user?.id,
+      ownerId: session.data?.user?.id,
       parentId: parent.id,
     });
     const newDataSource = [agave, ...dataSource];
@@ -99,14 +105,16 @@ export default function Page() {
     <div>
       {loading && <Loading />}
       <Card title="子株一覧">
-        <Row>
-          <Button
-            className="ml-auto m-1 border-none bg-green-700 text-white"
-            onClick={handleAddPup}
-          >
-            子株を追加
-          </Button>
-        </Row>
+        {isMine && (
+          <Row>
+            <Button
+              className="ml-auto m-1 border-none bg-green-700 text-white"
+              onClick={handleAddPup}
+            >
+              子株を追加
+            </Button>
+          </Row>
+        )}
         <Table
           dataSource={dataSource}
           showHeader={false}

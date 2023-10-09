@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { ChangeEvent } from "react";
 const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const agaves = await getAgaves(params.slug);
+  const agaves = await getAgavesByParentSlug(params.slug);
   return NextResponse.json(agaves);
 }
 
-async function getAgaves(slug: string) {
-  const parent = await prisma.agave.findUniqueOrThrow({
+async function getAgavesByParentSlug(slug: string) {
+  return await prisma.agave.findUniqueOrThrow({
     where: {
       slug: slug,
     },
-  });
-  return await prisma.agave.findMany({
-    where: {
-      parentId: parent.id,
-    },
-    orderBy: {
-      createdAt: "desc",
+    select: {
+      ownerId: true,
+      pups: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 }

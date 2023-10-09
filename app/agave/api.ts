@@ -24,6 +24,7 @@ export const getAgave = async (slug: string): Promise<AgaveType> => {
     description: agave.description,
     iconUrl: agave.iconUrl,
     ownerName: agave.owner?.name,
+    ownerId: agave.ownerId,
     parentId: agave.parentId,
     parent: agave.parent,
     pups: agave.pups,

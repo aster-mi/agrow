@@ -39,7 +39,8 @@ export default function Page() {
           setDataSource(data.ownedAgaves);
         });
     } catch (error) {
-      console.error("Error fetching agave:", error);
+      toast.error("データの取得に失敗しました");
+      router.back();
     }
     setLoading(false);
   }, []);
@@ -70,7 +71,8 @@ export default function Page() {
       toast.success("設置が完了しました");
       router.back();
     } catch (error) {
-      console.error("Error fetching agave:", error);
+      toast.error("エラーが発生しました");
+      router.back();
     }
   };
 

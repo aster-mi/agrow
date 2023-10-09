@@ -37,6 +37,7 @@ async function getAgave(slug: string) {
       owner: {
         select: {
           name: true,
+          id: true,
         },
       },
       tags: true,

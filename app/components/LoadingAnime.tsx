@@ -4,7 +4,7 @@ export default function LoadingAnime() {
   return (
     <div
       className="absolute left-0 top-0 flex justify-center items-center backdrop-blur w-full h-full"
-      style={{ zIndex: 1001 }}
+      style={{ zIndex: 1200 }}
       aria-label="読み込み中"
     >
       <div className="animate-bounce h-20 w-20">

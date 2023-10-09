@@ -107,30 +107,27 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
   ];
 
   return (
-    <ModalButton
-      children={
-        <div>
-          {isMine && (
-            <Row className="flex flex-row justify-center">
-              <button
-                className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold"
-                onClick={handleAddPup}
-              >
-                子株を追加
-              </button>
-            </Row>
-          )}
-          <Table
-            dataSource={dataSource}
-            showHeader={false}
-            columns={columns}
-            rowKey={(agave) => agave.slug!}
-            pagination={false}
-          />
-        </div>
-      }
-      buttonChildren={children}
-    />
+    <ModalButton buttonChildren={children}>
+      <div>
+        {isMine && (
+          <Row className="flex flex-row justify-center">
+            <button
+              className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold"
+              onClick={handleAddPup}
+            >
+              子株を追加
+            </button>
+          </Row>
+        )}
+        <Table
+          dataSource={dataSource}
+          showHeader={false}
+          columns={columns}
+          rowKey={(agave) => agave.slug!}
+          pagination={false}
+        />
+      </div>
+    </ModalButton>
   );
 };
 

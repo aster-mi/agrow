@@ -88,7 +88,7 @@ const Page = () => {
 
   useEffect(() => {
     setIsMine(agave?.ownerId === session.data?.user?.id);
-  }, [session.status, agave]);
+  }, [agave?.ownerId, session.data?.user?.id]);
 
   const handleChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -296,16 +296,12 @@ const Page = () => {
                       <div className="w-10 text-center">-</div>
                     </div>
                   )}
-                  <Pups
-                    children={
-                      <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
-                        <div className="text-xs mr-1 font-bold">子</div>
-                        <Image src={pup} alt="pup" width={40} height={40} />
-                      </div>
-                    }
-                    isMine={isMine}
-                    onLoading={handleLoadingChange}
-                  />
+                  <Pups isMine={isMine} onLoading={handleLoadingChange}>
+                    <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
+                      <div className="text-xs mr-1 font-bold">子</div>
+                      <Image src={pup} alt="pup" width={40} height={40} />
+                    </div>
+                  </Pups>
                 </div>
               </div>
             </div>

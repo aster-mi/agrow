@@ -16,13 +16,11 @@ import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
-import LoadingAnime from "@/app/components/LoadingAnime";
 import pup from "@/public/dotPup.png";
 import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
 import MenuButton from "@/app/components/MenuButton";
 import ShareButtons from "@/app/components/ShareButtons";
-import OffStarSvg from "@/app/components/svg/OffStar";
 import TagSvg from "@/app/components/svg/TagSvg";
 import GalleryModal from "@/app/components/GalleryModal";
 import { ImageType } from "@/app/type/ImageType";
@@ -32,6 +30,7 @@ import NoImage from "@/app/components/NoImage";
 import Loading from "@/app/loading";
 import dotWatering from "@/public/dotWatering.png";
 import { useSession } from "next-auth/react";
+import Pups from "@/app/components/Pups";
 
 const Page = () => {
   const { slug } = useParams();
@@ -44,8 +43,7 @@ const Page = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
-  const [isUploading, setIsUploading] = useState(false);
-  const [isImageProcessing, setIsImageProcessing] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const currentURL = process.env.NEXT_PUBLIC_APP_BASE_URL + usePathname();
@@ -64,7 +62,7 @@ const Page = () => {
     try {
       const agave: AgaveType = await getAgave(slug as string);
       setAgave(agave);
-      setIsMine(agave.ownerId === session.data?.user?.id);
+      setLoading(false);
     } catch (error) {
       toast.error("データ取得に失敗しました");
       router.back();
@@ -88,10 +86,14 @@ const Page = () => {
     fetchData();
   }, [fileInputKey, slug]);
 
+  useEffect(() => {
+    setIsMine(agave?.ownerId === session.data?.user?.id);
+  }, [session.status, agave]);
+
   const handleChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files && files.length > 0) {
-      setIsImageProcessing(true);
+      setLoading(true);
       setPreviewImages(new Array(files.length).fill(""));
       const compressedURLs = await Promise.all(
         Array.from(files).map(async (file) => {
@@ -103,7 +105,11 @@ const Page = () => {
     } else {
       setPreviewImages([]);
     }
-    setIsImageProcessing(false);
+    setLoading(false);
+  };
+
+  const handleLoadingChange = (newLoading: boolean) => {
+    setLoading(newLoading);
   };
 
   const handleUpload = async () => {
@@ -115,7 +121,7 @@ const Page = () => {
       if (!agave) {
         throw "agave not found.";
       }
-      setIsUploading(true);
+      setLoading(true);
 
       // 画像をSupabaseにアップロード
       const uploadPromises = previewImages.map(async (previewURL) => {
@@ -156,7 +162,7 @@ const Page = () => {
     } catch (error) {
       toast.error("画像アップロードに失敗しました");
     } finally {
-      setIsUploading(false);
+      setLoading(false);
     }
   };
 
@@ -194,9 +200,8 @@ const Page = () => {
 
   return (
     <div>
-      {agave === null ? (
-        <Loading />
-      ) : (
+      {loading && <Loading />}
+      {agave && (
         <div>
           <div className="flex border-b border-gray-300">
             <div className="w-2/12 flex justify-center">
@@ -291,12 +296,16 @@ const Page = () => {
                       <div className="w-10 text-center">-</div>
                     </div>
                   )}
-                  <Link href={slug + "/pup"}>
-                    <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
-                      <div className="text-xs mr-1 font-bold">子</div>
-                      <Image src={pup} alt="pup" width={40} height={40} />
-                    </div>
-                  </Link>
+                  <Pups
+                    children={
+                      <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
+                        <div className="text-xs mr-1 font-bold">子</div>
+                        <Image src={pup} alt="pup" width={40} height={40} />
+                      </div>
+                    }
+                    isMine={isMine}
+                    onLoading={handleLoadingChange}
+                  />
                 </div>
               </div>
             </div>
@@ -324,53 +333,40 @@ const Page = () => {
                   />
                 </label>
               </div>
-              {isUploading ? (
-                <Loading />
-              ) : (
-                <div>
-                  {previewImages.length > 0 && (
-                    <div>
-                      <div className="flex overflow-x-auto whitespace-nowrap">
-                        {previewImages.map((previewURL, index) => (
+              <div>
+                {previewImages.length > 0 && (
+                  <div>
+                    <div className="flex overflow-x-auto whitespace-nowrap">
+                      {!loading &&
+                        previewImages.map((previewURL, index) => (
                           <div
                             key={index}
                             className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
                             style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
                           >
-                            {isImageProcessing ? (
-                              // 圧縮中
-                              <Loading />
-                            ) : (
-                              <Image
-                                src={previewURL}
-                                alt={`Preview ${index}`}
-                                className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                                // onClick={() =>
-                                //   handleImageClick(`${previewURL}`, "")
-                                // }
-                                width={50}
-                                height={50}
-                              />
-                            )}
+                            <Image
+                              src={previewURL}
+                              alt={`Preview ${index}`}
+                              className="w-full h-full object-cover" // 画像を親要素に合わせて表示
+                              width={50}
+                              height={50}
+                            />
                           </div>
                         ))}
-                      </div>
-                      {!isImageProcessing && (
-                        <div className="grid grid-cols-1 gap-0">
-                          <button
-                            onClick={handleUpload}
-                            className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-                          >
-                            <span className="m-2 text-xl text-white">
-                              <span>投稿</span>
-                            </span>
-                          </button>
-                        </div>
-                      )}
                     </div>
-                  )}
-                </div>
-              )}
+                    <div className="grid grid-cols-1 gap-0">
+                      <button
+                        onClick={handleUpload}
+                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                      >
+                        <span className="m-2 text-xl text-white">
+                          <span>投稿</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           {agave.images && (

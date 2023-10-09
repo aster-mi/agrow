@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Card, Input, Row, Col, Button, Table } from "antd";
+import { Row, Table } from "antd";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { ColumnsType } from "antd/es/table";
@@ -9,10 +9,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { AgaveType } from "@/app/type/AgaveType";
 import NoImage from "@/app/components/NoImage";
-import { addAgave, getAgave } from "../../api";
+import { addAgave, getAgave } from "@/app/agave/api";
 import { toast } from "react-toastify";
 import buildImageUrl from "@/app/utils/buildImageUrl";
-import Loading from "@/app/loading";
+import ModalButton from "@/app/components/ModalButton";
+
+type PupsProps = {
+  children: React.ReactNode;
+  isMine: boolean;
+  onLoading: (loading: boolean) => void;
+};
 
 interface Agave {
   name: string;
@@ -20,36 +26,34 @@ interface Agave {
   slug: string;
 }
 
-export default function Page() {
+const Pups = ({ children, isMine, onLoading }: PupsProps) => {
   const { slug } = useParams();
   const session = useSession();
-  const [isMine, setIsMine] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<AgaveType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
+    onLoading(true);
     try {
       fetch(`/api/agave/${slug}/pup`)
         .then((response) => response.json())
         .then((data: AgaveType) => {
           setDataSource(data.pups || []);
-          setIsMine(data.ownerId === session.data?.user?.id);
         });
     } catch (error) {
       toast.error("データの取得に失敗しました");
       router.back();
     }
-    setLoading(false);
+    onLoading(false);
   }, []);
 
   const handleAddPup = async (e: FormEvent) => {
+    onLoading(true);
     e.preventDefault();
 
     const parent = await getAgave(slug as string);
     const pupName = parent.name! + " pup:#" + (parent.pups!.length + 1);
 
-    // アップロードした画像の URL をサーバーに送信する
     const agave = await addAgave({
       name: pupName,
       ownerId: session.data?.user?.id,
@@ -57,6 +61,7 @@ export default function Page() {
     });
     const newDataSource = [agave, ...dataSource];
     setDataSource(newDataSource);
+    onLoading(false);
     toast.success("登録完了！");
   };
 
@@ -102,26 +107,31 @@ export default function Page() {
   ];
 
   return (
-    <div>
-      {loading && <Loading />}
-      <Card title="子株一覧">
-        {isMine && (
-          <Row>
-            <Button
-              className="ml-auto m-1 border-none bg-green-700 text-white"
-              onClick={handleAddPup}
-            >
-              子株を追加
-            </Button>
-          </Row>
-        )}
-        <Table
-          dataSource={dataSource}
-          showHeader={false}
-          columns={columns}
-          rowKey={(agave) => agave.slug!}
-        />
-      </Card>
-    </div>
+    <ModalButton
+      children={
+        <div>
+          {isMine && (
+            <Row className="flex flex-row justify-center">
+              <button
+                className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold"
+                onClick={handleAddPup}
+              >
+                子株を追加
+              </button>
+            </Row>
+          )}
+          <Table
+            dataSource={dataSource}
+            showHeader={false}
+            columns={columns}
+            rowKey={(agave) => agave.slug!}
+            pagination={false}
+          />
+        </div>
+      }
+      buttonChildren={children}
+    />
   );
-}
+};
+
+export default Pups;

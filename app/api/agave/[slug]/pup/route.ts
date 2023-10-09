@@ -17,7 +17,6 @@ async function getAgavesByParentSlug(slug: string) {
       slug: slug,
     },
     select: {
-      ownerId: true,
       pups: {
         orderBy: {
           createdAt: "desc",

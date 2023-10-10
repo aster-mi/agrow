@@ -5,28 +5,41 @@ import AgrowLogo from "./components/AgrowLogo";
 import Link from "next/link";
 import Image from "next/image";
 import rackPng from "@/public/rack.png";
+import Loading from "./loading";
+import LoadingAnime from "./components/LoadingAnime";
+import Room from "./components/Room";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const session = useSession();
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <AgrowLogo />
+      <Room />
+      <div className="w-full p-3">
+        <AgrowLogo />
+      </div>
 
       <div className="mt-10">
         <div className="mx-auto">
-          {session ? (
-            <Link
-              href="/rack"
-              className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
-            >
-              <Image
-                src={rackPng}
-                width={100}
-                alt="rack"
-                style={{ width: "25px", height: "25px" }}
-              />
-              <div className="text-xl ml-1 font-bold">棚を確認する</div>
-            </Link>
+          {session.status === "loading" ? (
+            <LoadingAnime />
+          ) : session.data ? (
+            <>
+              <div className="text-center m-3">
+                こんにちは {session.data.user?.name} さん
+              </div>
+              <Link
+                href="/rack"
+                className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
+              >
+                <Image
+                  src={rackPng}
+                  width={100}
+                  alt="rack"
+                  style={{ width: "25px", height: "25px" }}
+                />
+                <div className="text-xl ml-1 font-bold">棚を確認する</div>
+              </Link>
+            </>
           ) : (
             <>
               <h1 className="text-2xl font-bold">ようこそ、 Agrow へ</h1>

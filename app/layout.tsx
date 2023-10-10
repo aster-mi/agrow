@@ -6,6 +6,7 @@ import NextAuthProvider from "./providers/NextAuthProvider";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "flowbite/dist/flowbite.min.css";
+import Header from "./components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={inter.className}>
         <NextAuthProvider>
+          <Header />
           {children}
           <BottomMenu />
         </NextAuthProvider>

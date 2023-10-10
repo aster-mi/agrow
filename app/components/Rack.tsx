@@ -12,17 +12,22 @@ import positionSetting from "@/app/utils/positionSetting";
 import { AgaveType } from "@/app/type/AgaveType";
 import { EditOutlined } from "@ant-design/icons";
 import buildImageUrl from "@/app/utils/buildImageUrl";
+import { on } from "events";
 
-const { Meta } = Card;
+type RackProps = {
+  rack: string;
+  onLoading: (loading: boolean) => void;
+};
 
-export default function Page() {
-  const { rack } = useParams();
+const Rack = ({ rack, onLoading }: RackProps) => {
   const [rackData, setRackData] = useState<RackType>();
   const [rackName, setRackName] = useState("");
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    if (rack === "") return;
+    onLoading(true);
     try {
       fetch(`/api/rack/${rack}`)
         .then((response) => response.json())
@@ -34,9 +39,11 @@ export default function Page() {
     } catch (error) {
       toast.error("棚の取得に失敗しました");
     }
-  }, []);
+    onLoading(false);
+  }, [rack]);
 
   const onFinish = async () => {
+    onLoading(true);
     try {
       setIsEditing(false);
       const response = await fetch(`/api/rack/${rack}`, {
@@ -58,6 +65,7 @@ export default function Page() {
     } catch (error) {
       toast.error("棚名の更新に失敗しました");
     }
+    onLoading(false);
   };
 
   return (
@@ -134,4 +142,6 @@ export default function Page() {
       )}
     </div>
   );
-}
+};
+
+export default Rack;

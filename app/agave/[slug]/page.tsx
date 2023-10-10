@@ -311,10 +311,10 @@ const Page = () => {
               <div className="grid grid-cols-1 gap-0">
                 <label
                   htmlFor="dropzone-file"
-                  className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                  className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                 >
                   <div className="flex flex-col items-center justify-center">
-                    <p className="m-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="m-2 text-sm text-gray-500">
                       <AddImageSvg />
                     </p>
                   </div>
@@ -353,7 +353,7 @@ const Page = () => {
                     <div className="grid grid-cols-1 gap-0">
                       <button
                         onClick={handleUpload}
-                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200"
                       >
                         <span className="m-2 text-xl text-white">
                           <span>投稿</span>

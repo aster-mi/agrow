@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 
 type ModalButtonProps = {
@@ -6,6 +8,7 @@ type ModalButtonProps = {
   buttonChildren: React.ReactNode;
   wrapClassName?: string;
   className?: string;
+  isVisible?: boolean;
 };
 
 const ModalButton = ({
@@ -13,11 +16,17 @@ const ModalButton = ({
   buttonChildren,
   wrapClassName,
   className,
+  isVisible,
 }: ModalButtonProps) => {
   const [visible, setVisible] = useState(false);
 
   const handleCancel = () => setVisible(false);
   const handleOpen = () => setVisible(true);
+
+  useEffect(() => {
+    if (isVisible === undefined) return;
+    setVisible(isVisible);
+  }, [isVisible]);
 
   return (
     <>

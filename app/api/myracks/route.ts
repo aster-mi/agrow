@@ -26,6 +26,11 @@ async function getRacks(userId: string) {
       code: true,
       design: true,
       _count: true,
+      agaves: {
+        select: {
+          rackPosition: true,
+        },
+      },
     },
   });
   return racks;

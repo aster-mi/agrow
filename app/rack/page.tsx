@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, Modal } from "antd";
+import { useState, useEffect, ChangeEvent } from "react";
+import { Card, Input, Modal, Progress, Row } from "antd"; // Import Progress component
 import Image from "next/image";
 import Link from "next/link";
 import NoImage from "@/app/components/NoImage";
@@ -11,6 +11,9 @@ import { useRouter } from "next/navigation";
 import { RackType } from "../type/RackType";
 import Loading from "../loading";
 import LoadingAnime from "../components/LoadingAnime";
+import positionSetting from "../utils/positionSetting";
+import Rack from "../components/Rack";
+import ModalButton from "../components/ModalButton";
 
 const { Meta } = Card;
 
@@ -18,7 +21,12 @@ export default function Page() {
   const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [rackPlans, setRackPlans] = useState<RackPlanType[]>([]);
   const [myRacks, setMyRacks] = useState<RackType[]>([]);
+  const [allRacks, setAllRacks] = useState<RackType[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [rackCode, setRackCode] = useState<string>("");
+  const [openRack, setOpenRack] = useState(false);
+  const [racksVisible, setRacksVisible] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +37,14 @@ export default function Page() {
   const fetchMyRack = async () => {
     fetch("/api/myracks")
       .then((response) => response.json())
-      .then((data) => setMyRacks(data));
+      .then((data) => {
+        setMyRacks(data);
+        setAllRacks(data);
+        if (data.length > 0) {
+          setRackCode(data[0].code);
+          setOpenRack(true);
+        }
+      });
   };
 
   const fetchRackPlan = async () => {
@@ -59,71 +74,137 @@ export default function Page() {
     setPageLoading(false);
   };
 
+  const handleOnLoading = (loading: boolean) => {
+    setPageLoading(loading);
+    setRacksVisible(false);
+  };
+
+  const handleSearch = async (e: ChangeEvent<HTMLInputElement>) => {
+    const currValue = e.target.value;
+    setSearchValue(currValue);
+    if (currValue) {
+      const filteredData = allRacks.filter((entry) =>
+        entry.name?.includes(currValue)
+      );
+      setMyRacks(filteredData);
+    } else {
+      setMyRacks(allRacks);
+    }
+  };
+
   return (
-    <div className="bg-black">
+    <div>
       {pageLoading && <Loading />}
       <div>
-        <div className="text-center text-lg p-2 text-gray-200">
-          - 所有している棚 -
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)", // 3列
-            gap: "1px", // グリッド間の間隔
-          }}
+        <ModalButton
+          buttonChildren={
+            <div className="border-white px-10 py-2 rounded text-white">
+              🔍棚一覧
+            </div>
+          }
+          isVisible={racksVisible}
         >
-          {myRacks &&
-            myRacks.map((rack) => (
-              <Link key={rack.code} href={"/rack/" + rack.code}>
-                <Card
+          <div className="text-center text-lg font-bold p-2 text-neutral-700">
+            所持している棚
+          </div>
+          <div className="flex flex-row px-24" style={{ overflowX: "scroll" }}>
+            {myRacks &&
+              myRacks.map((rack) => (
+                <div
                   key={rack.code}
-                  hoverable
-                  style={{ width: "33vw" }}
-                  cover={
-                    <div className="text-center" style={{ height: "20vw" }}>
-                      <div className="font-bold">{rack.name}</div>
-                      <div>
-                        アガベの数：{rack._count?.agaves + "/" + rack.size}
+                  onClick={() => {
+                    setRackCode(rack.code);
+                    setOpenRack(true);
+                    setRacksVisible(true);
+                  }}
+                >
+                  <div
+                    className={
+                      "w-20 h-36 shadow-m flex flex-col justify-end mb-3 " +
+                      (rackCode === rack.code
+                        ? "border-2 border-yellow-300 bg-yellow-50"
+                        : "border")
+                    }
+                  >
+                    <div className="text-center">
+                      <div className="font-bold"></div>
+                      <div className="flex flex-row justify-center">
+                        <div className="flex flex-col justify-items-end">
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(3, 1fr)",
+                              gap: "1px",
+                              width: "32px",
+                            }}
+                          >
+                            {positionSetting(rack.agaves!, rack.size).map(
+                              (agave, index) =>
+                                agave.rackPosition ? (
+                                  <div
+                                    key={index}
+                                    className="bg-green-500"
+                                    style={{ height: "10px", width: "10px" }}
+                                  ></div>
+                                ) : (
+                                  <div
+                                    key={index}
+                                    className="bg-neutral-300"
+                                    style={{ height: "10px", width: "10px" }}
+                                  ></div>
+                                )
+                            )}
+                          </div>
+                        </div>
                       </div>
+                      <div className="flex-wrap w-20 text-xs">{rack.name}</div>
                     </div>
-                  }
-                ></Card>
-              </Link>
-            ))}
-        </div>
-        <Modal
-          title="追加できる棚"
-          open={isModalVisible}
-          footer={null}
-          mask={true}
-          onCancel={() => setIsModalVisible(false)}
-        >
-          {rackPlans.map((plan) => (
-            <Card
-              className="bg-gray-100 m-2 shadow-md"
-              key={plan.id}
-              onClick={() => handleAddRack(plan.id)}
-              hoverable
-              cover={
-                <div className="text-center">
-                  <div className="font-bold">{plan.name}</div>
-                  <div>月額：{plan.monthlyFee}円</div>
-                  <div>サイズ：{plan.size}株分</div>
+                  </div>
                 </div>
-              }
-            ></Card>
-          ))}
-        </Modal>
-        <div className="text-center">
-          <button
-            onClick={showModal}
-            className="mt-20 rounded-full bg-black border border-green-500 bg-opacity-50 shadow-inner shadow-green-500 px-20 py-2"
+              ))}
+            <div className="ml-4 w-10 h-36 flex flex-col justify-center">
+              <button
+                onClick={showModal}
+                className="rounded-full font-bold text-2xl bg-green-600 text-white w-10 h-10"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <Row className="p-2">
+            <Input
+              placeholder="棚名で絞り込み..."
+              value={searchValue}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e)}
+              className="rounded m-2"
+            />
+          </Row>
+          <Modal
+            title="追加できる棚"
+            open={isModalVisible}
+            footer={null}
+            mask={true}
+            onCancel={() => setIsModalVisible(false)}
           >
-            棚を追加
-          </button>
-        </div>
+            {rackPlans.map((plan) => (
+              <Card
+                className="bg-gray-100 m-2 shadow-md"
+                key={plan.id}
+                onClick={() => handleAddRack(plan.id)}
+                hoverable
+                cover={
+                  <div className="text-center">
+                    <div className="font-bold">{plan.name}</div>
+                    <div>月額：{plan.monthlyFee}円</div>
+                    <div>サイズ：{plan.size}株分</div>
+                  </div>
+                }
+              ></Card>
+            ))}
+          </Modal>
+        </ModalButton>
       </div>
+      {openRack && <Rack rack={rackCode} onLoading={handleOnLoading} />}
     </div>
   );
 }

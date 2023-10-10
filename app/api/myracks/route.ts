@@ -32,6 +32,9 @@ async function getRacks(userId: string) {
         },
       },
     },
+    orderBy: {
+      name: "asc",
+    },
   });
   return racks;
 }

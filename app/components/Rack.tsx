@@ -12,14 +12,14 @@ import positionSetting from "@/app/utils/positionSetting";
 import { AgaveType } from "@/app/type/AgaveType";
 import { EditOutlined } from "@ant-design/icons";
 import buildImageUrl from "@/app/utils/buildImageUrl";
-import { on } from "events";
 
 type RackProps = {
   rack: string;
   onLoading: (loading: boolean) => void;
+  onUpdate: () => void;
 };
 
-const Rack = ({ rack, onLoading }: RackProps) => {
+const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
   const [rackData, setRackData] = useState<RackType>();
   const [rackName, setRackName] = useState("");
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
@@ -65,6 +65,7 @@ const Rack = ({ rack, onLoading }: RackProps) => {
     } catch (error) {
       toast.error("棚名の更新に失敗しました");
     }
+    onUpdate();
     onLoading(false);
   };
 

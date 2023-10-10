@@ -5,7 +5,7 @@ import { Modal } from "antd";
 
 type ModalButtonProps = {
   children: React.ReactNode;
-  buttonChildren: React.ReactNode;
+  buttonChildren: JSX.Element;
   wrapClassName?: string;
   className?: string;
   isVisible?: boolean;
@@ -30,7 +30,8 @@ const ModalButton = ({
 
   return (
     <>
-      <button onClick={handleOpen}>{buttonChildren}</button>
+      {buttonChildren &&
+        React.cloneElement(buttonChildren, { onClick: handleOpen })}
 
       <Modal
         open={visible}

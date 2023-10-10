@@ -37,7 +37,7 @@ const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
           setRackName(data.name);
         });
     } catch (error) {
-      toast.error("棚の取得に失敗しました");
+      toast.error("ラックの取得に失敗しました");
     }
     onLoading(false);
   }, [rack]);
@@ -58,12 +58,12 @@ const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
           if (!prevRackData) return prevRackData;
           return { ...prevRackData, name: rackName };
         });
-        toast.success("棚名を更新しました");
+        toast.success("ラック名を更新しました");
       } else {
-        toast.error("棚名の更新に失敗しました");
+        toast.error("ラック名の更新に失敗しました");
       }
     } catch (error) {
-      toast.error("棚名の更新に失敗しました");
+      toast.error("ラック名の更新に失敗しました");
     }
     onUpdate();
     onLoading(false);

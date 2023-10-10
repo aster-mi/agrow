@@ -37,7 +37,7 @@ export default function Page() {
                   alt="rack"
                   style={{ width: "25px", height: "25px" }}
                 />
-                <div className="text-xl ml-1 font-bold">棚を確認する</div>
+                <div className="text-xl ml-1 font-bold">ラックを確認する</div>
               </Link>
             </>
           ) : (

@@ -65,7 +65,7 @@ export default function Page() {
     const code = await res.json();
     fetchMyRack();
     setIsModalVisible(false);
-    toast.success("棚を追加しました");
+    toast.success("ラックを追加しました");
   };
 
   const showModal = () => {
@@ -100,14 +100,14 @@ export default function Page() {
         <Row className="flex flex-row justify-end">
           <ModalButton
             buttonChildren={
-              <div className="w-20 p-1 m-1 bg-green-500 rounded text-center text-lg text-white">
-                棚一覧
+              <div className="w-24 p-1 m-1 bg-green-500 rounded text-center font-bold text-white">
+                Myラック
               </div>
             }
             isVisible={racksVisible}
           >
             <div className="text-center text-lg font-bold p-2 text-neutral-700">
-              所持している棚
+              所持しているラック
             </div>
             <div
               className="flex flex-row px-24"
@@ -180,14 +180,14 @@ export default function Page() {
             </div>
             <Row className="p-2">
               <Input
-                placeholder="棚名で絞り込み..."
+                placeholder="ラック名で絞り込み..."
                 value={searchValue}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e)}
                 className="rounded m-2"
               />
             </Row>
             <Modal
-              title="追加できる棚"
+              title="追加できるラック"
               open={isModalVisible}
               footer={null}
               mask={true}

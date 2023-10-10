@@ -15,7 +15,7 @@ import buildImageUrl from "@/app/utils/buildImageUrl";
 import ModalButton from "@/app/components/ModalButton";
 
 type PupsProps = {
-  children: React.ReactNode;
+  children: JSX.Element;
   isMine: boolean;
   onLoading: (loading: boolean) => void;
 };

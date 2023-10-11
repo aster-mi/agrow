@@ -5,14 +5,13 @@ import AgrowLogo from "./components/AgrowLogo";
 import Link from "next/link";
 import Image from "next/image";
 import rackPng from "@/public/rack.png";
-import Loading from "./loading";
 import LoadingAnime from "./components/LoadingAnime";
 import Room from "./components/Room";
 
 export default function Page() {
   const session = useSession();
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen bg-black">
       <Room />
       <div className="w-full p-3">
         <AgrowLogo />

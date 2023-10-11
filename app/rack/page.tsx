@@ -14,6 +14,7 @@ import LoadingAnime from "../components/LoadingAnime";
 import positionSetting from "../utils/positionSetting";
 import Rack from "../components/Rack";
 import ModalButton from "../components/ModalButton";
+import SetAgave from "../components/SetAgave";
 
 const { Meta } = Card;
 
@@ -27,7 +28,8 @@ export default function Page() {
   const [openRack, setOpenRack] = useState(false);
   const [racksVisible, setRacksVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const router = useRouter();
+  const [openSetPosition, setOpenSetPosition] = useState<number>(0);
+  const [rackRefreshing, setRackRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
     fetchMyRack();
@@ -91,6 +93,10 @@ export default function Page() {
     } else {
       setMyRacks(allRacks);
     }
+  };
+
+  const handleRackRefreshed = () => {
+    setRackRefreshing(false);
   };
 
   return (
@@ -217,6 +223,18 @@ export default function Page() {
           rack={rackCode}
           onLoading={handleOnLoading}
           onUpdate={() => fetchMyRack()}
+          onSetAgave={setOpenSetPosition}
+          refresh={rackRefreshing}
+          onRefreshed={handleRackRefreshed}
+        />
+      )}
+      {openSetPosition !== 0 && (
+        <SetAgave
+          rack={rackCode}
+          position={openSetPosition}
+          onLoading={setPageLoading}
+          onUpdate={() => setRackRefreshing(true)}
+          onCancel={() => setOpenSetPosition(0)}
         />
       )}
     </div>

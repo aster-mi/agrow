@@ -15,11 +15,21 @@ import buildImageUrl from "@/app/utils/buildImageUrl";
 
 type RackProps = {
   rack: string;
+  refresh: boolean;
+  onRefreshed: () => void;
   onLoading: (loading: boolean) => void;
   onUpdate: () => void;
+  onSetAgave: (position: number) => void;
 };
 
-const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
+const Rack = ({
+  rack,
+  refresh,
+  onRefreshed,
+  onLoading,
+  onUpdate,
+  onSetAgave,
+}: RackProps) => {
   const [rackData, setRackData] = useState<RackType>();
   const [rackName, setRackName] = useState("");
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
@@ -27,6 +37,16 @@ const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
 
   useEffect(() => {
     if (rack === "") return;
+    refreshRack();
+  }, [rack]);
+
+  useEffect(() => {
+    if (!refresh) return;
+    refreshRack();
+    onRefreshed();
+  }, [refresh]);
+
+  const refreshRack = async () => {
     onLoading(true);
     try {
       fetch(`/api/rack/${rack}`)
@@ -40,7 +60,7 @@ const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
       toast.error("ラックの取得に失敗しました");
     }
     onLoading(false);
-  }, [rack]);
+  };
 
   const onFinish = async () => {
     onLoading(true);
@@ -122,19 +142,18 @@ const Rack = ({ rack, onLoading, onUpdate }: RackProps) => {
                       </div>
                     </Link>
                   ) : (
-                    <Link href={`/rack/${rack}/position/${index + 1}/agave`}>
-                      <Card
-                        hoverable
-                        className="flex items-center justify-center h-full w-full bg-black border-gray-500 border-2"
-                        cover={
-                          <div className="text-center text-x text-gray-200">
-                            <div>+</div>
-                            <div>設置</div>
-                            <div className="floor bg-white"></div>
-                          </div>
-                        }
-                      />
-                    </Link>
+                    <Card
+                      onClick={() => onSetAgave(index + 1)}
+                      hoverable
+                      className="flex items-center justify-center h-full w-full bg-black border-gray-500 border-2"
+                      cover={
+                        <div className="text-center text-x text-gray-200">
+                          <div>+</div>
+                          <div>設置</div>
+                          <div className="floor bg-white"></div>
+                        </div>
+                      }
+                    />
                   )}
                 </div>
               ))}

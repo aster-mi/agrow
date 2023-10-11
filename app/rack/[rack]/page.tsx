@@ -16,6 +16,9 @@ export default function Page() {
         rack={rack as string}
         onLoading={setPageLoading}
         onUpdate={() => {}}
+        onSetAgave={() => {}}
+        refresh={false}
+        onRefreshed={() => {}}
       />
     </>
   );

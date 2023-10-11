@@ -31,6 +31,7 @@ import Loading from "@/app/loading";
 import dotWatering from "@/public/dotWatering.png";
 import { useSession } from "next-auth/react";
 import Pups from "@/app/components/Pups";
+import { Modal, Image as AntdImage, Input } from "antd";
 
 const Page = () => {
   const { slug } = useParams();
@@ -38,6 +39,7 @@ const Page = () => {
   const [isMine, setIsMine] = useState<boolean>(false);
   const [agave, setAgave] = useState<AgaveType | null>(null);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [shotDate, setShotDate] = useState<Date>(new Date());
   const [fileInputKey, setFileInputKey] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
@@ -108,6 +110,11 @@ const Page = () => {
     setLoading(false);
   };
 
+  const handlePreviewModalClose = () => {
+    setPreviewImages([]);
+    setShotDate(new Date());
+  };
+
   const handleLoadingChange = (newLoading: boolean) => {
     setLoading(newLoading);
   };
@@ -147,7 +154,7 @@ const Page = () => {
 
       const uploadImages: ImageType[] = imagePaths.map((imagePath) => ({
         url: imagePath,
-        shotDate: new Date().toISOString(),
+        shotDate: shotDate,
       }));
 
       await addImages({
@@ -203,196 +210,213 @@ const Page = () => {
       {loading && <Loading />}
       {agave && (
         <div>
-          <div className="flex border-b border-gray-300">
-            <div className="w-2/12 flex justify-center">
-              {agave.iconUrl ? (
-                <Image
-                  src={buildImageUrl(agave.iconUrl)}
-                  alt={`Image icon`}
-                  className="w-full h-full object-cover"
-                  width={100}
-                  height={100}
-                />
-              ) : (
-                <NoImage />
-              )}
-            </div>
-            <div className="w-8/12 text-center">
-              <p className="break-all p-2">{agave.name}</p>
-            </div>
-            <div className="w-3/12 flex">
-              <div className="">
-                <Image
-                  src={dotWatering}
-                  alt="watering"
-                  width={100}
-                  height={100}
-                />
-              </div>
-              <div className="text-right">
-                <MenuButton
-                  contents={
-                    <>
-                      <ShareButtons getUrl={() => currentURL} />
-                      {isMine && (
-                        <DeleteButton
-                          onDelete={handleDeleteAgave}
-                          title={"株を削除"}
-                          buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
-                        />
-                      )}
-                    </>
-                  }
-                />
-              </div>
-            </div>
-          </div>
-          {/* TODO */}
-          <div>
-            <div className="flex">
-              <TagSvg />
-              チタノタ
-            </div>
-            {agave.description && (
-              <div
-                style={{ whiteSpace: "pre-wrap" }}
-              >{`${agave.description}`}</div>
+          <div
+            className="absolute w-full flex justify-center z-0"
+            style={{ opacity: "0.3" }}
+          >
+            {agave.iconUrl ? (
+              <Image
+                src={buildImageUrl(agave.iconUrl)}
+                alt={`Image icon`}
+                className="w-full h-full object-cover"
+                width={500}
+                height={500}
+              />
+            ) : (
+              <NoImage />
             )}
           </div>
-          <div className="flex my-2">
-            <div className="w-5/6">
-              <div>
-                <p>オーナー: {agave.ownerName}</p>
+          <div className="absolute">
+            <div className="flex bg-black bg-opacity-50">
+              <div className="w-2/12 flex justify-center">←</div>
+              <div className="w-8/12 text-center">
+                <p className="break-all p-2">{agave.name}</p>
+              </div>
+              <div className="w-3/12 flex">
+                <div className="">
+                  <Image
+                    src={dotWatering}
+                    alt="watering"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+                <div className="text-right">
+                  <MenuButton
+                    contents={
+                      <>
+                        <ShareButtons getUrl={() => currentURL} />
+                        {isMine && (
+                          <DeleteButton
+                            onDelete={handleDeleteAgave}
+                            title={"株を削除"}
+                            buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
+                          />
+                        )}
+                      </>
+                    }
+                  />
+                </div>
               </div>
             </div>
-            <div className="w-1/6">
-              <div className="flex flex-row-reverse">
-                <div className="w-16 flex flex-col">
-                  {agave.parent ? (
-                    <Link href={"/agave/" + agave.parent.slug}>
-                      <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center overflow-hidden">
+            {/* TODO */}
+            <div>
+              <div className="flex">
+                <TagSvg />
+                チタノタ
+              </div>
+              {agave.description && (
+                <div
+                  style={{ whiteSpace: "pre-wrap" }}
+                >{`${agave.description}`}</div>
+              )}
+            </div>
+            <div className="flex my-2">
+              <div className="w-5/6">
+                <div>
+                  <p>オーナー: {agave.ownerName}</p>
+                </div>
+              </div>
+              <div className="w-1/6">
+                <div className="flex flex-row-reverse">
+                  <div className="w-16 flex flex-col">
+                    {agave.parent ? (
+                      <Link href={"/agave/" + agave.parent.slug}>
+                        <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center overflow-hidden">
+                          <div className="text-xs mr-1 font-bold text-gray-700">
+                            親
+                          </div>
+                          <div className="w-10">
+                            {agave.parent.iconUrl ? (
+                              <Image
+                                src={buildImageUrl(agave.parent.iconUrl)}
+                                alt="parent"
+                                width={40}
+                                height={40}
+                              />
+                            ) : (
+                              <NoImage />
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="text-black h-10 rounded-l-full bg-gray-500 flex flex-row justify-end items-center">
                         <div className="text-xs mr-1 font-bold text-gray-700">
                           親
                         </div>
-                        <div className="w-10">
-                          {agave.parent.iconUrl ? (
-                            <Image
-                              src={buildImageUrl(agave.parent.iconUrl)}
-                              alt="parent"
-                              width={40}
-                              height={40}
-                            />
-                          ) : (
-                            <NoImage />
-                          )}
-                        </div>
+                        <div className="w-10 text-center">-</div>
                       </div>
-                    </Link>
-                  ) : (
-                    <div className="text-black h-10 rounded-l-full bg-gray-500 flex flex-row justify-end items-center">
-                      <div className="text-xs mr-1 font-bold text-gray-700">
-                        親
+                    )}
+                    <Pups isMine={isMine} onLoading={handleLoadingChange}>
+                      <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
+                        <div className="text-xs mr-1 font-bold">子</div>
+                        <Image src={pup} alt="pup" width={40} height={40} />
                       </div>
-                      <div className="w-10 text-center">-</div>
-                    </div>
-                  )}
-                  <Pups isMine={isMine} onLoading={handleLoadingChange}>
-                    <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
-                      <div className="text-xs mr-1 font-bold">子</div>
-                      <Image src={pup} alt="pup" width={40} height={40} />
-                    </div>
-                  </Pups>
+                    </Pups>
+                  </div>
                 </div>
               </div>
+            </div>
+            <div className="bg-neutral-800">
+              {isMine && (
+                <div>
+                  <div className="grid grid-cols-1 gap-0">
+                    <label
+                      htmlFor="dropzone-file"
+                      className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    >
+                      <div className="flex flex-col items-center justify-center">
+                        <p className="m-2 text-sm text-gray-500">
+                          <AddImageSvg />
+                        </p>
+                      </div>
+                      <input
+                        id="dropzone-file"
+                        key={fileInputKey}
+                        type="file"
+                        accept=".jpeg, .jpg, .png"
+                        multiple
+                        onChange={handleChangeFiles}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {previewImages.length > 0 && (
+                    <Modal
+                      open={true}
+                      onOk={handleUpload}
+                      okText="投稿"
+                      okType="primary"
+                      onCancel={handlePreviewModalClose}
+                      cancelText="キャンセル"
+                    >
+                      <div className="flex flex-row mb-4 border-b-2 border-gray-500 w-48">
+                        <p className="flex flex-col justify-center w-16 text-gray-500 font-bold border-b">
+                          📷撮影日:
+                        </p>
+                        <Input
+                          className="w-32 p-1 bg-white rounded-lg border-none font-bold text-blue-500 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          type="date"
+                          defaultValue={new Date().toISOString().slice(0, 10)}
+                          max={new Date().toISOString().slice(0, 10)}
+                          onChange={(e) =>
+                            setShotDate(new Date(e.target.value))
+                          }
+                        />
+                      </div>
+                      <div className="flex overflow-x-auto whitespace-nowrap">
+                        {!loading &&
+                          previewImages.map((previewURL, index) => (
+                            <div
+                              key={index}
+                              className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+                              style={{ flex: "0 0 auto", height: "200px" }}
+                            >
+                              <AntdImage
+                                src={previewURL}
+                                alt={`Preview ${index}`}
+                                height={200}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    </Modal>
+                  )}
+                </div>
+              )}
+              {agave.images && (
+                <div className="grid grid-cols-3 gap-0 w-full h-full">
+                  {agave.images.map((image, index) => (
+                    <div key={index} className="p-px overflow-hidden">
+                      <Image
+                        src={buildImageUrl(image.url)}
+                        alt={`Image ${index}`}
+                        className="w-full h-full object-cover"
+                        onClick={() => handleImageClick(index)}
+                        width={200}
+                        height={200}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {agave && agave.images && selectedImageIndex !== null && (
+                <GalleryModal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  onDelete={handleDeleteImage}
+                  onSetIcon={handleSetIcon}
+                  getShareUrl={createShareUrl}
+                  items={convertToImageGalleryItems(agave.images)}
+                  startIndex={selectedImageIndex}
+                  isMine={isMine}
+                />
+              )}
+              <div className="h-16 w-full"></div>
             </div>
           </div>
-          {isMine && (
-            <div>
-              <div className="grid grid-cols-1 gap-0">
-                <label
-                  htmlFor="dropzone-file"
-                  className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="m-2 text-sm text-gray-500">
-                      <AddImageSvg />
-                    </p>
-                  </div>
-                  <input
-                    id="dropzone-file"
-                    key={fileInputKey}
-                    type="file"
-                    accept=".jpeg, .jpg, .png"
-                    multiple
-                    onChange={handleChangeFiles}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-              <div>
-                {previewImages.length > 0 && (
-                  <div>
-                    <div className="flex overflow-x-auto whitespace-nowrap">
-                      {!loading &&
-                        previewImages.map((previewURL, index) => (
-                          <div
-                            key={index}
-                            className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
-                            style={{ flex: "0 0 auto", width: "100px" }} // 固定サイズのスタイルを追加
-                          >
-                            <Image
-                              src={previewURL}
-                              alt={`Preview ${index}`}
-                              className="w-full h-full object-cover" // 画像を親要素に合わせて表示
-                              width={50}
-                              height={50}
-                            />
-                          </div>
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-1 gap-0">
-                      <button
-                        onClick={handleUpload}
-                        className="relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 focus:ring-1 focus:outline-none focus:ring-green-200"
-                      >
-                        <span className="m-2 text-xl text-white">
-                          <span>投稿</span>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          {agave.images && (
-            <div className="grid grid-cols-3 gap-0 w-full h-full">
-              {agave.images.map((image, index) => (
-                <div key={index} className="p-px overflow-hidden">
-                  <Image
-                    src={buildImageUrl(image.url)}
-                    alt={`Image ${index}`}
-                    className="w-full h-full object-cover"
-                    onClick={() => handleImageClick(index)}
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {agave && agave.images && selectedImageIndex !== null && (
-            <GalleryModal
-              isOpen={isModalOpen}
-              onClose={closeModal}
-              onDelete={handleDeleteImage}
-              onSetIcon={handleSetIcon}
-              getShareUrl={createShareUrl}
-              items={convertToImageGalleryItems(agave.images)}
-              startIndex={selectedImageIndex}
-              isMine={isMine}
-            />
-          )}
         </div>
       )}
     </div>

@@ -60,3 +60,10 @@ a {
 .floor {
   transform: rotateY(100px) translateZ(100px) translateX(80deg);
 }
+
+.ant-btn-primary{
+  background-color: #1890ff !important;
+  border-color: #1890ff !important;
+  color: white !important;
+  font-weight: bold !important;
+}

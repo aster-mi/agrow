@@ -226,7 +226,7 @@ const Page = () => {
               <NoImage />
             )}
           </div>
-          <div className="absolute">
+          <div className="absolute w-full">
             <div className="flex bg-black bg-opacity-50">
               <div className="w-2/12 flex justify-center">←</div>
               <div className="w-8/12 text-center">
@@ -352,12 +352,12 @@ const Page = () => {
                       onCancel={handlePreviewModalClose}
                       cancelText="キャンセル"
                     >
-                      <div className="flex flex-row mb-4 border-b-2 border-gray-500 w-48">
+                      <div className="flex flex-row mb-4 border-b-2 border-gray-500 w-52">
                         <p className="flex flex-col justify-center w-16 text-gray-500 font-bold border-b">
                           📷撮影日:
                         </p>
                         <Input
-                          className="w-32 p-1 bg-white rounded-lg border-none font-bold text-blue-500 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          className="w-36 bg-white rounded-lg border-none font-bold text-blue-500 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                           type="date"
                           defaultValue={new Date().toISOString().slice(0, 10)}
                           max={new Date().toISOString().slice(0, 10)}

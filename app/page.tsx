@@ -11,7 +11,10 @@ import Room from "./components/Room";
 export default function Page() {
   const session = useSession();
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-black">
+    <div
+      className="absolute top-0 left-0 flex flex-col items-center justify-center h-screen bg-black"
+      style={{ zIndex: "60" }}
+    >
       <Room />
       <div className="w-full p-3">
         <AgrowLogo />

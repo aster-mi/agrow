@@ -165,9 +165,9 @@ const Page = () => {
 
       setPreviewImages([]);
       setFileInputKey((prevKey) => prevKey + 1);
-      toast.success("画像アップロード完了");
+      toast.success("画像の投稿が完了しました");
     } catch (error) {
-      toast.error("画像アップロードに失敗しました");
+      toast.error("画像の投稿に失敗しました");
     } finally {
       setLoading(false);
     }

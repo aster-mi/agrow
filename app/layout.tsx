@@ -11,8 +11,8 @@ import Header from "./components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Agave",
-  description: "アガベ管理用サービスです。",
+  title: "Agrow",
+  description: "アガベの管理サービスです。",
 };
 
 export default function RootLayout({

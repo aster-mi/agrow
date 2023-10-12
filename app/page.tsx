@@ -12,7 +12,7 @@ export default function Page() {
   const session = useSession();
   return (
     <div
-      className="absolute top-0 left-0 flex flex-col items-center justify-center h-screen bg-black"
+      className="absolute top-0 left-0 flex flex-col items-center justify-center h-screen w-screen bg-black"
       style={{ zIndex: "60" }}
     >
       <Room />

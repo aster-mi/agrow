@@ -87,7 +87,7 @@ const BottomMenu = () => {
               data-tooltip-target="tooltip-profile"
               className="inline-flex flex-col items-center justify-center px-5 rounded-r-full"
             >
-              <Link href="/">
+              <Link href="/mypage">
                 <svg
                   className="w-6 h-6 mb-1 text-white hover:text-green-600"
                   aria-hidden="true"

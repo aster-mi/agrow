@@ -7,9 +7,26 @@ import Image from "next/image";
 import rackPng from "@/public/rack.png";
 import LoadingAnime from "./components/LoadingAnime";
 import Room from "./components/Room";
+import { useEffect, useState } from "react";
 
 export default function Page() {
-  const session = useSession();
+  const [userName, setUserName] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const refresh = () => {
+    setLoading(true);
+    fetch("/api/mypage")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.name) setUserName(data.name);
+      });
+    setLoading(false);
+  };
+
   return (
     <div
       className="absolute top-0 left-0 flex flex-col items-center justify-center h-screen w-screen bg-black"
@@ -22,13 +39,11 @@ export default function Page() {
 
       <div className="mt-10">
         <div className="mx-auto">
-          {session.status === "loading" ? (
+          {loading ? (
             <LoadingAnime />
-          ) : session.data ? (
+          ) : userName !== "" ? (
             <>
-              <div className="text-center m-3">
-                こんにちは {session.data.user?.name} さん
-              </div>
+              <div className="text-center m-3">こんにちは {userName} さん</div>
               <Link
                 href="/rack"
                 className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"

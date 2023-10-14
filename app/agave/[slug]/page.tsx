@@ -227,37 +227,42 @@ const Page = () => {
             )}
           </div>
           <div className="absolute w-full">
-            <div className="grid grid-cols-9 gap-1 bg-black bg-opacity-50">
-              {/* 戻るボタン */}
-              <div
-                className="text-center col-span-2"
-                onClick={() => router.push(`/rack?code=${agave.rack?.code}`)}
-              >
-                ←Rack
-              </div>
+            <div className="grid grid-cols-9 gap-1">
+              <div className="col-span-2"></div>
               {/* 名前 */}
               <div className="text-center col-span-5 bg-neutral-800 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
-                <p className="break-all">{agave.name}</p>
+                <p className="break-all mt-1">{agave.name}</p>
               </div>
-              {/* 水やり */}
-              <div>
-                <div className="w-8 h-8">
-                  <Image
-                    src={dotWatering}
-                    alt="watering"
-                    width={100}
-                    height={100}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
+              <div className="col-span-1"></div>
               {/* メニューボタン */}
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col justify-center rounded-full border border-neutral-500 h-8 w-8 mt-1">
                 <div className="flex flex-row justify-center">
                   <MenuButton
                     contents={
                       <>
                         <ShareButtons getUrl={() => currentURL} />
+                        {/* 戻るボタン */}
+                        <div
+                          className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
+                          onClick={() =>
+                            router.push(`/rack?code=${agave.rack?.code}`)
+                          }
+                        >
+                          ←Rack
+                        </div>
+                        {/* 水やり */}
+                        <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
+                          <div className="h-6 w-6">
+                            <Image
+                              src={dotWatering}
+                              alt="watering"
+                              width={100}
+                              height={100}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="text-blue-500">水やり管理</div>
+                        </div>
                         {isMine && (
                           <DeleteButton
                             onDelete={handleDeleteAgave}

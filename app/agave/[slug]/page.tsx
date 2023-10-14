@@ -227,21 +227,33 @@ const Page = () => {
             )}
           </div>
           <div className="absolute w-full">
-            <div className="flex bg-black bg-opacity-50">
-              <div className="w-2/12 flex justify-center">←</div>
-              <div className="w-8/12 text-center">
-                <p className="break-all p-2">{agave.name}</p>
+            <div className="grid grid-cols-9 gap-1 bg-black bg-opacity-50">
+              {/* 戻るボタン */}
+              <div
+                className="text-center col-span-2"
+                onClick={() => router.push(`/rack?code=${agave.rack?.code}`)}
+              >
+                ←Rack
               </div>
-              <div className="w-3/12 flex">
-                <div className="">
+              {/* 名前 */}
+              <div className="text-center col-span-5 bg-neutral-800 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
+                <p className="break-all">{agave.name}</p>
+              </div>
+              {/* 水やり */}
+              <div>
+                <div className="w-8 h-8">
                   <Image
                     src={dotWatering}
                     alt="watering"
                     width={100}
                     height={100}
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="text-right">
+              </div>
+              {/* メニューボタン */}
+              <div className="flex flex-col justify-center">
+                <div className="flex flex-row justify-center">
                   <MenuButton
                     contents={
                       <>
@@ -318,7 +330,7 @@ const Page = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-neutral-800">
+            <div className="bg-neutral-900 h-screen rounded-t-lg">
               {isMine && (
                 <div>
                   <div className="grid grid-cols-1 gap-0">

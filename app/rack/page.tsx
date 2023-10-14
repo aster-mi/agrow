@@ -1,24 +1,19 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";
-import { Card, Input, Modal, Progress, Row } from "antd"; // Import Progress component
-import Image from "next/image";
-import Link from "next/link";
-import NoImage from "@/app/components/NoImage";
+import { Card, Input, Modal, Row } from "antd";
 import { toast } from "react-toastify";
 import { RackPlanType } from "../type/RackPlanType";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { RackType } from "../type/RackType";
 import Loading from "../loading";
-import LoadingAnime from "../components/LoadingAnime";
 import positionSetting from "../utils/positionSetting";
 import Rack from "../components/Rack";
 import ModalButton from "../components/ModalButton";
 import SetAgave from "../components/SetAgave";
 
-const { Meta } = Card;
-
 export default function Page() {
+  const { code } = useParams();
   const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [rackPlans, setRackPlans] = useState<RackPlanType[]>([]);
   const [myRacks, setMyRacks] = useState<RackType[]>([]);
@@ -44,7 +39,8 @@ export default function Page() {
         setAllRacks(data);
         setSearchValue("");
         if (data.length > 0 && !openRack) {
-          setRackCode(data[0].code);
+          // url parameterのcodeの値がない場合は0番目のラックを開く
+          setRackCode(code || data[0].code);
           setOpenRack(true);
         }
       });

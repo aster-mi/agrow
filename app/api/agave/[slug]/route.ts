@@ -51,6 +51,7 @@ async function getAgave(slug: string) {
       },
       parent: true,
       pups: true,
+      rack: true,
     },
   });
   return agave;

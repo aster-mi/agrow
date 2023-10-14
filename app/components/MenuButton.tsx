@@ -35,7 +35,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ contents }) => {
 
   return (
     <>
-      <button onClick={handleMenuClick} className="p-3">
+      <button onClick={handleMenuClick}>
         <MenuDotsSvg />
       </button>
       <div>{menuContent}</div>

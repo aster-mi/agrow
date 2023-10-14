@@ -28,6 +28,7 @@ export const getAgave = async (slug: string): Promise<AgaveType> => {
     parentId: agave.parentId,
     parent: agave.parent,
     pups: agave.pups,
+    rack: agave.rack,
     images: agave.agaveImages.map((image: any) => image), // images プロパティを url の配列に変換
   };
   return result;

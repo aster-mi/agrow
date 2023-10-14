@@ -92,7 +92,7 @@ model Agave {
   parentId     Int?
   pups         Agave[]        @relation("ParentPup")
   parent       Agave?         @relation("ParentPup", fields: [parentId], references: [id])
-  shortLink    ShortLink?
+  shortLinks   ShortLink[]
   rackPosition Int?
   rackCode     String?
   rack         Rack?          @relation(fields: [rackCode], references: [code])
@@ -118,9 +118,9 @@ model TagsOnAgaves {
 }
 
 model ShortLink {
-  link    String @id @unique
-  agaveId Int    @unique
-  agave   Agave  @relation(fields: [agaveId], references: [id])
+  link      String  @id @unique @default(cuid())
+  agaveSlug String?
+  agave     Agave?  @relation(fields: [agaveSlug], references: [slug])
 }
 
 model User {
@@ -141,6 +141,7 @@ model User {
   sessions      Session[]
   AgaveImages   AgaveImage[]
   racks         Rack[]
+  isAdmin       Boolean      @default(false)
 }
 
 model Follow {

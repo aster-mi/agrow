@@ -7,13 +7,13 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(nextAuthOptions);
-  const publicId = session!.user!.publicId;
-  const agaves = await getAgaves(publicId);
+  const id = session!.user!.id;
+  const agaves = await getAgaves(id);
   return NextResponse.json(agaves);
 }
 
-async function getAgaves(publicId: string) {
-  const result = await prisma.user.findUnique({
+async function getAgaves(id: string) {
+  const result = await prisma.user.findUniqueOrThrow({
     select: {
       ownedAgaves: {
         orderBy: [
@@ -36,7 +36,7 @@ async function getAgaves(publicId: string) {
       publicId: true,
     },
     where: {
-      publicId: publicId,
+      id: id,
     },
   });
   return result;

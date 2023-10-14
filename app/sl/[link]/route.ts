@@ -9,9 +9,17 @@ export async function GET(
 ) {
   try {
     const slug = await getSlug(params.link);
-    const path = new URL("/agave/" + slug, request.url);
-    return NextResponse.redirect(path);
+    if (slug === undefined || slug === null) {
+      // アガベ未登録
+      return NextResponse.redirect(
+        new URL(`/sl/${params.link}/set`, request.url)
+      );
+    }
+    // 登録済みのアガベ
+    return NextResponse.redirect(new URL("/agave/" + slug, request.url));
   } catch (e) {
+    console.log(e);
+    // 無効なshortLink
     return NextResponse.redirect(new URL("/", request.url));
   }
 }
@@ -21,7 +29,7 @@ async function getSlug(link: string) {
     where: {
       link: link,
     },
-    include: {
+    select: {
       agave: {
         select: {
           slug: true,
@@ -29,5 +37,5 @@ async function getSlug(link: string) {
       },
     },
   });
-  return shortLink.agave.slug;
+  return shortLink.agave?.slug;
 }

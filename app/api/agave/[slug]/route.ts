@@ -49,7 +49,6 @@ async function getAgave(slug: string) {
           shotDate: "desc",
         },
       },
-      shortLink: true,
       parent: true,
       pups: true,
     },

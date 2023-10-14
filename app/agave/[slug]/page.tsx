@@ -336,102 +336,105 @@ const Page = () => {
               </div>
             </div>
             <div className="bg-neutral-900 h-screen rounded-t-lg">
-              {isMine && (
-                <div>
-                  <div className="grid grid-cols-1 gap-0">
-                    <label
-                      htmlFor="dropzone-file"
-                      className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                    >
-                      <div className="flex flex-col items-center justify-center">
-                        <p className="m-2 text-sm text-gray-500">
-                          <AddImageSvg />
-                        </p>
-                      </div>
-                      <input
-                        id="dropzone-file"
-                        key={fileInputKey}
-                        type="file"
-                        accept=".jpeg, .jpg, .png"
-                        multiple
-                        onChange={handleChangeFiles}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
+              <div>
+                {" "}
+                {isMine && (
+                  <div>
+                    <div className="grid grid-cols-1 gap-0">
+                      <label
+                        htmlFor="dropzone-file"
+                        className="border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                      >
+                        <div className="flex flex-col items-center justify-center">
+                          <p className="m-2 text-sm text-gray-500">
+                            <AddImageSvg />
+                          </p>
+                        </div>
+                        <input
+                          id="dropzone-file"
+                          key={fileInputKey}
+                          type="file"
+                          accept=".jpeg, .jpg, .png"
+                          multiple
+                          onChange={handleChangeFiles}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
 
-                  {previewImages.length > 0 && (
-                    <Modal
-                      open={true}
-                      onOk={handleUpload}
-                      okText="投稿"
-                      okType="primary"
-                      onCancel={handlePreviewModalClose}
-                      cancelText="キャンセル"
-                    >
-                      <div className="flex flex-row mb-4 border-b-2 border-gray-500 w-52">
-                        <p className="flex flex-col justify-center w-16 text-gray-500 font-bold border-b">
-                          📷撮影日:
-                        </p>
-                        <Input
-                          className="w-36 bg-white rounded-lg border-none font-bold text-blue-500 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          type="date"
-                          defaultValue={new Date().toISOString().slice(0, 10)}
-                          max={new Date().toISOString().slice(0, 10)}
-                          onChange={(e) =>
-                            setShotDate(new Date(e.target.value))
-                          }
+                    {previewImages.length > 0 && (
+                      <Modal
+                        open={true}
+                        onOk={handleUpload}
+                        okText="投稿"
+                        okType="primary"
+                        onCancel={handlePreviewModalClose}
+                        cancelText="キャンセル"
+                      >
+                        <div className="flex flex-row mb-4 border-b-2 border-gray-500 w-52">
+                          <p className="flex flex-col justify-center w-16 text-gray-500 font-bold border-b">
+                            📷撮影日:
+                          </p>
+                          <Input
+                            className="w-36 bg-white rounded-lg border-none font-bold text-blue-500 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            type="date"
+                            defaultValue={new Date().toISOString().slice(0, 10)}
+                            max={new Date().toISOString().slice(0, 10)}
+                            onChange={(e) =>
+                              setShotDate(new Date(e.target.value))
+                            }
+                          />
+                        </div>
+                        <div className="flex overflow-x-auto whitespace-nowrap">
+                          {!loading &&
+                            previewImages.map((previewURL, index) => (
+                              <div
+                                key={index}
+                                className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
+                                style={{ flex: "0 0 auto", height: "200px" }}
+                              >
+                                <AntdImage
+                                  src={previewURL}
+                                  alt={`Preview ${index}`}
+                                  height={200}
+                                />
+                              </div>
+                            ))}
+                        </div>
+                      </Modal>
+                    )}
+                  </div>
+                )}
+                {agave.images && (
+                  <div className="grid grid-cols-3 gap-0 w-full h-full">
+                    {agave.images.map((image, index) => (
+                      <div key={index} className="p-px overflow-hidden">
+                        <Image
+                          src={buildImageUrl(image.url)}
+                          alt={`Image ${index}`}
+                          className="w-full h-full object-cover"
+                          onClick={() => handleImageClick(index)}
+                          width={200}
+                          height={200}
                         />
                       </div>
-                      <div className="flex overflow-x-auto whitespace-nowrap">
-                        {!loading &&
-                          previewImages.map((previewURL, index) => (
-                            <div
-                              key={index}
-                              className="mr-4 max-w-xs overflow-hidden rounded shadow-lg"
-                              style={{ flex: "0 0 auto", height: "200px" }}
-                            >
-                              <AntdImage
-                                src={previewURL}
-                                alt={`Preview ${index}`}
-                                height={200}
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    </Modal>
-                  )}
-                </div>
-              )}
-              {agave.images && (
-                <div className="grid grid-cols-3 gap-0 w-full h-full">
-                  {agave.images.map((image, index) => (
-                    <div key={index} className="p-px overflow-hidden">
-                      <Image
-                        src={buildImageUrl(image.url)}
-                        alt={`Image ${index}`}
-                        className="w-full h-full object-cover"
-                        onClick={() => handleImageClick(index)}
-                        width={200}
-                        height={200}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-              {agave && agave.images && selectedImageIndex !== null && (
-                <GalleryModal
-                  isOpen={isModalOpen}
-                  onClose={closeModal}
-                  onDelete={handleDeleteImage}
-                  onSetIcon={handleSetIcon}
-                  getShareUrl={createShareUrl}
-                  items={convertToImageGalleryItems(agave.images)}
-                  startIndex={selectedImageIndex}
-                  isMine={isMine}
-                />
-              )}
-              <div className="h-16 w-full"></div>
+                    ))}
+                  </div>
+                )}
+                {agave && agave.images && selectedImageIndex !== null && (
+                  <GalleryModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onDelete={handleDeleteImage}
+                    onSetIcon={handleSetIcon}
+                    getShareUrl={createShareUrl}
+                    items={convertToImageGalleryItems(agave.images)}
+                    startIndex={selectedImageIndex}
+                    isMine={isMine}
+                  />
+                )}
+                <div className="h-16 w-full"></div>
+              </div>
             </div>
           </div>
         </div>

@@ -33,6 +33,7 @@ export default function Page() {
       <div className="flex flex-wrap">
         {slList.map((sl) => (
           <div
+            key={sl}
             className="bg-white p-3 m-3 rounded text-gray-800 text-center cursor-pointer hover:bg-gray-100 hover:"
             onClick={() => {
               navigator.clipboard.writeText(sl);

@@ -56,7 +56,6 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
 
     const agave = await addAgave({
       name: pupName,
-      ownerId: session.data?.user?.id,
       parentId: parent.id,
     });
     const newDataSource = [agave, ...dataSource];

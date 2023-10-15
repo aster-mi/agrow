@@ -32,6 +32,8 @@ import dotWatering from "@/public/dotWatering.png";
 import { useSession } from "next-auth/react";
 import Pups from "@/app/components/Pups";
 import { Modal, Image as AntdImage, Input } from "antd";
+import EditAgave from "@/app/components/EditAgave";
+import { UserType } from "@/app/type/UserType";
 
 const Page = () => {
   const { slug } = useParams();
@@ -46,6 +48,8 @@ const Page = () => {
     null
   );
   const [loading, setLoading] = useState<boolean>(true);
+  const [editing, setEditing] = useState<boolean>(false);
+
   const router = useRouter();
 
   const currentURL = process.env.NEXT_PUBLIC_APP_BASE_URL + usePathname();
@@ -89,8 +93,8 @@ const Page = () => {
   }, [fileInputKey, slug]);
 
   useEffect(() => {
-    setIsMine(agave?.ownerId === session.data?.user?.id);
-  }, [agave?.ownerId, session.data?.user?.id]);
+    setIsMine(agave?.owner?.id === session.data?.user?.id);
+  }, [agave?.owner?.id, session.data?.user?.id]);
 
   const handleChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -227,19 +231,29 @@ const Page = () => {
             )}
           </div>
           <div className="absolute w-full">
-            <div className="grid grid-cols-9 gap-1">
-              <div className="col-span-2"></div>
+            <div className="grid grid-cols-9 gap-0">
+              <div className="col-span-1"></div>
               {/* 名前 */}
-              <div className="text-center col-span-5 bg-neutral-800 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
+              <div className="text-center col-span-7 bg-neutral-800 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
                 <p className="break-all mt-1">{agave.name}</p>
               </div>
-              <div className="col-span-1"></div>
+
               {/* メニューボタン */}
-              <div className="flex flex-col justify-center rounded-full border border-neutral-500 h-8 w-8 mt-1">
+              <div className="flex flex-col justify-center rounded-full border-2 border-neutral-500 h-8 w-8 mt-1 ml-1">
                 <div className="flex flex-row justify-center">
                   <MenuButton
                     contents={
                       <>
+                        {/* 編集 */}
+                        <div
+                          className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
+                          onClick={() => {
+                            setEditing(true);
+                          }}
+                        >
+                          編集
+                        </div>
+                        {/* 共有 */}
                         <ShareButtons getUrl={() => currentURL} />
                         {/* 戻るボタン */}
                         <div
@@ -276,23 +290,33 @@ const Page = () => {
                 </div>
               </div>
             </div>
-            {/* TODO */}
-            <div>
-              <div className="flex">
-                <TagSvg />
-                チタノタ
-              </div>
-              {agave.description && (
-                <div
-                  style={{ whiteSpace: "pre-wrap" }}
-                >{`${agave.description}`}</div>
-              )}
-            </div>
+
             <div className="flex my-2">
               <div className="w-5/6">
-                <div>
-                  <p>オーナー: {agave.ownerName}</p>
-                </div>
+                {/* owner */}
+                {agave.owner && (
+                  <div className="flex flex-row w-full overflow-hidden m-1">
+                    <div className="w-8 h-8 rounded-full overflow-hidden mr-1">
+                      <img
+                        src={buildImageUrl(agave.owner.image!)}
+                        alt="User avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-xs">
+                        @{agave.owner.publicId}
+                      </div>
+                      <div className="text-xs">{agave.owner.name}</div>
+                    </div>
+                  </div>
+                )}
+                {agave.description && (
+                  <div
+                    className="m-1"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >{`${agave.description}`}</div>
+                )}
               </div>
               <div className="w-1/6">
                 <div className="flex flex-row-reverse">
@@ -334,6 +358,21 @@ const Page = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div>
+              {agave.tags && (
+                <div className="flex flex-row overflow-x-scroll w-full py-3">
+                  {agave.tags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="flex flex-row pr-2 mx-1 rounded-full border-2 border-gray-200 text-gray-200 bg-black bg-opacity-50 whitespace-nowrap"
+                    >
+                      <TagSvg />
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="bg-neutral-900 h-screen rounded-t-lg">
               <div>
@@ -431,6 +470,17 @@ const Page = () => {
                     items={convertToImageGalleryItems(agave.images)}
                     startIndex={selectedImageIndex}
                     isMine={isMine}
+                  />
+                )}
+                {editing && (
+                  <EditAgave
+                    target={agave}
+                    onLoading={setLoading}
+                    onUpdated={() => {
+                      setEditing(false);
+                      fetchData();
+                    }}
+                    onCanceled={() => setEditing(false)}
                   />
                 )}
                 <div className="h-16 w-full"></div>

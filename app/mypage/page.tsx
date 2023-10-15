@@ -58,8 +58,8 @@ export default function Page() {
 
   const handleEdit = () => {
     setIsEditing(true);
-    setNewName(user.name);
-    setNewPublicId(user.publicId);
+    setNewName(user.name!);
+    setNewPublicId(user.publicId!);
   };
 
   const handleCancel = () => {

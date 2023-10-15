@@ -1,5 +1,6 @@
 import { ImageType } from "./ImageType";
 import { RackType } from "./RackType";
+import { UserType } from "./UserType";
 
 export interface AgaveType {
   id?: number;
@@ -8,12 +9,12 @@ export interface AgaveType {
   description?: string;
   iconUrl?: string;
   images?: ImageType[];
-  ownerId?: string;
-  ownerName?: string;
+  owner?: UserType;
   parentId?: number;
   parent?: AgaveType;
   rackPosition?: number;
   rackCode?: string;
+  tags?: string[];
   pups?: AgaveType[];
   rack?: RackType;
 }

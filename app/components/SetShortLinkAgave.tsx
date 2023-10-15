@@ -58,7 +58,6 @@ const SetShortLinkAgave = ({ link, onLoading, onUpdate }: SetProps) => {
     const agave = await addAgave({
       name: agaveName,
       description: agaveDescription,
-      ownerId: session?.user?.id,
     });
     handleSetAgaveClick(agave.slug!);
     onLoading(false);

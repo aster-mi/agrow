@@ -1,5 +1,6 @@
 export interface UserType {
-  name: string;
-  image: string;
-  publicId: string;
+  id?: string;
+  name?: string;
+  image?: string;
+  publicId?: string;
 }

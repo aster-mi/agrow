@@ -59,7 +59,6 @@ const SetAgave = ({
     const agave = await addAgave({
       name: agaveName,
       description: agaveDescription,
-      ownerId: session?.user?.id,
       rackCode: rack.toString(),
       rackPosition: parseInt(position.toString()),
     });

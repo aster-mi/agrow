@@ -1,4 +1,5 @@
 import { AgaveType } from "../type/AgaveType";
+import { UserType } from "../type/UserType";
 
 const baseUrl = "/api/agave";
 
@@ -23,12 +24,12 @@ export const getAgave = async (slug: string): Promise<AgaveType> => {
     name: agave.name,
     description: agave.description,
     iconUrl: agave.iconUrl,
-    ownerName: agave.owner?.name,
-    ownerId: agave.ownerId,
+    owner: agave.owner,
     parentId: agave.parentId,
     parent: agave.parent,
     pups: agave.pups,
     rack: agave.rack,
+    tags: agave.tags.map((arg: any) => arg.tag.name), // tags プロパティを name の配列に変換
     images: agave.agaveImages.map((image: any) => image), // images プロパティを url の配列に変換
   };
   return result;

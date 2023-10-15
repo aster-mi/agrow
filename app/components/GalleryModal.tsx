@@ -7,7 +7,8 @@ import ShareButtons from "./ShareButtons";
 import DeleteButton from "./DeleteButton";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import { Fragment, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface GalleryModalProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   const galleryRef = useRef<Gallery>(null);
   const [playSlideShow, setPlaySlideShow] = useState(false);
   const [imageOnly, setImageOnly] = useState(false);
+  const router = useRouter();
   const focusRef = useRef(null);
 
   const getCurrentIndex = () => {
@@ -53,13 +55,13 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   };
 
   const handleGetShareButtonUrl = () => {
-    onClose();
+    handleClose();
     return getShareUrl(getCurrentIndex());
   };
 
   const handleSetIcon = () => {
     onSetIcon!(getCurrentIndex());
-    onClose();
+    handleClose();
   };
 
   const startSlideShow = () => {
@@ -79,7 +81,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
   const handleDeleteImage = async () => {
     onDelete!(getCurrentIndex());
-    onClose();
+    handleClose();
   };
 
   const downloadImage = () => {
@@ -106,84 +108,91 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
       });
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    window.history.pushState(null, "", null);
+    window.addEventListener("popstate", onClose);
+    console.log("push");
+  }, [isOpen]);
+
+  const handleClose = () => {
+    router.back();
+  };
+
   return (
-    <div>
-      <Dialog
-        as="div"
-        className="fixed inset-0 z-50 backdrop-blur-2xl"
-        onClose={() => {}}
-        open={isOpen}
-        initialFocus={focusRef}
+    <Dialog
+      as="div"
+      className="fixed inset-0 z-50 backdrop-blur-2xl"
+      onClose={() => {}}
+      open={isOpen}
+      initialFocus={focusRef}
+    >
+      <div
+        className="flex justify-center items-center h-screen"
+        onClick={handleClose}
+        ref={focusRef}
       >
-        <div
-          className="flex justify-center items-center h-screen"
-          onClick={onClose}
-          ref={focusRef}
-        >
-          {items && (
-            <div onClick={(e) => e.stopPropagation()} className="w-full">
-              <Gallery
-                items={items}
-                showBullets={false}
-                showThumbnails={!imageOnly}
-                showNav={!imageOnly}
-                showFullscreenButton={false}
-                showPlayButton={false}
-                thumbnailPosition={"bottom"}
-                slideDuration={200}
-                slideInterval={2000}
-                startIndex={startIndex}
-                ref={galleryRef}
-                onClick={() => {
-                  stopSlideShow();
-                  setImageOnly(!imageOnly);
-                }}
-              />
-            </div>
-          )}
-        </div>
-        {!imageOnly && (
-          <div onClick={handleChildClick}>
-            <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
-              <div className="left-0 p-3">
-                <button onClick={onClose}>←</button>
-              </div>
-              <div className="left-0 p-3">
-                <button onClick={downloadImage}>
-                  <DownloadSvg />
-                </button>
-              </div>
-              <div className="left-0 p-3">
-                <button onClick={startSlideShow}>▶️</button>
-              </div>
-              {isMine && (
-                <>
-                  <div className="left-0 p-3">
-                    {onSetIcon && (
-                      <button onClick={handleSetIcon}>Icon化</button>
-                    )}
-                  </div>
-                  <div className="left-0 p-3">
-                    {onDelete && (
-                      <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
-                    )}
-                  </div>
-                </>
-              )}
-              <div className="right-0">
-                <MenuButton
-                  contents={
-                    <>
-                      <ShareButtons getUrl={handleGetShareButtonUrl} />
-                    </>
-                  }
-                />
-              </div>
-            </div>
+        {items && (
+          <div onClick={(e) => e.stopPropagation()} className="w-full">
+            <Gallery
+              items={items}
+              showBullets={false}
+              showThumbnails={!imageOnly}
+              showNav={!imageOnly}
+              showFullscreenButton={false}
+              showPlayButton={false}
+              thumbnailPosition={"bottom"}
+              slideDuration={200}
+              slideInterval={2000}
+              startIndex={startIndex}
+              ref={galleryRef}
+              onClick={() => {
+                stopSlideShow();
+                setImageOnly(!imageOnly);
+              }}
+            />
           </div>
         )}
-      </Dialog>
-    </div>
+      </div>
+      {!imageOnly && (
+        <div onClick={handleChildClick}>
+          <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
+            <div className="left-0 p-3">
+              <button onClick={handleClose}>←</button>
+            </div>
+            <div className="left-0 p-3">
+              <button onClick={downloadImage}>
+                <DownloadSvg />
+              </button>
+            </div>
+            <div className="left-0 p-3">
+              <button onClick={startSlideShow}>▶️</button>
+            </div>
+            {isMine && (
+              <>
+                <div className="left-0 p-3">
+                  {onSetIcon && <button onClick={handleSetIcon}>Icon化</button>}
+                </div>
+                <div className="left-0 p-3">
+                  {onDelete && (
+                    <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
+                  )}
+                </div>
+              </>
+            )}
+            <div className="right-0">
+              <MenuButton
+                contents={
+                  <>
+                    <ShareButtons getUrl={handleGetShareButtonUrl} />
+                  </>
+                }
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </Dialog>
   );
 };
 

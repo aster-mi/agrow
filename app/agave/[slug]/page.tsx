@@ -244,45 +244,47 @@ const Page = () => {
                   <MenuButton
                     contents={
                       <>
-                        {/* 編集 */}
-                        <div
-                          className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
-                          onClick={() => {
-                            setEditing(true);
-                          }}
-                        >
-                          編集
-                        </div>
                         {/* 共有 */}
                         <ShareButtons getUrl={() => currentURL} />
-                        {/* 戻るボタン */}
-                        <div
-                          className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
-                          onClick={() =>
-                            router.push(`/rack?code=${agave.rack?.code}`)
-                          }
-                        >
-                          ←Rack
-                        </div>
-                        {/* 水やり */}
-                        <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
-                          <div className="h-6 w-6">
-                            <Image
-                              src={dotWatering}
-                              alt="watering"
-                              width={100}
-                              height={100}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="text-blue-500">水やり管理</div>
-                        </div>
                         {isMine && (
-                          <DeleteButton
-                            onDelete={handleDeleteAgave}
-                            title={"株を削除"}
-                            buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
-                          />
+                          <>
+                            {/* 編集 */}
+                            <div
+                              className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
+                              onClick={() => {
+                                setEditing(true);
+                              }}
+                            >
+                              編集
+                            </div>
+                            {/* 戻るボタン */}
+                            <div
+                              className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
+                              onClick={() =>
+                                router.push(`/rack?code=${agave.rack?.code}`)
+                              }
+                            >
+                              ラックを見る
+                            </div>
+                            {/* 水やり */}
+                            <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
+                              <div className="h-6 w-6">
+                                <Image
+                                  src={dotWatering}
+                                  alt="watering"
+                                  width={100}
+                                  height={100}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="text-blue-500">水やり管理</div>
+                            </div>
+                            <DeleteButton
+                              onDelete={handleDeleteAgave}
+                              title={"株を削除"}
+                              buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
+                            />
+                          </>
                         )}
                       </>
                     }

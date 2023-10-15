@@ -118,10 +118,7 @@ export default function Page() {
             <div className="text-center text-lg font-bold p-2 text-neutral-700">
               所持しているラック
             </div>
-            <div
-              className="flex flex-row px-24"
-              style={{ overflowX: "scroll" }}
-            >
+            <div className="flex flex-row px-2 pb-10 overflow-x-scroll">
               {myRacks &&
                 myRacks.map((rack) => (
                   <div
@@ -135,7 +132,7 @@ export default function Page() {
                   >
                     <div
                       className={
-                        "w-20 h-36 shadow-m flex flex-col justify-end mb-3 " +
+                        "w-20 h-48 shadow-m flex flex-col justify-end mb-3 " +
                         (rackCode === rack.code
                           ? "border-2 border-yellow-300 bg-yellow-50"
                           : "border")
@@ -172,7 +169,7 @@ export default function Page() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex-wrap w-20 text-xs">
+                        <div className="flex-wrap w-20 text-xs h-10">
                           {rack.name}
                         </div>
                       </div>

@@ -8,15 +8,34 @@ import rackPng from "@/public/rack.png";
 import LoadingAnime from "./components/LoadingAnime";
 import Room from "./components/Room";
 import { useEffect, useState } from "react";
-import Session from "next-auth";
+import { Modal } from "antd";
+import fromNow from "./utils/fromNow";
 
 export default function Page() {
   const session = useSession();
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [newsList, setNewsList] = useState<News[]>([]);
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
+
+  interface News {
+    id: number;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+  }
 
   useEffect(() => {
     refresh();
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/news")
+      .then((res) => res.json())
+      .then((data) => {
+        setNewsList(data);
+      });
   }, []);
 
   const refresh = () => {
@@ -83,6 +102,33 @@ export default function Page() {
             </>
           )}
         </div>
+      </div>
+      <Modal
+        open={selectedNews !== null}
+        onCancel={() => setSelectedNews(null)}
+        footer={null}
+      >
+        <h1>{selectedNews?.title}</h1>
+        <div>{selectedNews?.content}</div>
+        <div className="text-right text-sm text-gray-500">
+          {fromNow(selectedNews?.createdAt)}
+        </div>
+      </Modal>
+
+      <div className="mt-10">- NEWS -</div>
+      <div className="w-full bg-black">
+        {newsList.map((news) => (
+          <div
+            key={news.id}
+            onClick={() => setSelectedNews(news)}
+            className="flex flex-row justify-between border border-gray-500 text-white p-1 rounded"
+          >
+            <div>{news.title}</div>
+            <div className="text-right text-sm text-gray-500">
+              {fromNow(news.createdAt)}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

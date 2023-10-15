@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { nextAuthOptions } from "../../../auth/[...nextauth]/route";
+
+const prisma = new PrismaClient();
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(nextAuthOptions);
+  if (!session?.user?.id) {
+    return new NextResponse(null, { status: 403 });
+  }
+  const isAdmin = (await getUser(session?.user?.id)).isAdmin;
+  if (!isAdmin) {
+    return new NextResponse(null, { status: 403 });
+  }
+  const body = await request.json();
+  return new NextResponse(JSON.stringify(await updateNews(params.id, body)));
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(nextAuthOptions);
+  if (!session?.user?.id) {
+    return new NextResponse(null, { status: 403 });
+  }
+  const isAdmin = (await getUser(session?.user?.id)).isAdmin;
+  if (!isAdmin) {
+    return new NextResponse(null, { status: 403 });
+  }
+  return new NextResponse(JSON.stringify(await deleteNews(params.id)));
+}
+
+async function getUser(userId: string) {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    select: {
+      isAdmin: true,
+    },
+  });
+  return user;
+}
+
+async function updateNews(id: string, body: any) {
+  const news = await prisma.news.update({
+    where: {
+      id: parseInt(id),
+    },
+    data: {
+      title: body.title,
+      content: body.content,
+    },
+  });
+  return news;
+}
+
+async function deleteNews(id: string) {
+  const news = await prisma.news.delete({
+    where: {
+      id: parseInt(id),
+    },
+  });
+  return news;
+}

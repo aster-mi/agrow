@@ -23,6 +23,7 @@
     "auth": "^0.0.9",
     "autoprefixer": "10.4.15",
     "blueimp-load-image": "^5.16.0",
+    "date-fns": "^2.30.0",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
     "flowbite": "^1.8.1",

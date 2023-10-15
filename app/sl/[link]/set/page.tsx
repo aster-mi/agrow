@@ -23,13 +23,14 @@ export default function Page() {
         <Loading />
       ) : (
         <div>
-          {session.status === "authenticated" ? (
+          {session.status === "authenticated" && (
             <SetShortLinkAgave
               link={link as string}
               onLoading={setLoading}
               onUpdate={handleUpdate}
             />
-          ) : (
+          )}
+          {session.status === "unauthenticated" && (
             <div>
               <div className="text-gray-200">
                 まずはこちらからログインしてください

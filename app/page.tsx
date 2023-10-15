@@ -8,8 +8,10 @@ import rackPng from "@/public/rack.png";
 import LoadingAnime from "./components/LoadingAnime";
 import Room from "./components/Room";
 import { useEffect, useState } from "react";
+import Session from "next-auth";
 
 export default function Page() {
+  const session = useSession();
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -41,32 +43,43 @@ export default function Page() {
         <div className="mx-auto">
           {loading ? (
             <LoadingAnime />
-          ) : userName !== "" ? (
-            <>
-              <div className="text-center m-3">こんにちは {userName} さん</div>
-              <Link
-                href="/rack"
-                className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
-              >
-                <Image
-                  src={rackPng}
-                  width={100}
-                  alt="rack"
-                  style={{ width: "25px", height: "25px" }}
-                />
-                <div className="text-xl ml-1 font-bold">ラックを確認する</div>
-              </Link>
-            </>
           ) : (
             <>
-              <h1 className="text-2xl font-bold">ようこそ、 Agrow へ</h1>
-              <p className="text-gray-400">こちらからログインしてください</p>
-              <button
-                className="w-full rounded-none border-none bg-green-500 text-white font-bold p-2 mt-5"
-                onClick={() => signIn()}
-              >
-                ログイン
-              </button>
+              {userName !== "" && session.status === "authenticated" && (
+                <>
+                  <div className="text-center m-3">
+                    こんにちは {userName} さん
+                  </div>
+                  <Link
+                    href="/rack"
+                    className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
+                  >
+                    <Image
+                      src={rackPng}
+                      width={100}
+                      alt="rack"
+                      style={{ width: "25px", height: "25px" }}
+                    />
+                    <div className="text-xl ml-1 font-bold">
+                      ラックを確認する
+                    </div>
+                  </Link>
+                </>
+              )}
+              {session.status === "unauthenticated" && (
+                <>
+                  <h1 className="text-2xl font-bold">ようこそ、 Agrow へ</h1>
+                  <p className="text-gray-400">
+                    こちらからログインしてください
+                  </p>
+                  <button
+                    className="w-full rounded-none border-none bg-green-500 text-white font-bold p-2 mt-5"
+                    onClick={() => signIn()}
+                  >
+                    ログイン
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>

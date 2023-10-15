@@ -6,10 +6,10 @@ import rackPng from "@/public/rack.png";
 import { useSession } from "next-auth/react";
 
 const BottomMenu = () => {
-  const { data: session } = useSession();
+  const session = useSession();
   return (
     <>
-      {session && (
+      {session.status === "authenticated" && (
         <div className="fixed z-50 w-full h-14 max-w-lg -translate-x-1/2 backdrop-blur-sm bg-black bg-opacity-50 rounded-full bottom-2 left-1/2">
           <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
             <div

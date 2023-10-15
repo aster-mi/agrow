@@ -10,6 +10,7 @@ import buildImageUrl from "../utils/buildImageUrl";
 import Loading from "../loading";
 import compressImage from "../utils/compressImage";
 import { UserType } from "../type/UserType";
+import { signOut } from "next-auth/react";
 
 export default function Page() {
   const [user, setUser] = useState<UserType>({
@@ -276,6 +277,9 @@ export default function Page() {
           )}
         </div>
       )}
+      <button className="text-red" onClick={() => signOut()}>
+        ログアウト
+      </button>
     </div>
   );
 }

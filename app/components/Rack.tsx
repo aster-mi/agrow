@@ -37,6 +37,7 @@ const Rack = ({
 
   useEffect(() => {
     if (rack === "") return;
+    setIsEditing(false);
     refreshRack();
   }, [rack]);
 
@@ -44,6 +45,7 @@ const Rack = ({
     if (!refresh) return;
     refreshRack();
     onRefreshed();
+    setIsEditing(false);
   }, [refresh]);
 
   const refreshRack = async () => {
@@ -66,6 +68,10 @@ const Rack = ({
     onLoading(true);
     try {
       setIsEditing(false);
+      if (rackName === "" || rackName === rackData!.name) {
+        setRackName(rackData!.name!);
+        return;
+      }
       const response = await fetch(`/api/rack/${rack}`, {
         method: "PUT",
         headers: {

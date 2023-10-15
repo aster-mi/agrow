@@ -257,15 +257,6 @@ const Page = () => {
                             >
                               編集
                             </div>
-                            {/* 戻るボタン */}
-                            <div
-                              className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
-                              onClick={() =>
-                                router.push(`/rack?code=${agave.rack?.code}`)
-                              }
-                            >
-                              ラックを見る
-                            </div>
                             {/* 水やり */}
                             <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
                               <div className="h-6 w-6">

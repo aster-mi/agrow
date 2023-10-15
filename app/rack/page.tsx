@@ -13,7 +13,6 @@ import ModalButton from "../components/ModalButton";
 import SetAgave from "../components/SetAgave";
 
 export default function Page() {
-  const { code } = useParams();
   const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [rackPlans, setRackPlans] = useState<RackPlanType[]>([]);
   const [myRacks, setMyRacks] = useState<RackType[]>([]);
@@ -38,11 +37,17 @@ export default function Page() {
         setMyRacks(data);
         setAllRacks(data);
         setSearchValue("");
-        if (data.length > 0 && !openRack) {
-          // url parameterのcodeの値がない場合は0番目のラックを開く
-          setRackCode(code || data[0].code);
-          setOpenRack(true);
+        const openedRackCode = sessionStorage.getItem("openedRackCode");
+        if (openedRackCode) {
+          // sessionStorageに開いているラックのcodeがある場合はそのラックを開く
+          setRackCode(openedRackCode);
+        } else {
+          // ない場合は0番目のラックを開く
+          const rackCode = data[0].code;
+          setRackCode(rackCode);
+          sessionStorage.setItem("openedRackCode", rackCode);
         }
+        setOpenRack(true);
       });
   };
 
@@ -64,6 +69,8 @@ export default function Page() {
     fetchMyRack();
     setIsModalVisible(false);
     toast.success("ラックを追加しました");
+    sessionStorage.setItem("openedRackCode", code);
+    setRackCode(code);
   };
 
   const showModal = () => {
@@ -120,6 +127,7 @@ export default function Page() {
                   <div
                     key={rack.code}
                     onClick={() => {
+                      sessionStorage.setItem("openedRackCode", rack.code);
                       setRackCode(rack.code);
                       setOpenRack(true);
                       setRacksVisible(true);

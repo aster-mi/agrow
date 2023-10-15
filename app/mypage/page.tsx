@@ -74,10 +74,20 @@ export default function Page() {
     try {
       // validate publicId
       if (newPublicId && newPublicId !== user.publicId) {
+        // 文字数
         if (newPublicId.length < 5 || newPublicId.length > 20) {
           toast.error("ユーザーIDは5~20文字の間で設定してください");
           return;
         }
+        // 形式 (半角英数字とアンダースコアのみ)
+        if (!newPublicId.match(/^[a-zA-Z0-9_]+$/)) {
+          toast.error(
+            "ユーザーIDは半角英数字とアンダースコア(_)のみ使用できます"
+          );
+          return;
+        }
+        // 全て小文字に変換
+        setNewPublicId(newPublicId.toLowerCase());
         try {
           await fetch(`/api/user/${newPublicId}`)
             .then((res) => res.json())

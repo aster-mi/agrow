@@ -34,6 +34,7 @@ import Pups from "@/app/components/Pups";
 import { Modal, Image as AntdImage, Input } from "antd";
 import EditAgave from "@/app/components/EditAgave";
 import { UserType } from "@/app/type/UserType";
+import UserView from "@/app/components/UserView";
 
 const Page = () => {
   const { slug } = useParams();
@@ -287,23 +288,7 @@ const Page = () => {
             <div className="flex my-2">
               <div className="w-5/6">
                 {/* owner */}
-                {agave.owner && (
-                  <div className="flex flex-row w-full overflow-hidden m-1">
-                    <div className="w-8 h-8 rounded-full overflow-hidden mr-1">
-                      <img
-                        src={buildImageUrl(agave.owner.image!)}
-                        alt="User avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-xs">
-                        @{agave.owner.publicId}
-                      </div>
-                      <div className="text-xs">{agave.owner.name}</div>
-                    </div>
-                  </div>
-                )}
+                <UserView user={agave.owner} />
                 {agave.description && (
                   <div
                     className="m-1"

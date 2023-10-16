@@ -18,6 +18,15 @@ async function getAgavesByParentSlug(slug: string) {
     },
     select: {
       pups: {
+        include: {
+          owner: {
+            select: {
+              name: true,
+              image: true,
+              publicId: true,
+            },
+          },
+        },
         orderBy: {
           createdAt: "desc",
         },

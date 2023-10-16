@@ -13,6 +13,7 @@ import { addAgave, getAgave } from "@/app/agave/api";
 import { toast } from "react-toastify";
 import buildImageUrl from "@/app/utils/buildImageUrl";
 import ModalButton from "@/app/components/ModalButton";
+import UserView from "./UserView";
 
 type PupsProps = {
   children: JSX.Element;
@@ -76,8 +77,8 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
                 src={buildImageUrl(agave.iconUrl)}
                 alt={`Image icon`}
                 className="w-full h-full object-cover"
-                width={100}
-                height={100}
+                width={50}
+                height={50}
               />
             ) : (
               <NoImage />
@@ -90,11 +91,16 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
       title: "名前/詳細",
       width: "30%",
       filterSearch: true,
-      render: (agave: Agave) => (
-        <Link href={`/agave/${agave.slug}`}>
-          <div>{agave.name}</div>
-          <div>{agave.description}</div>
-        </Link>
+      render: (agave: AgaveType) => (
+        <div className="h-full">
+          <Link href={`/agave/${agave.slug}`}>
+            <div className="mb-2 top-0">
+              <UserView user={agave.owner} />
+            </div>
+            <div>{agave.name}</div>
+            <div>{agave.description}</div>
+          </Link>
+        </div>
       ),
     },
   ];

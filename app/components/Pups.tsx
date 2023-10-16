@@ -97,12 +97,6 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
         </Link>
       ),
     },
-    {
-      title: "詳細",
-      dataIndex: "description",
-      width: "30%",
-      filterSearch: true,
-    },
   ];
 
   return (

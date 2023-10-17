@@ -35,6 +35,7 @@ import { Modal, Image as AntdImage, Input } from "antd";
 import EditAgave from "@/app/components/EditAgave";
 import { UserType } from "@/app/type/UserType";
 import UserView from "@/app/components/UserView";
+import AngleDown from "@/app/components/svg/AngleDown";
 
 const Page = () => {
   const { slug } = useParams();
@@ -50,6 +51,7 @@ const Page = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [editing, setEditing] = useState<boolean>(false);
+  const [openDescription, setOpenDescription] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -235,7 +237,7 @@ const Page = () => {
             <div className="grid grid-cols-9 gap-0">
               <div className="col-span-1"></div>
               {/* 名前 */}
-              <div className="text-center col-span-7 bg-neutral-800 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
+              <div className="text-center col-span-7 bg-neutral-900 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
                 <p className="break-all mt-1">{agave.name}</p>
               </div>
 
@@ -288,13 +290,40 @@ const Page = () => {
             <div className="flex my-2">
               <div className="w-5/6">
                 {/* owner */}
-                <UserView user={agave.owner} />
-                {agave.description && (
+                <div className="bg-neutral-900 rounded-full inline-block pr-1">
+                  <UserView user={agave.owner} />
+                </div>
+                {/* description */}
+                <div className=" bg-black bg-opacity-50 p-2 ml-1 mr-2 rounded-md overflow-hidden">
                   <div
-                    className="m-1"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >{`${agave.description}`}</div>
-                )}
+                    className={
+                      openDescription ? "flex flex-row" : "flex flex-row h-20"
+                    }
+                  >
+                    {agave.description && (
+                      <>
+                        <div
+                          className="flex m-1 break-words w-5/6 text-white text-sm"
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >{`${agave.description}`}</div>
+                        <div className="w-1/6 flex my-7">
+                          <div className="mx-auto">
+                            <div
+                              className={openDescription ? "rotate-180" : ""}
+                              onClick={() =>
+                                setOpenDescription(!openDescription)
+                              }
+                            >
+                              <div className="bg-gray-700 bg-opacity-50 rounded-full">
+                                <AngleDown />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="w-1/6">
                 <div className="flex flex-row-reverse">

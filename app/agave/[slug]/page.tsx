@@ -16,7 +16,7 @@ import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
-import pup from "@/public/dotPup.png";
+import tradeImage from "@/public/dotTrade.png";
 import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
 import MenuButton from "@/app/components/MenuButton";
@@ -36,6 +36,7 @@ import EditAgave from "@/app/components/EditAgave";
 import { UserType } from "@/app/type/UserType";
 import UserView from "@/app/components/UserView";
 import AngleDown from "@/app/components/svg/AngleDown";
+import EyeSvg from "@/app/components/svg/EyeSvg";
 
 const Page = () => {
   const { slug } = useParams();
@@ -235,7 +236,11 @@ const Page = () => {
           </div>
           <div className="absolute w-full">
             <div className="grid grid-cols-9 gap-0">
-              <div className="col-span-1"></div>
+              <div className="col-span-1">
+                <div className="text-2xl pl-2 pt-1 text-neutral-500 font-bold">
+                  ☆
+                </div>
+              </div>
               {/* 名前 */}
               <div className="text-center col-span-7 bg-neutral-900 border-b-2 border-neutral-500 shadow shadow-white rounded-b-full">
                 <p className="break-all mt-1">{agave.name}</p>
@@ -287,17 +292,28 @@ const Page = () => {
               </div>
             </div>
 
-            <div className="flex my-2">
+            <div className="flex mt-2">
               <div className="w-5/6">
                 {/* owner */}
-                <div className="bg-neutral-900 rounded-full inline-block pr-1">
-                  <UserView user={agave.owner} />
+                <div className="flex flex-row">
+                  <div className="w-5/6">
+                    <div className="bg-neutral-900 rounded-full inline-block pr-1">
+                      <UserView user={agave.owner} />
+                    </div>
+                  </div>
+                  {/* TODO */}
+                  <div className="w-1/6 text-xs flex flex-col justify-end">
+                    <div>
+                      <span className="text-yellow-200">★</span> 230
+                    </div>
+                    <div>💬 20</div>
+                  </div>
                 </div>
                 {/* description */}
                 <div className=" bg-black bg-opacity-50 p-2 ml-1 mr-2 rounded-md overflow-hidden">
                   <div
                     className={
-                      openDescription ? "flex flex-row" : "flex flex-row h-20"
+                      openDescription ? "flex flex-row" : "flex flex-row h-24"
                     }
                   >
                     {agave.description && (
@@ -326,7 +342,7 @@ const Page = () => {
                 </div>
               </div>
               <div className="w-1/6">
-                <div className="flex flex-row-reverse">
+                <div>
                   <div className="w-16 flex flex-col">
                     {agave.parent ? (
                       <Link href={"/agave/" + agave.parent.slug}>
@@ -359,9 +375,18 @@ const Page = () => {
                     <Pups isMine={isMine} onLoading={handleLoadingChange}>
                       <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
                         <div className="text-xs mr-1 font-bold">子</div>
-                        <Image src={pup} alt="pup" width={40} height={40} />
+                        <div className="w-7 text-center italic font-serif font-extralight text-3xl text-green-900">
+                          {agave.pups?.length}
+                        </div>
+                        <div className="text-xs h-full flex flex-col justify-end text-green-900 font-bold pb-1">
+                          株
+                        </div>
                       </div>
                     </Pups>
+                    <div className="pl-2 pt-2 flex flex-col text-center">
+                      <div className="text-4xl">💬</div>
+                      <div className="text-xs scale-75">コメント</div>
+                    </div>
                   </div>
                 </div>
               </div>

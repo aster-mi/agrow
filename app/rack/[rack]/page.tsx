@@ -13,12 +13,10 @@ export default function Page() {
     <>
       {pageLoading && <Loading />}
       <Rack
-        rack={rack as string}
+        code={rack as string}
         onLoading={setPageLoading}
         onUpdate={() => {}}
         onSetAgave={() => {}}
-        refresh={false}
-        onRefreshed={() => {}}
       />
     </>
   );

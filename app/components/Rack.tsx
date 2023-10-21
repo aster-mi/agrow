@@ -12,67 +12,41 @@ import positionSetting from "@/app/utils/positionSetting";
 import { AgaveType } from "@/app/type/AgaveType";
 import { EditOutlined } from "@ant-design/icons";
 import buildImageUrl from "@/app/utils/buildImageUrl";
+import useRack, { mutateRack } from "../hooks/useRack";
+import { mutate } from "swr";
 
 type RackProps = {
-  rack: string;
-  refresh: boolean;
-  onRefreshed: () => void;
+  code: string;
   onLoading: (loading: boolean) => void;
   onUpdate: () => void;
   onSetAgave: (position: number) => void;
 };
 
-const Rack = ({
-  rack,
-  refresh,
-  onRefreshed,
-  onLoading,
-  onUpdate,
-  onSetAgave,
-}: RackProps) => {
-  const [rackData, setRackData] = useState<RackType>();
+const Rack = ({ code, onLoading, onUpdate, onSetAgave }: RackProps) => {
+  const { rack, rackError, rackLoading } = useRack(code);
   const [rackName, setRackName] = useState("");
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    if (rack === "") return;
+    if (code === "") return;
     setIsEditing(false);
-    refreshRack();
-  }, [rack]);
+  }, [code]);
 
   useEffect(() => {
-    if (!refresh) return;
-    refreshRack();
-    onRefreshed();
-    setIsEditing(false);
-  }, [refresh]);
-
-  const refreshRack = async () => {
-    onLoading(true);
-    try {
-      fetch(`/api/rack/${rack}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setRackData(data);
-          setAgaves(positionSetting(data.agaves, data.size));
-          setRackName(data.name);
-        });
-    } catch (error) {
-      toast.error("ラックの取得に失敗しました");
-    }
-    onLoading(false);
-  };
+    if (!rack) return;
+    setAgaves(positionSetting(rack.agaves!, rack.size));
+  }, [rack]);
 
   const onFinish = async () => {
     onLoading(true);
     try {
       setIsEditing(false);
-      if (rackName === "" || rackName === rackData!.name) {
-        setRackName(rackData!.name!);
+      if (rackName === "" || rackName === rack!.name) {
+        setRackName(rack!.name!);
         return;
       }
-      const response = await fetch(`/api/rack/${rack}`, {
+      const response = await fetch(`/api/rack/${code}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,10 +54,7 @@ const Rack = ({
         body: JSON.stringify({ name: rackName }),
       });
       if (response.ok) {
-        setRackData((prevRackData) => {
-          if (!prevRackData) return prevRackData;
-          return { ...prevRackData, name: rackName };
-        });
+        mutateRack(code);
         toast.success("ラック名を更新しました");
       } else {
         toast.error("ラック名の更新に失敗しました");
@@ -95,16 +66,18 @@ const Rack = ({
     onLoading(false);
   };
 
+  if (rackLoading) return <div className="text-gray-400">loading...</div>;
+
   return (
     <div>
-      {rackData && (
+      {rack && (
         <div>
           <div className="flex justify-center m-3">
             {isEditing ? (
               <div className="flex justify-center">
                 <Input
                   autoFocus
-                  defaultValue={rackData.name}
+                  defaultValue={rack.name}
                   onChange={(e) => setRackName(e.target.value)}
                   className="p-0 border-none rounded"
                 />
@@ -117,13 +90,13 @@ const Rack = ({
               </div>
             ) : (
               <div onClick={() => setIsEditing(true)}>
-                {rackData.name}
+                {rack.name}
                 <EditOutlined className="ml-1" />
               </div>
             )}
           </div>
           <div className="grid grid-cols-3 gap-1 w-full h-full">
-            {agaves.length > 0 &&
+            {agaves &&
               agaves.map((agave, index) => (
                 <div
                   key={index}

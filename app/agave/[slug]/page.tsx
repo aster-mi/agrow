@@ -213,9 +213,10 @@ const Page = () => {
     }));
   }
 
+  if (loading) return <Loading />;
+
   return (
     <div>
-      {loading && <Loading />}
       {agave && (
         <div>
           <div

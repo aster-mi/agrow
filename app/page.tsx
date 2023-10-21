@@ -1,5 +1,6 @@
 "use client";
 
+import useSWR from "swr";
 import { useSession, signIn, signOut } from "next-auth/react";
 import AgrowLogo from "./components/AgrowLogo";
 import Link from "next/link";
@@ -10,43 +11,34 @@ import Room from "./components/Room";
 import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import fromNow from "./utils/fromNow";
+import Loading from "./loading";
+import useNews, { News } from "./hooks/useNews";
+import useProfile from "./hooks/useProfile";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Page() {
   const session = useSession();
-  const [userName, setUserName] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [newsList, setNewsList] = useState<News[]>([]);
+  const { newsList, newsError, newsLoading } = useNews();
+  const { profile, profileError, profileLoading } = useProfile();
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
-  interface News {
-    id: number;
-    title: string;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-  }
+  // useEffect(() => {
+  //   refresh();
+  // }, []);
 
-  useEffect(() => {
-    refresh();
-  }, []);
+  // const refresh = () => {
+  //   setLoading(true);
+  //   fetch("/api/mypage")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.name) setUserName(data.name);
+  //     });
+  //   setLoading(false);
+  // };
 
-  useEffect(() => {
-    fetch("/api/admin/news")
-      .then((res) => res.json())
-      .then((data) => {
-        setNewsList(data);
-      });
-  }, []);
-
-  const refresh = () => {
-    setLoading(true);
-    fetch("/api/mypage")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.name) setUserName(data.name);
-      });
-    setLoading(false);
-  };
+  if (newsLoading || profileLoading) return <Loading />;
+  if (newsError || profileError) return <div>failed to load</div>;
 
   return (
     <div
@@ -60,45 +52,35 @@ export default function Page() {
 
       <div className="mt-10">
         <div className="mx-auto">
-          {loading ? (
-            <LoadingAnime />
-          ) : (
+          {session.status === "authenticated" && (
             <>
-              {userName !== "" && session.status === "authenticated" && (
-                <>
-                  <div className="text-center m-3">
-                    こんにちは {userName} さん
-                  </div>
-                  <Link
-                    href="/rack"
-                    className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
-                  >
-                    <Image
-                      src={rackPng}
-                      width={100}
-                      alt="rack"
-                      style={{ width: "25px", height: "25px" }}
-                    />
-                    <div className="text-xl ml-1 font-bold">
-                      ラックを確認する
-                    </div>
-                  </Link>
-                </>
-              )}
-              {session.status === "unauthenticated" && (
-                <>
-                  <h1 className="text-2xl font-bold">ようこそ、 Agrow へ</h1>
-                  <p className="text-gray-400">
-                    こちらからログインしてください
-                  </p>
-                  <button
-                    className="w-full rounded-none border-none bg-green-500 text-white font-bold p-2 mt-5"
-                    onClick={() => signIn()}
-                  >
-                    ログイン
-                  </button>
-                </>
-              )}
+              <div className="text-center m-3">
+                こんにちは {profile.name} さん
+              </div>
+              <Link
+                href="/rack"
+                className="flex flex-row items-center justify-center rounded-full bg-black border border-yellow-100 bg-opacity-50 shadow-inner shadow-yellow-100 px-20 py-2"
+              >
+                <Image
+                  src={rackPng}
+                  width={100}
+                  alt="rack"
+                  style={{ width: "25px", height: "25px" }}
+                />
+                <div className="text-xl ml-1 font-bold">ラックを確認する</div>
+              </Link>
+            </>
+          )}
+          {session.status === "unauthenticated" && (
+            <>
+              <h1 className="text-2xl font-bold">ようこそ、 Agrow へ</h1>
+              <p className="text-gray-400">こちらからログインしてください</p>
+              <button
+                className="w-full rounded-none border-none bg-green-500 text-white font-bold p-2 mt-5"
+                onClick={() => signIn()}
+              >
+                ログイン
+              </button>
             </>
           )}
         </div>

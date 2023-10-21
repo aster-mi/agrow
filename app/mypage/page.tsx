@@ -1,46 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import supabase from "@/app/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { Input } from "antd";
 import "cropperjs/dist/cropper.css";
 import { toast } from "react-toastify";
-import buildImageUrl from "../utils/buildImageUrl";
 import Loading from "../loading";
 import compressImage from "../utils/compressImage";
-import { UserType } from "../type/UserType";
 import { signOut } from "next-auth/react";
+import useProfile, { mutateProfile } from "../hooks/useProfile";
 
 export default function Page() {
-  const [user, setUser] = useState<UserType>({
-    name: "",
-    image: "",
-    publicId: "",
-  });
   const [isEditing, setIsEditing] = useState(false);
   const [newImage, setNewImage] = useState<Blob | null>(null);
   const [newName, setNewName] = useState("");
   const [newPublicId, setNewPublicId] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    refresh();
-  }, []);
-
-  const refresh = () => {
-    setLoading(true);
-    fetch("/api/mypage")
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(() => ({
-          name: data.name,
-          image: buildImageUrl(data.image),
-          publicId: data.publicId,
-        }));
-      });
-    setLoading(false);
-  };
+  const [loading, setLoading] = useState(false);
+  const { profile, profileError, profileLoading } = useProfile();
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -59,8 +36,8 @@ export default function Page() {
 
   const handleEdit = () => {
     setIsEditing(true);
-    setNewName(user.name!);
-    setNewPublicId(user.publicId!);
+    setNewName(profile.name!);
+    setNewPublicId(profile.publicId!);
   };
 
   const handleCancel = () => {
@@ -74,7 +51,7 @@ export default function Page() {
     setLoading(true);
     try {
       // validate publicId
-      if (newPublicId && newPublicId !== user.publicId) {
+      if (newPublicId && newPublicId !== profile.publicId) {
         // 文字数
         if (newPublicId.length < 5 || newPublicId.length > 20) {
           toast.error("ユーザーIDは5~20文字の間で設定してください");
@@ -103,7 +80,7 @@ export default function Page() {
         }
       }
       // validate name
-      if (newName && newName !== user.name) {
+      if (newName && newName !== profile.name) {
         if (newName.length < 1 || newName.length > 20) {
           toast.error("名前は1~20文字の間で設定してください");
           return;
@@ -157,7 +134,7 @@ export default function Page() {
         }
       }
 
-      refresh();
+      mutateProfile();
       toast.success("変更を保存しました");
       setIsEditing(false);
       setNewImage(null);
@@ -167,6 +144,9 @@ export default function Page() {
       setLoading(false);
     }
   };
+
+  if (profileLoading) return <Loading />;
+  if (profileError) return <div>failed to load</div>;
 
   return (
     <div className="m-3 space-y-4">
@@ -195,7 +175,7 @@ export default function Page() {
                       />
                     ) : (
                       <img
-                        src={user.image}
+                        src={profile.image}
                         alt="User avatar"
                         className="absolute z-10 w-full h-full object-cover"
                       />
@@ -251,7 +231,7 @@ export default function Page() {
                 <div className="flex flex-row w-full">
                   <div className="w-16 h-16 rounded-full overflow-hidden">
                     <img
-                      src={user.image}
+                      src={profile.image}
                       alt="User avatar"
                       className="w-full h-full object-cover"
                       onClick={handleEdit}
@@ -259,10 +239,10 @@ export default function Page() {
                   </div>
                   <div className="ml-2 mt-3">
                     <div className="text-gray-400 text-sm" onClick={handleEdit}>
-                      @{user.publicId}
+                      @{profile.publicId}
                     </div>
                     <div className="text-lg" onClick={handleEdit}>
-                      {user.name}
+                      {profile.name}
                     </div>
                   </div>
                   <span

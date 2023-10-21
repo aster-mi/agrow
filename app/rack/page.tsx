@@ -9,47 +9,46 @@ import { RackType } from "../type/RackType";
 import Loading from "../loading";
 import positionSetting from "../utils/positionSetting";
 import Rack from "../components/Rack";
-import ModalButton from "../components/ModalButton";
 import SetAgave from "../components/SetAgave";
+import useMyRacks, { mutateMyRacks } from "../hooks/useMyRacks";
+import { mutateRack } from "../hooks/useRack";
 
 export default function Page() {
   const [pageLoading, setPageLoading] = useState<boolean>(true);
   const [rackPlans, setRackPlans] = useState<RackPlanType[]>([]);
-  const [myRacks, setMyRacks] = useState<RackType[]>([]);
-  const [allRacks, setAllRacks] = useState<RackType[]>([]);
+  const { myRacks, myRacksError, myRacksLoading } = useMyRacks();
+  const [showRacks, setShowRacks] = useState<RackType[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rackCode, setRackCode] = useState<string>("");
   const [openRack, setOpenRack] = useState(false);
   const [racksVisible, setRacksVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [openSetPosition, setOpenSetPosition] = useState<number>(0);
-  const [rackRefreshing, setRackRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchMyRack();
+    if (!myRacks) return;
+    setShowRacks(myRacks);
+    setSearchValue("");
+    if (myRacks.length === 0) {
+      setRacksVisible(false);
+      setOpenRack(false);
+      setRacksVisible(true);
+      showModal();
+      return;
+    }
+    const openedRackCode = sessionStorage.getItem("openedRackCode");
+    if (openedRackCode) {
+      // sessionStorageに開いているラックのcodeがある場合はそのラックを開く
+      setRackCode(openedRackCode);
+    } else {
+      // ない場合は0番目のラックを開く
+      const rackCode = myRacks[0].code;
+      setRackCode(rackCode);
+      sessionStorage.setItem("openedRackCode", rackCode);
+    }
+    setOpenRack(true);
     setPageLoading(false);
-  }, []);
-
-  const fetchMyRack = async () => {
-    fetch("/api/myracks")
-      .then((response) => response.json())
-      .then((data) => {
-        setMyRacks(data);
-        setAllRacks(data);
-        setSearchValue("");
-        const openedRackCode = sessionStorage.getItem("openedRackCode");
-        if (openedRackCode) {
-          // sessionStorageに開いているラックのcodeがある場合はそのラックを開く
-          setRackCode(openedRackCode);
-        } else {
-          // ない場合は0番目のラックを開く
-          const rackCode = data[0].code;
-          setRackCode(rackCode);
-          sessionStorage.setItem("openedRackCode", rackCode);
-        }
-        setOpenRack(true);
-      });
-  };
+  }, [myRacks]);
 
   const fetchRackPlan = async () => {
     fetch("/api/rack/plan")
@@ -66,7 +65,8 @@ export default function Page() {
       body: JSON.stringify(id),
     });
     const code = await res.json();
-    fetchMyRack();
+    mutateMyRacks();
+    console.log("mutate myRacks");
     setIsModalVisible(false);
     toast.success("ラックを追加しました");
     sessionStorage.setItem("openedRackCode", code);
@@ -89,38 +89,41 @@ export default function Page() {
     const currValue = e.target.value;
     setSearchValue(currValue);
     if (currValue) {
-      const filteredData = allRacks.filter((entry) =>
+      const filteredData = myRacks.filter((entry) =>
         entry.name?.includes(currValue)
       );
-      setMyRacks(filteredData);
+      setShowRacks(filteredData);
     } else {
-      setMyRacks(allRacks);
+      setShowRacks(myRacks);
     }
   };
 
-  const handleRackRefreshed = () => {
-    setRackRefreshing(false);
-  };
+  if (pageLoading || myRacksLoading) return <Loading />;
+  if (myRacksError) return <div>failed to load</div>;
 
   return (
     <div>
-      {pageLoading && <Loading />}
       <div>
         <Row className="flex flex-row justify-end">
-          <ModalButton
-            buttonChildren={
-              <div className="w-24 p-1 m-1 bg-green-500 rounded text-center font-bold text-white">
-                Myラック
-              </div>
-            }
-            isVisible={racksVisible}
+          <div
+            onClick={() => setRacksVisible(true)}
+            className="w-24 p-1 m-1 bg-green-500 rounded text-center font-bold text-white"
+          >
+            Myラック
+          </div>
+          <Modal
+            title="My ラック"
+            open={racksVisible}
+            footer={null}
+            mask={false}
+            onCancel={() => setRacksVisible(false)}
           >
             <div className="text-center text-lg font-bold p-2 text-neutral-700">
               所持しているラック
             </div>
             <div className="flex flex-row px-2 pb-10 overflow-x-scroll">
-              {myRacks &&
-                myRacks.map((rack) => (
+              {showRacks &&
+                showRacks.map((rack) => (
                   <div
                     key={rack.code}
                     onClick={() => {
@@ -216,17 +219,15 @@ export default function Page() {
                 ></Card>
               ))}
             </Modal>
-          </ModalButton>
+          </Modal>
         </Row>
       </div>
       {openRack && (
         <Rack
-          rack={rackCode}
+          code={rackCode}
           onLoading={handleOnLoading}
-          onUpdate={() => fetchMyRack()}
+          onUpdate={mutateMyRacks}
           onSetAgave={setOpenSetPosition}
-          refresh={rackRefreshing}
-          onRefreshed={handleRackRefreshed}
         />
       )}
       {openSetPosition !== 0 && (
@@ -234,7 +235,7 @@ export default function Page() {
           rack={rackCode}
           position={openSetPosition}
           onLoading={setPageLoading}
-          onUpdate={() => setRackRefreshing(true)}
+          onUpdate={() => mutateRack(rackCode)}
           onCancel={() => setOpenSetPosition(0)}
         />
       )}

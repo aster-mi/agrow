@@ -112,12 +112,12 @@ async function getAgave(slug: string) {
         where: {
           deleted: false,
         },
-        orderBy: {
-          shotDate: "desc",
-        },
+        orderBy: [{ shotDate: "desc" }, { createdAt: "desc" }],
       },
       parent: true,
-      pups: true,
+      pups: {
+        orderBy: [{ createdAt: "desc" }],
+      },
       rack: true,
     },
   });

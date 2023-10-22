@@ -9,12 +9,7 @@ export default function useProfile() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWRImmutable("/api/mypage", fetcher);
   return {
-    profile: {
-      id: data?.id,
-      name: data?.name,
-      publicId: data?.publicId,
-      image: buildImageUrl(data?.image),
-    } as UserType,
+    profile: data ? buildProfile(data) : undefined,
     profileError: error,
     profileLoading: isLoading,
   };
@@ -22,4 +17,13 @@ export default function useProfile() {
 
 export function mutateProfile() {
   return mutate("/api/mypage");
+}
+
+function buildProfile(data: any): UserType {
+  return {
+    id: data.id,
+    name: data.name,
+    publicId: data.publicId,
+    image: buildImageUrl(data.image),
+  };
 }

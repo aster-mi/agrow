@@ -23,22 +23,8 @@ export default function Page() {
   const { profile, profileError, profileLoading } = useProfile();
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
-  // useEffect(() => {
-  //   refresh();
-  // }, []);
-
-  // const refresh = () => {
-  //   setLoading(true);
-  //   fetch("/api/mypage")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.name) setUserName(data.name);
-  //     });
-  //   setLoading(false);
-  // };
-
   if (newsLoading || profileLoading) return <Loading />;
-  if (newsError || profileError) return <div>failed to load</div>;
+  if (newsError || profileError || !profile) return <div>failed to load</div>;
 
   return (
     <div

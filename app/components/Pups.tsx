@@ -14,8 +14,11 @@ import { toast } from "react-toastify";
 import buildImageUrl from "@/app/utils/buildImageUrl";
 import ModalButton from "@/app/components/ModalButton";
 import UserView from "./UserView";
+import Loading from "../loading";
+import { mutateAgave } from "../hooks/useAgave";
 
 type PupsProps = {
+  pups: AgaveType[];
   children: JSX.Element;
   isMine: boolean;
   onLoading: (loading: boolean) => void;
@@ -27,41 +30,20 @@ interface Agave {
   slug: string;
 }
 
-const Pups = ({ children, isMine, onLoading }: PupsProps) => {
+const Pups = ({ pups, children, isMine, onLoading }: PupsProps) => {
   const { slug } = useParams();
-  const session = useSession();
-  const [dataSource, setDataSource] = useState<AgaveType[]>([]);
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    onLoading(true);
-    try {
-      fetch(`/api/agave/${slug}/pup`)
-        .then((response) => response.json())
-        .then((data: AgaveType) => {
-          setDataSource(data.pups || []);
-        });
-    } catch (error) {
-      toast.error("データの取得に失敗しました");
-      router.back();
-    }
-    onLoading(false);
-  }, []);
-
-  const handleAddPup = async (e: FormEvent) => {
-    onLoading(true);
-    e.preventDefault();
-
+  const handleAddPup = async () => {
+    setLoading(true);
     const parent = await getAgave(slug as string);
     const pupName = parent.name! + " pup:#" + (parent.pups!.length + 1);
-
     const agave = await addAgave({
       name: pupName,
       parentId: parent.id,
     });
-    const newDataSource = [agave, ...dataSource];
-    setDataSource(newDataSource);
-    onLoading(false);
+    mutateAgave(slug as string);
+    setLoading(false);
     toast.success("登録完了！");
   };
 
@@ -111,15 +93,16 @@ const Pups = ({ children, isMine, onLoading }: PupsProps) => {
         {isMine && (
           <Row className="flex flex-row justify-center">
             <button
-              className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold"
+              className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold disabled:opacity-50"
               onClick={handleAddPup}
+              disabled={loading}
             >
               子株を追加
             </button>
           </Row>
         )}
         <Table
-          dataSource={dataSource}
+          dataSource={pups}
           showHeader={false}
           columns={columns}
           rowKey={(agave) => agave.slug!}

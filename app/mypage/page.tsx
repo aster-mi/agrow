@@ -36,8 +36,8 @@ export default function Page() {
 
   const handleEdit = () => {
     setIsEditing(true);
-    setNewName(profile.name!);
-    setNewPublicId(profile.publicId!);
+    setNewName(profile?.name!);
+    setNewPublicId(profile!.publicId!);
   };
 
   const handleCancel = () => {
@@ -48,6 +48,7 @@ export default function Page() {
   };
 
   const handleSave = async () => {
+    if (!profile) return;
     setLoading(true);
     try {
       // validate publicId
@@ -145,118 +146,115 @@ export default function Page() {
     }
   };
 
-  if (profileLoading) return <Loading />;
+  if (profileLoading || loading) return <Loading />;
   if (profileError) return <div>failed to load</div>;
+  if (!profile) return <div>no profile</div>;
 
   return (
     <div className="m-3 space-y-4">
-      {loading ? (
-        <Loading />
-      ) : (
-        <div>
-          {isEditing ? (
-            <div className="flex flex-row w-full">
-              <div className="w-16 h-16 rounded-full overflow-hidden">
-                <label
-                  htmlFor="dropzone-file"
-                  style={{ position: "relative", display: "inline-block" }}
-                >
-                  <div className="w-16 h-16 rounded-full overflow-hidden flex justify-center">
-                    <div className="absolute z-20 w-full h-full flex flex-col justify-center bg-black bg-opacity-50">
-                      <div className="flex flex-row justify-center text-lg">
-                        📷
-                      </div>
+      <div>
+        {isEditing ? (
+          <div className="flex flex-row w-full">
+            <div className="w-16 h-16 rounded-full overflow-hidden">
+              <label
+                htmlFor="dropzone-file"
+                style={{ position: "relative", display: "inline-block" }}
+              >
+                <div className="w-16 h-16 rounded-full overflow-hidden flex justify-center">
+                  <div className="absolute z-20 w-full h-full flex flex-col justify-center bg-black bg-opacity-50">
+                    <div className="flex flex-row justify-center text-lg">
+                      📷
                     </div>
-                    {newImage ? (
-                      <img
-                        src={URL.createObjectURL(newImage)}
-                        alt="User avatar"
-                        className="absolute z-10 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={profile.image}
-                        alt="User avatar"
-                        className="absolute z-10 w-full h-full object-cover"
-                      />
-                    )}
                   </div>
-                  <input
-                    id="dropzone-file"
-                    type="file"
-                    accept=".jpeg, .jpg, .png, .webp"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-              <div className="ml-2 mt-3">
-                <div className="flex text-gray-400 text-xm">
-                  @
-                  <Input
-                    type="text"
-                    value={newPublicId}
-                    onChange={handlePublicIdChange}
-                    maxLength={20}
-                    rootClassName="bg-transparent border-none text-gray-400 text-xm p-0 focus:ring-0 underline"
-                  />
-                </div>
-                <Input
-                  type="text"
-                  value={newName}
-                  className="flex"
-                  onChange={handleNameChange}
-                  maxLength={20}
-                  rootClassName="bg-transparent border-none text-white text-lg p-0 focus:ring-0 underline"
-                />
-              </div>
-              <div className="flex flex-col justify-center">
-                <button
-                  onClick={handleSave}
-                  className="bg-green-500 text-white px-1 py-2 rounded text-sm"
-                >
-                  保存
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="bg-red-500 text-white px-1 py-2 rounded text-sm"
-                >
-                  キャンセル
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div>
-                <div className="flex flex-row w-full">
-                  <div className="w-16 h-16 rounded-full overflow-hidden">
+                  {newImage ? (
+                    <img
+                      src={URL.createObjectURL(newImage)}
+                      alt="User avatar"
+                      className="absolute z-10 w-full h-full object-cover"
+                    />
+                  ) : (
                     <img
                       src={profile.image}
                       alt="User avatar"
-                      className="w-full h-full object-cover"
-                      onClick={handleEdit}
+                      className="absolute z-10 w-full h-full object-cover"
                     />
-                  </div>
-                  <div className="ml-2 mt-3">
-                    <div className="text-gray-400 text-sm" onClick={handleEdit}>
-                      @{profile.publicId}
-                    </div>
-                    <div className="text-lg" onClick={handleEdit}>
-                      {profile.name}
-                    </div>
-                  </div>
-                  <span
-                    onClick={handleEdit}
-                    className="absolute right-0 m-3 underline cursor-pointer"
-                  >
-                    編集
-                  </span>
+                  )}
                 </div>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  accept=".jpeg, .jpg, .png, .webp"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+            <div className="ml-2 mt-3">
+              <div className="flex text-gray-400 text-xm">
+                @
+                <Input
+                  type="text"
+                  value={newPublicId}
+                  onChange={handlePublicIdChange}
+                  maxLength={20}
+                  rootClassName="bg-transparent border-none text-gray-400 text-xm p-0 focus:ring-0 underline"
+                />
+              </div>
+              <Input
+                type="text"
+                value={newName}
+                className="flex"
+                onChange={handleNameChange}
+                maxLength={20}
+                rootClassName="bg-transparent border-none text-white text-lg p-0 focus:ring-0 underline"
+              />
+            </div>
+            <div className="flex flex-col justify-center">
+              <button
+                onClick={handleSave}
+                className="bg-green-500 text-white px-1 py-2 rounded text-sm"
+              >
+                保存
+              </button>
+              <button
+                onClick={handleCancel}
+                className="bg-red-500 text-white px-1 py-2 rounded text-sm"
+              >
+                キャンセル
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div>
+              <div className="flex flex-row w-full">
+                <div className="w-16 h-16 rounded-full overflow-hidden">
+                  <img
+                    src={profile.image}
+                    alt="User avatar"
+                    className="w-full h-full object-cover"
+                    onClick={handleEdit}
+                  />
+                </div>
+                <div className="ml-2 mt-3">
+                  <div className="text-gray-400 text-sm" onClick={handleEdit}>
+                    @{profile.publicId}
+                  </div>
+                  <div className="text-lg" onClick={handleEdit}>
+                    {profile.name}
+                  </div>
+                </div>
+                <span
+                  onClick={handleEdit}
+                  className="absolute right-0 m-3 underline cursor-pointer"
+                >
+                  編集
+                </span>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
       <button className="text-red" onClick={() => signOut()}>
         ログアウト
       </button>

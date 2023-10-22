@@ -37,12 +37,14 @@ import { UserType } from "@/app/type/UserType";
 import UserView from "@/app/components/UserView";
 import AngleDown from "@/app/components/svg/AngleDown";
 import EyeSvg from "@/app/components/svg/EyeSvg";
+import useAgave, { mutateAgave } from "@/app/hooks/useAgave";
+import { mutate } from "swr";
 
 const Page = () => {
   const { slug } = useParams();
   const session = useSession();
   const [isMine, setIsMine] = useState<boolean>(false);
-  const [agave, setAgave] = useState<AgaveType | null>(null);
+  const { agave, agaveError, agaveLoading } = useAgave(slug as string);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [shotDate, setShotDate] = useState<Date>(new Date());
   const [fileInputKey, setFileInputKey] = useState<number>(0);
@@ -50,7 +52,7 @@ const Page = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [openDescription, setOpenDescription] = useState<boolean>(false);
 
@@ -68,17 +70,6 @@ const Page = () => {
     setIsModalOpen(false);
   };
 
-  const fetchData = async () => {
-    try {
-      const agave: AgaveType = await getAgave(slug as string);
-      setAgave(agave);
-      setLoading(false);
-    } catch (error) {
-      toast.error("データ取得に失敗しました");
-      router.back();
-    }
-  };
-
   const getImage = (index: number) => {
     return agave!.images![index];
   };
@@ -91,10 +82,6 @@ const Page = () => {
       .substring(imageUrl.lastIndexOf("/") + 1)
       .replace(".jpg", "")}`;
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [fileInputKey, slug]);
 
   useEffect(() => {
     setIsMine(agave?.owner?.id === session.data?.user?.id);
@@ -173,6 +160,7 @@ const Page = () => {
 
       setPreviewImages([]);
       setFileInputKey((prevKey) => prevKey + 1);
+      mutateAgave(slug as string);
       toast.success("画像の投稿が完了しました");
     } catch (error) {
       toast.error("画像の投稿に失敗しました");
@@ -193,7 +181,7 @@ const Page = () => {
       .substring(imageUrl!.lastIndexOf("/") + 1)
       .replace(".jpg", "");
     await deleteImage(slug as string, fileName);
-    fetchData();
+    mutateAgave(slug as string);
     toast.success("画像を削除しました");
   };
 
@@ -201,7 +189,7 @@ const Page = () => {
     const imageUrl = getImage(index).url;
     const fileName = imageUrl!.substring(imageUrl!.lastIndexOf("/agave") + 1);
     await setAgaveIcon(slug as string, fileName);
-    fetchData();
+    mutateAgave(slug as string);
     toast.success("サムネイルに設定しました");
   };
 
@@ -213,7 +201,8 @@ const Page = () => {
     }));
   }
 
-  if (loading) return <Loading />;
+  if (loading || agaveLoading) return <Loading />;
+  if (agaveError) return <div>failed to load</div>;
 
   return (
     <div>
@@ -373,7 +362,11 @@ const Page = () => {
                         <div className="w-10 text-center">-</div>
                       </div>
                     )}
-                    <Pups isMine={isMine} onLoading={handleLoadingChange}>
+                    <Pups
+                      pups={agave.pups || []}
+                      isMine={isMine}
+                      onLoading={handleLoadingChange}
+                    >
                       <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
                         <div className="text-xs mr-1 font-bold">子</div>
                         <div className="w-7 text-center italic font-serif font-extralight text-3xl text-green-900">
@@ -511,7 +504,7 @@ const Page = () => {
                     onLoading={setLoading}
                     onUpdated={() => {
                       setEditing(false);
-                      fetchData();
+                      mutateAgave(slug as string);
                     }}
                     onCanceled={() => setEditing(false)}
                   />

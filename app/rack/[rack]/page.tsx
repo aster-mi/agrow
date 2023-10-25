@@ -15,7 +15,6 @@ export default function Page() {
       <Rack
         code={rack as string}
         onLoading={setPageLoading}
-        onUpdate={() => {}}
         onSetAgave={() => {}}
       />
     </>

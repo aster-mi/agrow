@@ -9,6 +9,12 @@ import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Modal } from "antd";
+import XSvg from "./svg/XSvg";
+import LineSvg from "./svg/LineSvg";
+import CopySvg from "./svg/CopySvg";
+import ImageSvg from "./svg/ImageSvg";
+import MoreSvg from "./svg/MoreSvg";
 
 interface GalleryModalProps {
   isOpen: boolean;
@@ -43,6 +49,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
   const galleryRef = useRef<Gallery>(null);
   const [playSlideShow, setPlaySlideShow] = useState(false);
   const [imageOnly, setImageOnly] = useState(false);
+  const [openMoreModal, setOpenMoreModal] = useState(false);
   const router = useRouter();
   const focusRef = useRef(null);
 
@@ -156,39 +163,66 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
       </div>
       {!imageOnly && (
         <div onClick={handleChildClick}>
-          <div className="absolute top-0 left-0 right-0 flex justify-between bg-black bg-opacity-50">
-            <div className="left-0 p-3">
+          <div className="absolute top-0 w-full flex flex-row justify-between bg-black bg-opacity-50 h-10">
+            <div className="p-2 w-10 h-10">
               <button onClick={handleClose}>←</button>
             </div>
-            <div className="left-0 p-3">
-              <button onClick={downloadImage}>
-                <DownloadSvg />
-              </button>
-            </div>
-            <div className="left-0 p-3">
+            <div className="p-2 w-10 h-10">
               <button onClick={startSlideShow}>▶️</button>
             </div>
-            {isMine && (
-              <>
-                <div className="left-0 p-3 text-yellow-300">
-                  {onSetIcon && <button onClick={handleSetIcon}>★</button>}
-                </div>
-                <div className="left-0 p-3">
-                  {onDelete && (
-                    <DeleteButton onDelete={handleDeleteImage} title={"🗑"} />
-                  )}
-                </div>
-              </>
-            )}
-            <div className="right-0">
-              <MenuButton
-                contents={
-                  <>
-                    <ShareButtons getUrl={handleGetShareButtonUrl} />
-                  </>
-                }
-              />
+            <div
+              className="fill-white w-10 h-10 p-2"
+              onClick={() => setOpenMoreModal(true)}
+            >
+              <MoreSvg />
             </div>
+            <Modal
+              open={openMoreModal}
+              onCancel={() => setOpenMoreModal(false)}
+              footer={null}
+            >
+              <div className="text-lg font-bold text-gray-800 border-b">
+                共有
+              </div>
+              <div className="flex flex-row justify-between mt-5">
+                <ShareButtons getUrl={handleGetShareButtonUrl} />
+              </div>
+              <div className="text-lg font-bold text-gray-800 border-b mt-12">
+                その他
+              </div>
+              <div className="flex flex-row justify-between mt-5">
+                <div onClick={downloadImage}>
+                  <div className="p-3 rounded-md shadow-md bg-gray-50 w-12 h-12">
+                    <DownloadSvg />
+                  </div>
+                  <div className="text-xs text-gray-600 text-center mt-1">
+                    保存
+                  </div>
+                </div>
+                {isMine && (
+                  <>
+                    <div>
+                      {onSetIcon && (
+                        <div onClick={handleSetIcon}>
+                          <div className="p-3 rounded-md shadow-md bg-gray-50 w-12 h-12">
+                            <ImageSvg />
+                          </div>
+                          <div className="text-xs text-gray-600 text-center mt-1">
+                            <p>アイコン</p>
+                            <p>に設定</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {onDelete && (
+                        <DeleteButton onDelete={handleDeleteImage} />
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </Modal>
           </div>
         </div>
       )}

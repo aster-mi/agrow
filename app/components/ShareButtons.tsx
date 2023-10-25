@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import ShareSvg from "./svg/ShareSvg";
+import XSvg from "./svg/XSvg";
+import LineSvg from "./svg/LineSvg";
+import CopySvg from "./svg/CopySvg";
 
 interface ShareButtonProps {
   getUrl: () => string;
@@ -29,24 +32,33 @@ const ShareButtons: React.FC<ShareButtonProps> = ({ getUrl }) => {
 
   return (
     <>
-      <button
-        onClick={copyUrlToClipboard}
-        className="text-blue-500 w-full border-b border-gray-300 p-2"
-      >
-        URLをコピー
-      </button>
-      <button
-        onClick={shareOnTwitter}
-        className="text-blue-500 w-full border-b border-gray-300 p-2"
-      >
-        ツイッターに共有
-      </button>
-      <button
-        onClick={shareOnLINE}
-        className="text-blue-500 w-full border-b border-gray-300 p-2"
-      >
-        LINEに共有
-      </button>
+      <div>
+        <div
+          onClick={shareOnTwitter}
+          className="p-3 rounded-md shadow-md bg-gray-50 w-12 h-12"
+        >
+          <XSvg />
+        </div>
+        <div className="text-xs text-gray-600 text-center mt-1">x</div>
+      </div>
+      <div>
+        <div
+          onClick={shareOnLINE}
+          className="p-3 rounded-md shadow-md bg-gray-50 w-12 h-12"
+        >
+          <LineSvg />
+        </div>
+        <div className="text-xs text-gray-600 text-center mt-1">line</div>
+      </div>
+      <div>
+        <div
+          onClick={copyUrlToClipboard}
+          className="p-3 rounded-md shadow-md bg-gray-50 w-12 h-12"
+        >
+          <CopySvg />
+        </div>
+        <div className="text-xs text-gray-600 text-center mt-1">copy</div>
+      </div>
     </>
   );
 };

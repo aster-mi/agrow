@@ -228,6 +228,8 @@ const Page = () => {
                 <p className="break-all mt-1">{agave.name}</p>
               </div>
 
+              {/* TODO 画像moreに寄せる */}
+
               {/* メニューボタン */}
               <div className="flex flex-col justify-center rounded-full border-2 border-neutral-500 h-8 w-8 mt-1 ml-1">
                 <div className="flex flex-row justify-center">
@@ -260,11 +262,7 @@ const Page = () => {
                               </div>
                               <div className="text-blue-500">水やり管理</div>
                             </div>
-                            <DeleteButton
-                              onDelete={handleDeleteAgave}
-                              title={"株を削除"}
-                              buttonClass="text-red-500 w-full border-b border-gray-300 p-2"
-                            />
+                            <DeleteButton onDelete={handleDeleteAgave} />
                           </>
                         )}
                       </>

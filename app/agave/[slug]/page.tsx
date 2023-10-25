@@ -181,7 +181,7 @@ const Page = () => {
     const fileName = imageUrl!.substring(imageUrl!.lastIndexOf("/agave") + 1);
     await setAgaveIcon(slug as string, fileName);
     mutateAgave(slug as string);
-    toast.success("サムネイルに設定しました");
+    toast.success("画像をアイコンに設定しました");
   };
 
   function convertToImageGalleryItems(images: ImageType[]) {

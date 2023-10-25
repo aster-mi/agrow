@@ -170,8 +170,8 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
             </div>
             {isMine && (
               <>
-                <div className="left-0 p-3">
-                  {onSetIcon && <button onClick={handleSetIcon}>Icon化</button>}
+                <div className="left-0 p-3 text-yellow-300">
+                  {onSetIcon && <button onClick={handleSetIcon}>★</button>}
                 </div>
                 <div className="left-0 p-3">
                   {onDelete && (

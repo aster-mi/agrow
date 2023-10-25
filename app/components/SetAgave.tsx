@@ -100,7 +100,7 @@ const SetAgave = ({
 
   const columns: ColumnsType<AgaveType> = [
     {
-      title: "サムネ",
+      title: "アイコン",
       width: "30%",
       render: (agave: Agave) => (
         <div className="">

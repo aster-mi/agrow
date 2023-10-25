@@ -50,7 +50,7 @@ const Pups = ({ slug, children, isMine }: PupsProps) => {
 
   const columns: ColumnsType<AgaveType> = [
     {
-      title: "サムネ",
+      title: "アイコン",
       width: "25%",
       render: (agave: AgaveType) => (
         <div className="h-20 w-20">

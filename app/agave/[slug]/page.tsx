@@ -12,11 +12,9 @@ import {
   setAgaveIcon,
 } from "@/app/agave/api";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { AgaveType } from "@/app/type/AgaveType";
 import Image from "next/image";
 import compressImage from "@/app/utils/compressImage";
 import AddImageSvg from "@/app/components/svg/AddImageSvg";
-import tradeImage from "@/public/dotTrade.png";
 import Link from "next/link";
 import DeleteButton from "@/app/components/DeleteButton";
 import MenuButton from "@/app/components/MenuButton";
@@ -33,12 +31,9 @@ import { useSession } from "next-auth/react";
 import Pups from "@/app/components/Pups";
 import { Modal, Image as AntdImage, Input } from "antd";
 import EditAgave from "@/app/components/EditAgave";
-import { UserType } from "@/app/type/UserType";
 import UserView from "@/app/components/UserView";
 import AngleDown from "@/app/components/svg/AngleDown";
-import EyeSvg from "@/app/components/svg/EyeSvg";
 import useAgave, { mutateAgave } from "@/app/hooks/useAgave";
-import { mutate } from "swr";
 
 const Page = () => {
   const { slug } = useParams();
@@ -108,10 +103,6 @@ const Page = () => {
   const handlePreviewModalClose = () => {
     setPreviewImages([]);
     setShotDate(new Date());
-  };
-
-  const handleLoadingChange = (newLoading: boolean) => {
-    setLoading(newLoading);
   };
 
   const handleUpload = async () => {
@@ -206,6 +197,7 @@ const Page = () => {
 
   return (
     <div>
+      {loading || (agaveLoading && <Loading />)}
       {agave && (
         <div>
           <div
@@ -362,11 +354,7 @@ const Page = () => {
                         <div className="w-10 text-center">-</div>
                       </div>
                     )}
-                    <Pups
-                      pups={agave.pups || []}
-                      isMine={isMine}
-                      onLoading={handleLoadingChange}
-                    >
+                    <Pups slug={slug as string} isMine={isMine}>
                       <div className="text-gray-700 h-10 rounded-l-full bg-white flex flex-row justify-end items-center mt-1">
                         <div className="text-xs mr-1 font-bold">子</div>
                         <div className="w-7 text-center italic font-serif font-extralight text-3xl text-green-900">
@@ -505,6 +493,9 @@ const Page = () => {
                     onUpdated={() => {
                       setEditing(false);
                       mutateAgave(slug as string);
+                      if (agave.parent) {
+                        mutateAgave(agave.parent.slug as string);
+                      }
                     }}
                     onCanceled={() => setEditing(false)}
                   />

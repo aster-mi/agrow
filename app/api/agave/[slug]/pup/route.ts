@@ -21,6 +21,7 @@ async function getAgavesByParentSlug(slug: string) {
         include: {
           owner: {
             select: {
+              id: true,
               name: true,
               image: true,
               publicId: true,

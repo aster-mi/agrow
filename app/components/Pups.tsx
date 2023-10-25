@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Row, Table } from "antd";
-import { useSession } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
+import { Modal, Row, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,16 +10,16 @@ import NoImage from "@/app/components/NoImage";
 import { addAgave, getAgave } from "@/app/agave/api";
 import { toast } from "react-toastify";
 import buildImageUrl from "@/app/utils/buildImageUrl";
-import ModalButton from "@/app/components/ModalButton";
 import UserView from "./UserView";
-import Loading from "../loading";
 import { mutateAgave } from "../hooks/useAgave";
+import React from "react";
+import usePups, { mutatePups } from "../hooks/usePups";
+import { useSession } from "next-auth/react";
 
 type PupsProps = {
-  pups: AgaveType[];
+  slug: string;
   children: JSX.Element;
   isMine: boolean;
-  onLoading: (loading: boolean) => void;
 };
 
 interface Agave {
@@ -30,9 +28,11 @@ interface Agave {
   slug: string;
 }
 
-const Pups = ({ pups, children, isMine, onLoading }: PupsProps) => {
-  const { slug } = useParams();
+const Pups = ({ slug, children, isMine }: PupsProps) => {
+  const session = useSession();
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const { pups, pupsError, pupsLoading } = usePups(slug as string);
 
   const handleAddPup = async () => {
     setLoading(true);
@@ -43,73 +43,88 @@ const Pups = ({ pups, children, isMine, onLoading }: PupsProps) => {
       parentId: parent.id,
     });
     mutateAgave(slug as string);
+    mutatePups(slug as string);
     setLoading(false);
-    toast.success("登録完了！");
+    toast.success("子株の追加が完了しました");
   };
 
   const columns: ColumnsType<AgaveType> = [
     {
       title: "サムネ",
-      width: "30%",
+      width: "25%",
       render: (agave: AgaveType) => (
-        <div className="">
+        <div className="h-20 w-20">
           <Link href={`/agave/${agave.slug}`}>
-            {agave.iconUrl ? (
-              <Image
-                src={buildImageUrl(agave.iconUrl)}
-                alt={`Image icon`}
-                className="w-full h-full object-cover"
-                width={50}
-                height={50}
-              />
-            ) : (
-              <NoImage />
-            )}
+            <div className="rounded-lg overflow-hidden">
+              {agave.iconUrl ? (
+                <Image
+                  src={buildImageUrl(agave.iconUrl)}
+                  alt={`Image icon`}
+                  className="w-full h-full object-cover"
+                  width={50}
+                  height={50}
+                />
+              ) : (
+                <NoImage />
+              )}
+            </div>
           </Link>
         </div>
       ),
     },
     {
       title: "名前/詳細",
-      width: "30%",
+      width: "75%",
       filterSearch: true,
       render: (agave: AgaveType) => (
-        <div className="h-full">
-          <Link href={`/agave/${agave.slug}`}>
-            <div className="mb-2 top-0">
-              <UserView user={agave.owner} />
-            </div>
-            <div>{agave.name}</div>
-            <div>{agave.description}</div>
-          </Link>
-        </div>
+        <Link className="h-20 top-0" href={`/agave/${agave.slug}`}>
+          <div className="flex flex-row justify-between">
+            <div className="font-bold">{agave.name}</div>
+            {agave.owner?.id === session?.data?.user?.id && (
+              <div className="text-green-500 text-xs font-bold">所有中</div>
+            )}
+          </div>
+          <div className="h-16 overflow-hidden">{agave.description}</div>
+        </Link>
       ),
     },
   ];
 
+  if (pupsLoading) {
+    return <div>loading...</div>;
+  }
+  if (pupsError) {
+    return <div>error...</div>;
+  }
+
   return (
-    <ModalButton buttonChildren={children}>
-      <div>
-        {isMine && (
-          <Row className="flex flex-row justify-center">
-            <button
-              className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold disabled:opacity-50"
-              onClick={handleAddPup}
-              disabled={loading}
-            >
-              子株を追加
-            </button>
-          </Row>
-        )}
-        <Table
-          dataSource={pups}
-          showHeader={false}
-          columns={columns}
-          rowKey={(agave) => agave.slug!}
-          pagination={false}
-        />
-      </div>
-    </ModalButton>
+    <>
+      {children &&
+        React.cloneElement(children, { onClick: () => setVisible(true) })}
+
+      <Modal open={visible} onCancel={() => setVisible(false)} footer={null}>
+        <div>
+          {isMine && (
+            <Row className="flex flex-row justify-center">
+              <button
+                className="m-2 px-10 py-3 rounded-full border-none bg-green-700 text-white font-bold disabled:opacity-50"
+                onClick={handleAddPup}
+                disabled={loading}
+              >
+                子株を追加
+              </button>
+            </Row>
+          )}
+          <Table
+            dataSource={pups}
+            showHeader={false}
+            columns={columns}
+            rowKey={(agave) => agave.slug!}
+            pagination={false}
+          />
+        </div>
+      </Modal>
+    </>
   );
 };
 

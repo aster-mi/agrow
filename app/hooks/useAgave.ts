@@ -18,7 +18,7 @@ export default function useAgave(slug: string) {
 }
 
 export function mutateAgave(slug: string) {
-  return mutate(`/api/agave/${slug}`);
+  return mutate(`/api/agave/${slug}`, undefined, true);
 }
 
 function buildAgave(data: any): AgaveType {

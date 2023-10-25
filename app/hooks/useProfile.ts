@@ -16,7 +16,7 @@ export default function useProfile() {
 }
 
 export function mutateProfile() {
-  return mutate("/api/mypage");
+  return mutate("/api/mypage", undefined, true);
 }
 
 function buildProfile(data: any): UserType {

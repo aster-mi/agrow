@@ -15,5 +15,5 @@ export default function useMyRacks() {
 }
 
 export function mutateMyRacks() {
-  return mutate("/api/myracks");
+  return mutate("/api/myracks", undefined, true);
 }

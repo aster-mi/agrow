@@ -15,8 +15,6 @@ import Loading from "./loading";
 import useNews, { News } from "./hooks/useNews";
 import useProfile from "./hooks/useProfile";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export default function Page() {
   const session = useSession();
   const { newsList, newsError, newsLoading } = useNews();

@@ -18,5 +18,5 @@ export default function useRack(code: string) {
 }
 
 export function mutateRack(code: string) {
-  return mutate(`/api/rack/${code}`);
+  return mutate(`/api/rack/${code}`, undefined, true);
 }

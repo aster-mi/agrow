@@ -65,8 +65,6 @@ export default function Page() {
       body: JSON.stringify(id),
     });
     const code = await res.json();
-    mutateMyRacks();
-    console.log("mutate myRacks");
     setIsModalVisible(false);
     toast.success("ラックを追加しました");
     sessionStorage.setItem("openedRackCode", code);
@@ -226,7 +224,6 @@ export default function Page() {
         <Rack
           code={rackCode}
           onLoading={handleOnLoading}
-          onUpdate={mutateMyRacks}
           onSetAgave={setOpenSetPosition}
         />
       )}

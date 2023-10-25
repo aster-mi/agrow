@@ -13,16 +13,16 @@ import { AgaveType } from "@/app/type/AgaveType";
 import { EditOutlined } from "@ant-design/icons";
 import buildImageUrl from "@/app/utils/buildImageUrl";
 import useRack, { mutateRack } from "../hooks/useRack";
+import { mutateMyRacks } from "../hooks/useMyRacks";
 import { mutate } from "swr";
 
 type RackProps = {
   code: string;
   onLoading: (loading: boolean) => void;
-  onUpdate: () => void;
   onSetAgave: (position: number) => void;
 };
 
-const Rack = ({ code, onLoading, onUpdate, onSetAgave }: RackProps) => {
+const Rack = ({ code, onLoading, onSetAgave }: RackProps) => {
   const { rack, rackError, rackLoading } = useRack(code);
   const [rackName, setRackName] = useState("");
   const [agaves, setAgaves] = useState<AgaveType[]>([]);
@@ -55,6 +55,8 @@ const Rack = ({ code, onLoading, onUpdate, onSetAgave }: RackProps) => {
       });
       if (response.ok) {
         mutateRack(code);
+        mutateMyRacks();
+        console.log(rack.name);
         toast.success("ラック名を更新しました");
       } else {
         toast.error("ラック名の更新に失敗しました");
@@ -62,11 +64,11 @@ const Rack = ({ code, onLoading, onUpdate, onSetAgave }: RackProps) => {
     } catch (error) {
       toast.error("ラック名の更新に失敗しました");
     }
-    onUpdate();
     onLoading(false);
   };
 
   if (rackLoading) return <div className="text-gray-400">loading...</div>;
+  if (rackError) return <div className="text-gray-400">failed to load</div>;
 
   return (
     <div>

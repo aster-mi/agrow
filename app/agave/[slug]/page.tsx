@@ -34,6 +34,7 @@ import EditAgave from "@/app/components/EditAgave";
 import UserView from "@/app/components/UserView";
 import AngleDown from "@/app/components/svg/AngleDown";
 import useAgave, { mutateAgave } from "@/app/hooks/useAgave";
+import MoreSvg from "@/app/components/svg/MoreSvg";
 
 const Page = () => {
   const { slug } = useParams();
@@ -50,6 +51,7 @@ const Page = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
   const [openDescription, setOpenDescription] = useState<boolean>(false);
+  const [openMoreModal, setOpenMoreModal] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -228,48 +230,56 @@ const Page = () => {
                 <p className="break-all mt-1">{agave.name}</p>
               </div>
 
-              {/* TODO 画像moreに寄せる */}
-
-              {/* メニューボタン */}
-              <div className="flex flex-col justify-center rounded-full border-2 border-neutral-500 h-8 w-8 mt-1 ml-1">
-                <div className="flex flex-row justify-center">
-                  <MenuButton
-                    contents={
-                      <>
-                        {/* 共有 */}
-                        <ShareButtons getUrl={() => currentURL} />
-                        {isMine && (
-                          <>
-                            {/* 編集 */}
-                            <div
-                              className="text-blue-500 p-2 border-b border-gray-300 w-full text-center"
-                              onClick={() => {
-                                setEditing(true);
-                              }}
-                            >
-                              編集
-                            </div>
-                            {/* 水やり */}
-                            <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
-                              <div className="h-6 w-6">
-                                <Image
-                                  src={dotWatering}
-                                  alt="watering"
-                                  width={100}
-                                  height={100}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <div className="text-blue-500">水やり管理</div>
-                            </div>
-                            <DeleteButton onDelete={handleDeleteAgave} />
-                          </>
-                        )}
-                      </>
-                    }
-                  />
-                </div>
+              <div
+                className="fill-white w-10 h-10 p-2"
+                onClick={() => setOpenMoreModal(true)}
+              >
+                <MoreSvg />
               </div>
+              <Modal
+                open={openMoreModal}
+                onCancel={() => setOpenMoreModal(false)}
+                footer={null}
+              >
+                <div>
+                  <div className="text-lg font-bold text-gray-800 border-b">
+                    共有
+                  </div>
+                  <div className="flex flex-row justify-between mt-5">
+                    <ShareButtons getUrl={() => currentURL} />
+                  </div>
+                  <div className="text-lg font-bold text-gray-800 border-b mt-12">
+                    その他
+                  </div>
+                  <div className="flex flex-row justify-between mt-5">
+                    {isMine && (
+                      <>
+                        {/* 編集 */}
+                        <div
+                          className="text-blue-500 p-2 w-full text-center"
+                          onClick={() => {
+                            setEditing(true);
+                          }}
+                        ></div>
+                        {/* 水やり */}
+                        {/* <div className="p-2 border-b border-gray-300 w-full flex flex-row justify-center">
+                          <div className="h-6 w-6">
+                            <Image
+                              src={dotWatering}
+                              alt="watering"
+                              width={100}
+                              height={100}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="text-blue-500">水やり管理</div>
+                        </div> */}
+                        <DeleteButton onDelete={handleDeleteAgave} />
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Modal>
             </div>
 
             <div className="flex mt-2">

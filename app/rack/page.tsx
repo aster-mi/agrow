@@ -122,7 +122,6 @@ export default function Page() {
             Myラック
           </div>
           <Modal
-            title="My ラック"
             open={racksVisible}
             footer={null}
             mask={false}

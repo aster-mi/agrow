@@ -103,10 +103,10 @@ const BottomMenu = () => {
                 ) : (
                   <Image
                     src={profile?.image!}
-                    width={24}
-                    height={24}
+                    width={30}
+                    height={30}
                     alt="profile icon"
-                    className="w-6 h-6 mb-1"
+                    className="w-8 h-8 mb-1 rounded-full"
                   />
                 )}
               </Link>

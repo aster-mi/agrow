@@ -4,7 +4,6 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Card, Input, Modal, Row } from "antd";
 import { toast } from "react-toastify";
 import { RackPlanType } from "../type/RackPlanType";
-import { useParams } from "next/navigation";
 import { RackType } from "../type/RackType";
 import Loading from "../loading";
 import positionSetting from "../utils/positionSetting";
@@ -12,6 +11,8 @@ import Rack from "../components/Rack";
 import SetAgave from "../components/SetAgave";
 import useMyRacks, { mutateMyRacks } from "../hooks/useMyRacks";
 import { mutateRack } from "../hooks/useRack";
+import { UserType } from "../type/UserType";
+import TodoMessage from "../components/TodoMessage";
 
 export default function Page() {
   const [pageLoading, setPageLoading] = useState<boolean>(true);
@@ -24,11 +25,13 @@ export default function Page() {
   const [racksVisible, setRacksVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [openSetPosition, setOpenSetPosition] = useState<number>(0);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
     if (!myRacks) return;
     setShowRacks(myRacks);
     setSearchValue("");
+    fetchMyData();
     if (myRacks.length === 0) {
       setRacksVisible(false);
       setOpenRack(false);
@@ -37,7 +40,10 @@ export default function Page() {
       return;
     }
     const openedRackCode = sessionStorage.getItem("openedRackCode");
-    if (openedRackCode) {
+    if (
+      openedRackCode &&
+      myRacks.find((rack) => rack.code === openedRackCode)
+    ) {
       // sessionStorageに開いているラックのcodeがある場合はそのラックを開く
       setRackCode(openedRackCode);
     } else {
@@ -49,6 +55,12 @@ export default function Page() {
     setOpenRack(true);
     setPageLoading(false);
   }, [myRacks]);
+
+  const fetchMyData = async () => {
+    const res = await fetch("/api/mypage");
+    const data: UserType = await res.json();
+    setIsAdmin(data.isAdmin!);
+  };
 
   const fetchRackPlan = async () => {
     fetch("/api/rack/plan")
@@ -201,21 +213,25 @@ export default function Page() {
               mask={true}
               onCancel={() => setIsModalVisible(false)}
             >
-              {rackPlans.map((plan) => (
-                <Card
-                  className="bg-gray-100 m-2 shadow-md"
-                  key={plan.id}
-                  onClick={() => handleAddRack(plan.id)}
-                  hoverable
-                  cover={
-                    <div className="text-center">
-                      <div className="font-bold">{plan.name}</div>
-                      <div>月額：{plan.monthlyFee}円</div>
-                      <div>サイズ：{plan.size}株分</div>
-                    </div>
-                  }
-                ></Card>
-              ))}
+              {isAdmin ? (
+                rackPlans.map((plan) => (
+                  <Card
+                    className="bg-gray-100 m-2 shadow-md"
+                    key={plan.id}
+                    onClick={() => handleAddRack(plan.id)}
+                    hoverable
+                    cover={
+                      <div className="text-center">
+                        <div className="font-bold">{plan.name}</div>
+                        <div>月額：{plan.monthlyFee}円</div>
+                        <div>サイズ：{plan.size}株分</div>
+                      </div>
+                    }
+                  ></Card>
+                ))
+              ) : (
+                <TodoMessage />
+              )}
             </Modal>
           </Modal>
         </Row>

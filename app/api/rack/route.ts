@@ -20,6 +20,19 @@ export async function POST(request: NextRequest) {
 }
 
 async function registerAgave(rackPlanId: number, userId: string) {
+  // TODO stripe実装まではadmin以外は登録できないようにする
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    select: {
+      isAdmin: true,
+    },
+  });
+  if (!user.isAdmin) {
+    throw "bad request";
+  }
+
   if (!rackPlanId || !userId) {
     throw "bad request";
   }

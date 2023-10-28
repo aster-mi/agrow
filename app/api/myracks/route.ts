@@ -36,5 +36,31 @@ async function getRacks(userId: string) {
       name: "asc",
     },
   });
+  if (racks.length === 0) {
+    return await createFreeRack(userId);
+  }
   return racks;
+}
+
+async function createFreeRack(userId: string) {
+  const rackPlan = await prisma.rackPlan.findFirst({
+    where: {
+      size: 9,
+    },
+  });
+
+  if (!rackPlan) {
+    throw "bad request";
+  }
+
+  const rack = await prisma.rack.create({
+    data: {
+      name: "お試しラック",
+      ownerId: userId,
+      rackPlanId: rackPlan.id,
+      size: rackPlan.size,
+      monthlyFee: rackPlan.monthlyFee,
+    },
+  });
+  return [rack];
 }

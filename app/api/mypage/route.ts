@@ -77,6 +77,7 @@ async function getUser(id: string) {
       name: true,
       publicId: true,
       image: true,
+      isAdmin: true,
     },
   });
 }

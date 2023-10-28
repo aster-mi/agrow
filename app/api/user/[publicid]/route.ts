@@ -23,6 +23,7 @@ async function getUser(publicId: string) {
       name: true,
       publicId: true,
       image: true,
+      isAdmin: true,
     },
   });
 }

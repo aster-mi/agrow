@@ -1,0 +1,35 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+  - name: gotrue
+    url: http://gotrue:9999
+    routes:
+      - name: gotrue-route
+        paths:
+          - /auth
+        strip_path: false
+
+  - name: postgrest
+    url: http://postgrest:3000
+    routes:
+      - name: postgrest-route
+        paths:
+          - /rest
+        strip_path: false
+
+  - name: storage
+    url: http://storage:5000
+    routes:
+      - name: storage-route
+        paths:
+          - /storage
+        strip_path: false
+
+  - name: realtime
+    url: http://realtime:4000
+    routes:
+      - name: realtime-route
+        paths:
+          - /realtime
+        strip_path: false
